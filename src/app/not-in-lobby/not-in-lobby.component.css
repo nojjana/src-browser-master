@@ -1,0 +1,43 @@
+.game-code-input{
+  padding:8px;
+  display:block;
+  border:none;
+  border-bottom:2px dashed white;
+  width:184px;
+  background: transparent;
+  color: white;
+}
+
+#connecting-box{
+  width: 200px;
+  text-align: center;
+  margin: 100px auto auto;
+  border: 1px solid black;
+  border-radius: 10px;
+  height: 150px;
+  color: white;
+}
+
+.myButton {
+  color: white;
+  width: 200px;
+  height: 40px;
+  border: 3px dashed white;
+  line-height: 40px;
+  margin: auto
+}
+
+.myButton:hover {
+  color: #69f0ae;
+  border: 3px dashed #69f0ae;
+  cursor: pointer;
+}
+
+input:focus{
+  outline: none;
+}
+
+
+.game-code-input:hover {
+  border-bottom:2px dashed #69f0ae;
+}

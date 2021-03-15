@@ -1,0 +1,7 @@
+<!--Switches the shown Component according to the current program -->
+<app-not-in-lobby *ngIf="program === Program.NOT_IN_LOBBY"></app-not-in-lobby>
+<app-main-menu *ngIf="program === Program.MAIN_MENU"></app-main-menu>
+<app-labyrinth-game *ngIf="program === Program.LABYRINTH"></app-labyrinth-game>
+<app-spaceship-game *ngIf="program === Program.SPACESHIP"></app-spaceship-game>
+<app-whack-a-mole-game *ngIf="program === Program.WHACK_A_MOLE"></app-whack-a-mole-game>
+<app-varianz-test *ngIf="program === Program.VARIANZ_TEST || program === Program.LAST_TEST"></app-varianz-test>

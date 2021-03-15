@@ -1,0 +1,18 @@
+#tutorial-box{
+  width: 350px;
+  text-align: center;
+  margin: auto;
+  border: 1px solid black;
+  border-radius: 10px;
+  height: 150px;
+  color: white;
+  padding-top: 100px;
+}
+
+main {
+  background-image:
+    url("../../assets/whack-a-mole/Grass.png");
+  background-repeat: repeat;
+  height: 100%;
+  width: 100%;
+}
