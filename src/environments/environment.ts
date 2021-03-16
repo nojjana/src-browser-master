@@ -4,9 +4,9 @@
 
 export const environment = {
   production: false,
-  //socketUrl: 'http://localhost:3005',
+  socketUrl: 'http://localhost:3005',
   // socketUrl: 'http://86.119.42.129:3005'
-  socketUrl: 'https://src-fhnw.xyz:3005'
+  // socketUrl: 'https://src-fhnw.xyz:3005'
 };
 
 /*
