@@ -9,6 +9,7 @@ import { NotInLobbyComponent } from './not-in-lobby/not-in-lobby.component';
 import { MainMenuComponent } from './main-menu/main-menu.component';
 import { SpaceshipGameComponent } from './spaceship-game/spaceship-game.component';
 import { WhackAMoleGameComponent } from './whack-a-mole-game/whack-a-mole-game.component';
+import { ShakerGameComponent } from './shaker-game/shaker-game.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatButtonModule} from '@angular/material/button';
@@ -25,6 +26,7 @@ import { VarianzTestComponent } from './varianz-test/varianz-test.component';
     MainMenuComponent,
     SpaceshipGameComponent,
     WhackAMoleGameComponent,
+    ShakerGameComponent,
     VarianzTestComponent,
   ],
   imports: [

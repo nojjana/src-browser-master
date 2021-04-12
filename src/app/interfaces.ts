@@ -4,6 +4,7 @@ export enum Program {
   LABYRINTH,
   SPACESHIP,
   WHACK_A_MOLE,
+  SHAKER,
   VARIANZ_TEST,
   LAST_TEST
 }
