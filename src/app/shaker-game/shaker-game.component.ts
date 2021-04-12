@@ -1,5 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import Phaser from 'phaser';
+import { runInThisContext } from 'vm';
 import {SocketService} from '../socket-service/socket.service';
 import Group = Phaser.GameObjects.Group;
 
@@ -92,12 +93,21 @@ export default class ShakerScene extends Phaser.Scene {
   private halfPixelSize = this.pixelSize / 2;
   private mole: Phaser.GameObjects.Image;
   private hammer: Phaser.GameObjects.Image;
+  private shakeObject: Phaser.GameObjects.Image;
+  private fallingObject: Phaser.GameObjects.Image;
+  private shakerContainer: Phaser.GameObjects.Image;
   private scoreText: Phaser.GameObjects.BitmapText;
   private score: any;
   private holes: Phaser.GameObjects.Group;
   private hit: Phaser.GameObjects.Image;
   private screenCenterX: number;
   private screenCenterY: number;
+  private screenEndX: number;
+  private screenEndY: number;
+  private shakeObjectY: number;
+  private shakeObjectX: number;
+  private shakerContainerX: number;
+  private shakerContainerY: number;
   private background: Phaser.GameObjects.TileSprite;
 
 
@@ -111,6 +121,9 @@ export default class ShakerScene extends Phaser.Scene {
     this.load.image('HammerArea', '../../assets/shaker/HammerArea.png');
     this.load.image('HammerHit', '../../assets/shaker/HammerHit.png');
     this.load.image('Grass', '../../assets/shaker/Grass.png');
+    this.load.image('ShakeObject', '../../assets/shaker/ShakeObject-Apple.png');
+    this.load.image('FallingObject', '../../assets/shaker/Apple.png');
+    this.load.image('ShakerContainer', '../../assets/shaker/ShakerContainer.png');
     this.load.bitmapFont('pressStart', '../../assets/font/PressStartWhite.png', '../../assets/font/PressStartWhite.fnt');
   }
 
@@ -119,27 +132,59 @@ export default class ShakerScene extends Phaser.Scene {
     const shakerData = data.shakerData;
     this.screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
     this.screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
+    this.screenEndX = this.cameras.main.worldView.x + this.cameras.main.width;
+    this.screenEndY = this.cameras.main.worldView.y + this.cameras.main.height;
+    this.shakeObjectX = this.screenCenterX;
+    this.shakeObjectY = this.screenCenterY * 0.5;
+    this.shakerContainerX = this.screenCenterX;
+    this.shakerContainerY = this.screenEndY * 0.8;
 
-    this.createBackground(shakerData[1], shakerData[0]);
+    // this.createBackground(shakerData[1], shakerData[0]);
+
+    this.shakeObject = this.add.image(
+      this.shakeObjectX,
+      this.shakeObjectY,
+      'ShakeObject'
+    );
+    this.shakeObject.setDepth(70);
+
+    this.fallingObject = this.add.image(
+      this.shakeObjectX,
+      this.shakeObjectY * 2,
+      'FallingObject'
+    );
+    this.shakeObject.setDepth(80);
+
+    this.shakerContainer = this.add.image(
+      this.shakerContainerX,
+      this.shakerContainerY,
+      'ShakerContainer'
+    );
+    this.shakerContainer.setDepth(100);
+
     this.hammer = this.add.image(
-      shakerData[2],
-      shakerData[3],
+      this.shakeObjectX,
+      this.shakeObjectY,
       'HammerArea'
     );
     this.hammer.setDepth(3);
+    this.hammer.setVisible(false);
+
     this.hit = this.add.image(
-      shakerData[2],
-      shakerData[3],
+      this.shakeObjectX,
+      this.shakeObjectY,
       'HammerHit'
     );
     this.hit.setVisible(false);
-    this.hit.setDepth(3);
+    this.hit.setDepth(90);
+
     this.mole = this.add.image(
-      shakerData[4],
-      shakerData[5],
+      this.shakeObjectX,
+      this.shakeObjectY,
       'Mole'
     );
     this.mole.setDepth(2);
+    this.mole.setVisible(false);
 
     this.scoreText = this.add.bitmapText(this.screenCenterX, 540, 'pressStart', 'Score: 0', 32)
       .setOrigin(0.5)
@@ -163,13 +208,13 @@ export default class ShakerScene extends Phaser.Scene {
   }
 
   private createBackground(height: number, width: number): void {
-    this.holes = new Group(this);
-    for (let i = 0; i < height; i++) {
-      for (let j = 0; j < width; j++) {
-        this.holes.add(this.add.image(this.halfPixelSize + j * this.pixelSize, this.halfPixelSize + i * this.pixelSize, 'MoleHole')
-          .setDepth(1));
-      }
-    }
+    // this.holes = new Group(this);
+    // for (let i = 0; i < height; i++) {
+    //   for (let j = 0; j < width; j++) {
+    //     this.holes.add(this.add.image(this.halfPixelSize + j * this.pixelSize, this.halfPixelSize + i * this.pixelSize, 'MoleHole')
+    //       .setDepth(1));
+    //   }
+    // }
     // this.background = this.add.tileSprite(0, 0, 2 * this.game.canvas.width, 2 * this.game.canvas.height, 'Grass');
    //  this.background.setDepth(0);
   }
