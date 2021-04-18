@@ -1,6 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import Phaser from 'phaser';
-import { runInThisContext } from 'vm';
 import {SocketService} from '../socket-service/socket.service';
 import Group = Phaser.GameObjects.Group;
 
