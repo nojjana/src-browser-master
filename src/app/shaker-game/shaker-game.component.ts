@@ -189,6 +189,11 @@ export default class ShakerScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setDepth(100);
 
+      // TODO shaking makes fruit fall ?
+      // this.lobbyController.sendToDisplays('updateHammer',
+      // [this.hammer.position.x, this.hammer.position.y,
+      // this.mole.position.x, this.mole.position.y,
+      // this.hit, this.score]);
     this.socketService.on('updateHammer', (hammer) => {
       this.hammer.setPosition(hammer[0], hammer[1]);
       this.mole.setPosition(hammer[2], hammer[3]);
@@ -218,10 +223,15 @@ export default class ShakerScene extends Phaser.Scene {
    //  this.background.setDepth(0);
   }
 
+
   private hammerHit(hammerElement: any): void {
     if (hammerElement === true  && !this.hit.visible) {
+        // TODO meldung von server, dass geschlagen wurde, hier soll anzeige dann geändert werden
+        // TODO fortschrittsbalken (prio 2)
+        // counter?
+        // fruit falls?
       this.hit.setPosition(this.hammer.x, this.hammer.y);
-      this.hit.setVisible(true);
+      this.hit.setVisible(true);  // bild vom hammerschlag wird sichtbar
       this.time.addEvent({delay: 300, callback: () => this.hit.setVisible(false)});
     }
   }
