@@ -49,6 +49,7 @@ export class ShakerGameComponent implements OnInit, OnDestroy {
 
     this.socketService.removeListener('shakerData');
     this.socketService.removeListener('updateHammer');
+    this.socketService.removeListener('updateShaking');
 
     this.socketService.removeListener('controllerEndedTutorial');
     this.socketService.removeListener('gameOver');
@@ -149,7 +150,7 @@ export default class ShakerScene extends Phaser.Scene {
 
     this.fallingObject = this.add.image(
       this.shakeObjectX,
-      this.shakeObjectY * 2,
+      this.shakeObjectY,
       'FallingObject'
     );
     this.shakeObject.setDepth(80);
@@ -202,6 +203,10 @@ export default class ShakerScene extends Phaser.Scene {
       this.score = hammer[5];
     });
 
+    this.socketService.on('updateShaking', (shakeEvent) => {
+      this.shakeEvent(shakeEvent[0]);
+    });
+
     this.socketService.on('gameOver', finished => {
       if (finished === true) {
         this.showGameOver();
@@ -225,7 +230,9 @@ export default class ShakerScene extends Phaser.Scene {
 
 
   private hammerHit(hammerElement: any): void {
+    // console.log('hammerHit');
     if (hammerElement === true  && !this.hit.visible) {
+      console.log('hammerElement true');
         // TODO meldung von server, dass geschlagen wurde, hier soll anzeige dann geändert werden
         // TODO fortschrittsbalken (prio 2)
         // counter?
@@ -233,6 +240,20 @@ export default class ShakerScene extends Phaser.Scene {
       this.hit.setPosition(this.hammer.x, this.hammer.y);
       this.hit.setVisible(true);  // bild vom hammerschlag wird sichtbar
       this.time.addEvent({delay: 300, callback: () => this.hit.setVisible(false)});
+      // TODO
+      // this.fall();
+    }
+  }
+
+  private shakeEvent(shakeElement: any): void {
+    // console.log('shakeEvent');
+    if (shakeElement === true) {
+      console.log('shakeElement true');
+        // TODO meldung von server, dass geschlagen wurde, hier soll anzeige dann geändert werden
+        // TODO fortschrittsbalken (prio 2)
+        // counter?
+        // fruit falls?
+      this.fall();
     }
   }
 
@@ -240,7 +261,10 @@ export default class ShakerScene extends Phaser.Scene {
     this.hammer.destroy();
     this.mole.destroy();
     this.scoreText.destroy();
-    this.holes.destroy(true);
+    // this.holes.destroy(true);
+    this.shakeObject.destroy();
+    this.shakerContainer.destroy();
+    this.fallingObject.destroy();
     const text = ['Game Over', 'You got: ' + this.score + ' Points'];
     this.add.bitmapText(this.screenCenterX, this.screenCenterY, 'pressStart', text, 32).setOrigin(0.5, 0.5).setCenterAlign();
   }
@@ -249,4 +273,29 @@ export default class ShakerScene extends Phaser.Scene {
     console.log('running');
   }
 
+  private fall(): void {
+    console.log('object falling!');
+    console.log('this.shakeObjectY = '+this.shakeObjectY);
+    console.log('this.shakerContainerY = '+this.shakerContainerY);
+    if (this.shakeObjectY < this.shakerContainerY) {
+      this.falling();
+    } else {
+      console.log('object reached shaker');
+    }
+  }
+
+  private falling(): void  {
+    // console.log('increasing Y of object');
+    // this.fallingObject.setPosition(this.shakeObjectX, updateY);
+    // this.fallingObject.setVisible(true);
+    if (this.shakeObjectY < this.shakerContainerY) {
+      this.shakeObjectY = this.shakeObjectY + 10;
+      this.fallingObject.setPosition(this.shakeObjectX, this.shakeObjectY);
+      setTimeout(this.falling, 3000); // try again in 300 milliseconds
+    }
+  }
+
 }
+
+
+
