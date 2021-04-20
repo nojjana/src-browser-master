@@ -50,6 +50,9 @@ export class ShakerGameComponent implements OnInit, OnDestroy {
     this.socketService.removeListener('shakerData');
     this.socketService.removeListener('updateHammer');
     this.socketService.removeListener('updateShaking');
+    this.socketService.removeListener('updateFall');
+    this.socketService.removeListener('updateScore');
+
 
     this.socketService.removeListener('controllerEndedTutorial');
     this.socketService.removeListener('gameOver');
@@ -106,6 +109,8 @@ export default class ShakerScene extends Phaser.Scene {
   private screenEndY: number;
   private shakeObjectY: number;
   private shakeObjectX: number;
+  private fallingObjectY: number;
+  private fallingObjectX: number;
   private shakerContainerX: number;
   private shakerContainerY: number;
   private background: Phaser.GameObjects.TileSprite;
@@ -136,6 +141,8 @@ export default class ShakerScene extends Phaser.Scene {
     this.screenEndY = this.cameras.main.worldView.y + this.cameras.main.height;
     this.shakeObjectX = this.screenCenterX;
     this.shakeObjectY = this.screenCenterY * 0.5;
+    this.fallingObjectX = this.screenCenterX;
+    this.fallingObjectY = this.screenCenterY * 0.5;
     this.shakerContainerX = this.screenCenterX;
     this.shakerContainerY = this.screenEndY * 0.8;
 
@@ -149,8 +156,8 @@ export default class ShakerScene extends Phaser.Scene {
     this.shakeObject.setDepth(70);
 
     this.fallingObject = this.add.image(
-      this.shakeObjectX,
-      this.shakeObjectY,
+      this.fallingObjectX,
+      this.fallingObjectY,
       'FallingObject'
     );
     this.shakeObject.setDepth(80);
@@ -190,7 +197,7 @@ export default class ShakerScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setDepth(100);
 
-      // TODO shaking makes fruit fall ?
+      // FROM SERVER SHAKERPROGRAM:
       // this.lobbyController.sendToDisplays('updateHammer',
       // [this.hammer.position.x, this.hammer.position.y,
       // this.mole.position.x, this.mole.position.y,
@@ -204,7 +211,16 @@ export default class ShakerScene extends Phaser.Scene {
     });
 
     this.socketService.on('updateShaking', (shakeEvent) => {
-      this.shakeEvent(shakeEvent[0]);
+      this.shakeEvent(shakeEvent);
+    });
+
+    this.socketService.on('updateFall', (fallEvent) => {
+      this.fallEvent(fallEvent);
+    });
+
+    this.socketService.on('updateScore', (scoreEvent) => {
+      this.scoreText.setText('Score: ' + scoreEvent);
+      this.score = scoreEvent;
     });
 
     this.socketService.on('gameOver', finished => {
@@ -229,14 +245,13 @@ export default class ShakerScene extends Phaser.Scene {
   }
 
 
-  private hammerHit(hammerElement: any): void {
+  // private hammerHit(hammerElement: any): void {
+
+  private hammerHit(hammerElement: boolean): void {
     // console.log('hammerHit');
     if (hammerElement === true  && !this.hit.visible) {
       console.log('hammerElement true');
         // TODO meldung von server, dass geschlagen wurde, hier soll anzeige dann geändert werden
-        // TODO fortschrittsbalken (prio 2)
-        // counter?
-        // fruit falls?
       this.hit.setPosition(this.hammer.x, this.hammer.y);
       this.hit.setVisible(true);  // bild vom hammerschlag wird sichtbar
       this.time.addEvent({delay: 300, callback: () => this.hit.setVisible(false)});
@@ -245,14 +260,23 @@ export default class ShakerScene extends Phaser.Scene {
     }
   }
 
-  private shakeEvent(shakeElement: any): void {
+  private shakeEvent(shakeElement: boolean): void {
     // console.log('shakeEvent');
     if (shakeElement === true) {
       console.log('shakeElement true');
-        // TODO meldung von server, dass geschlagen wurde, hier soll anzeige dann geändert werden
+        // TODO meldung von server, dass geschlagen/geschüttelt wurde, hier soll anzeige dann geändert werden
         // TODO fortschrittsbalken (prio 2)
-        // counter?
-        // fruit falls?
+        // counter? im server?
+      this.hammerHit(true);
+    }
+  }
+
+  private fallEvent(fallElement: any): void {
+    // console.log('fallEvent');
+    if (fallElement === true) {
+      console.log('fallElement true');
+      // TODO meldung von server, dass genug geschüttelt wurde, damit eine frucht fallen kann
+      // ingredient falls
       this.fall();
     }
   }
@@ -275,12 +299,13 @@ export default class ShakerScene extends Phaser.Scene {
 
   private fall(): void {
     console.log('object falling!');
-    console.log('this.shakeObjectY = '+this.shakeObjectY);
-    console.log('this.shakerContainerY = '+this.shakerContainerY);
-    if (this.shakeObjectY < this.shakerContainerY) {
+    // console.log('this.shakeObjectY = '+this.shakeObjectY);
+    // console.log('this.shakerContainerY = '+this.shakerContainerY);
+    if (this.fallingObjectY < this.shakerContainerY) {
       this.falling();
     } else {
-      console.log('object reached shaker');
+      console.log('object reached shaker. setting back to tree? TODO respawn when falling?');
+      // this.fallingObject.setPosition(this.shakeObjectX, this.shakeObjectY);
     }
   }
 
@@ -288,10 +313,10 @@ export default class ShakerScene extends Phaser.Scene {
     // console.log('increasing Y of object');
     // this.fallingObject.setPosition(this.shakeObjectX, updateY);
     // this.fallingObject.setVisible(true);
-    if (this.shakeObjectY < this.shakerContainerY) {
-      this.shakeObjectY = this.shakeObjectY + 10;
-      this.fallingObject.setPosition(this.shakeObjectX, this.shakeObjectY);
-      setTimeout(this.falling, 3000); // try again in 300 milliseconds
+    if (this.fallingObjectY < this.shakerContainerY) {
+      this.fallingObjectY = this.fallingObjectY + 10;
+      this.fallingObject.setPosition(this.fallingObjectX, this.fallingObjectY);
+      setTimeout(this.falling, 300); // try again in 300 milliseconds
     }
   }
 
