@@ -94,9 +94,11 @@ export default class ShakerScene extends Phaser.Scene {
   private mole: Phaser.GameObjects.Image;
   private hammer: Phaser.GameObjects.Image;
   private shakeObject: Phaser.GameObjects.Image;
+  private currentShakeObject: Phaser.GameObjects.Image;
   private shakeObjects: Phaser.GameObjects.Group;                  //groupe shakeObjects
   private appleTree: Phaser.GameObjects.Image;                     //Image appleTree
   private bananaTree: Phaser.GameObjects.Image;                    //Image bananaTree
+  private berryTree: Phaser.GameObjects.Image;                    //Image bananaTree
   private fallingObject: Phaser.GameObjects.Image;
   private shakerContainer: Phaser.GameObjects.Image;
   private scoreText: Phaser.GameObjects.BitmapText;
@@ -127,6 +129,7 @@ export default class ShakerScene extends Phaser.Scene {
     this.load.image('ShakeObject', '../../assets/shaker/ShakeObject-Apple.png');
     this.load.image('AppleTree', '../../assets/shaker/ShakeObject-Apple.png');
     this.load.image('BananaTree', '../../assets/shaker/ShakeObject-Banana.png');
+    this.load.image('BerryTree', '../../assets/shaker/ShakeObject-Berry.gif');
     this.load.image('FallingObject', '../../assets/shaker/Apple.png');
     this.load.image('ShakerContainer', '../../assets/shaker/ShakerContainer.png');
     this.load.bitmapFont('pressStart', '../../assets/font/PressStartWhite.png', '../../assets/font/PressStartWhite.fnt');
@@ -145,29 +148,16 @@ export default class ShakerScene extends Phaser.Scene {
     this.shakerContainerY = this.screenEndY * 0.8;
 
     // this.createBackground(shakerData[1], shakerData[0]);
-    this.initShakeObjects;
-    this.generateShakeObject();
+    //this.initShakeObjects;
+    //this.generateShakeObject();
 
-    this.shakeObject = this.add.image(
+
+   this.shakeObject = this.add.image(
       this.shakeObjectX,
       this.shakeObjectY,
       'ShakeObject'
     ); 
-    this.shakeObject.setDepth(70); 
-
-    this.appleTree = this.add.image(
-      this.shakeObjectX,
-      this.shakeObjectY,
-      'AppleTree'
-    );
-    this.appleTree.setDepth(70);
-
-    this.bananaTree = this.add.image(
-      this.shakeObjectX,
-      this.shakeObjectY,
-      'BananaTree'
-    );
-    this.bananaTree.setDepth(70);
+    this.shakeObject.setDepth(70);    
 
     this.fallingObject = this.add.image(
       this.shakeObjectX,
@@ -237,12 +227,12 @@ export default class ShakerScene extends Phaser.Scene {
     this.socketService.emit('shakerBuild');
   }
 
-  //TODO: load random ShakeObject
+/*   //TODO: load random ShakeObject
   private generateShakeObject(){
     return this.shakeObject = this.appleTree;
     console.log("TODO: generate random ShakeObject")
   }
-
+ */
   private createBackground(height: number, width: number): void {
     // this.holes = new Group(this);
     // for (let i = 0; i < height; i++) {
@@ -256,11 +246,11 @@ export default class ShakerScene extends Phaser.Scene {
   }
 
   //create group of shakeObjects
-  private initShakeObjects(): void {
+/*   private initShakeObjects(): void {
     this.shakeObjects = new Group(this);
     this.shakeObjects.add(this.appleTree);
     this.shakeObjects.add(this.bananaTree);
-  }
+  } */
 
   private hammerHit(hammerElement: any): void {
     // console.log('hammerHit');
@@ -296,6 +286,7 @@ export default class ShakerScene extends Phaser.Scene {
     this.scoreText.destroy();
     // this.holes.destroy(true);
     this.shakeObject.destroy();
+    this.currentShakeObject.destroy();
     this.shakerContainer.destroy();
     this.fallingObject.destroy();
     const text = ['Game Over', 'You got: ' + this.score + ' Points'];
@@ -313,7 +304,10 @@ export default class ShakerScene extends Phaser.Scene {
     if (this.shakeObjectY < this.shakerContainerY) {
       this.falling();
     } else {
-      console.log('object reached shaker');
+      this.createRandomShakeObject();
+      console.log('object reached shaker');      
+      //change shakeObject after 3000 seconds
+      //setTimeout(this.createRandomShakeObject, 3000); // try again in 3000 milliseconds
     }
   }
 
@@ -325,6 +319,47 @@ export default class ShakerScene extends Phaser.Scene {
       this.shakeObjectY = this.shakeObjectY + 10;
       this.fallingObject.setPosition(this.shakeObjectX, this.shakeObjectY);
       setTimeout(this.falling, 3000); // try again in 300 milliseconds
+    }
+  }
+
+  //todo: should be random generated
+  private createRandomShakeObject(): void{
+    console.log("createRandomShakeObject opened")
+    var value = Phaser.Math.Between(1,3);
+    console.log("value: "+value);
+    if (value == 1) {
+
+      this.appleTree = this.add.image(
+        this.shakeObjectX,
+        this.shakeObjectY,
+        'AppleTree'
+      );
+      this.appleTree.setDepth(70);
+
+    } else if (value == 2) {
+
+      this.bananaTree = this.add.image(
+        this.shakeObjectX,
+        this.shakeObjectY,
+        'BananaTree'
+      );
+      this.bananaTree.setDepth(70); 
+    } else if (value == 3) {
+
+      this.berryTree = this.add.image(
+        this.shakeObjectX,
+        this.shakeObjectY,
+        'BerryTree'
+      );
+      this.berryTree.setDepth(70); 
+    }
+  }
+
+  private updateShakeObject(){
+    if (this.shakeObject == this.appleTree) {
+      return this.shakeObject = this.bananaTree;
+    } else if (this.shakeObject = this.bananaTree) {
+      return this.shakeObject = this.appleTree;
     }
   }
 
