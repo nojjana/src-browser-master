@@ -151,13 +151,14 @@ export default class ShakerScene extends Phaser.Scene {
     //this.initShakeObjects;
     //this.generateShakeObject();
 
-
-   this.shakeObject = this.add.image(
+   this.shakeObject = this.createRandomShakeObject();
+   this.shakeObject.setDepth(70); 
+   /* this.shakeObject = this.add.image(
       this.shakeObjectX,
       this.shakeObjectY,
       'ShakeObject'
     ); 
-    this.shakeObject.setDepth(70);    
+    this.shakeObject.setDepth(70);    */ 
 
     this.fallingObject = this.add.image(
       this.shakeObjectX,
@@ -304,10 +305,11 @@ export default class ShakerScene extends Phaser.Scene {
     if (this.shakeObjectY < this.shakerContainerY) {
       this.falling();
     } else {
-      this.createRandomShakeObject();
+      //this.updateShakeObject();
       console.log('object reached shaker');      
       //change shakeObject after 3000 seconds
-      //setTimeout(this.createRandomShakeObject, 3000); // try again in 3000 milliseconds
+      this.shakeObject = this.createRandomShakeObject();    
+
     }
   }
 
@@ -322,47 +324,43 @@ export default class ShakerScene extends Phaser.Scene {
     }
   }
 
-  //todo: should be random generated
-  private createRandomShakeObject(): void{
+  //new List shakeObjectsAlreadyPlayed
+
+  private createRandomShakeObject(){
     console.log("createRandomShakeObject opened")
     var value = Phaser.Math.Between(1,3);
     console.log("value: "+value);
     if (value == 1) {
-
-      this.appleTree = this.add.image(
+      return this.add.image(
         this.shakeObjectX,
         this.shakeObjectY,
         'AppleTree'
       );
-      this.appleTree.setDepth(70);
+      //this.appleTree.setDepth(70);
 
     } else if (value == 2) {
 
-      this.bananaTree = this.add.image(
+      return this.add.image(
         this.shakeObjectX,
         this.shakeObjectY,
         'BananaTree'
       );
-      this.bananaTree.setDepth(70); 
+      //this.bananaTree.setDepth(70); 
     } else if (value == 3) {
 
-      this.berryTree = this.add.image(
+      return this.add.image(
         this.shakeObjectX,
         this.shakeObjectY,
         'BerryTree'
       );
-      this.berryTree.setDepth(70); 
+      //this.berryTree.setDepth(70); 
     }
   }
 
   private updateShakeObject(){
-    if (this.shakeObject == this.appleTree) {
-      return this.shakeObject = this.bananaTree;
-    } else if (this.shakeObject = this.bananaTree) {
-      return this.shakeObject = this.appleTree;
-    }
+    this.shakeObject = this.createRandomShakeObject();
+    console.log("updateShakeObject: "+this.shakeObject);
   }
-
 }
 
 
