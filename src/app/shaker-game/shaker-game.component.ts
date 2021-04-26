@@ -1,3 +1,4 @@
+import { verifyHostBindings } from '@angular/compiler';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import Phaser from 'phaser';
 import {SocketService} from '../socket-service/socket.service';
@@ -50,6 +51,7 @@ export class ShakerGameComponent implements OnInit, OnDestroy {
     this.socketService.removeListener('shakerData');
     this.socketService.removeListener('updateHammer');
     this.socketService.removeListener('updateShaking');
+    this.socketService.removeListener('reachedShaker');
 
     this.socketService.removeListener('controllerEndedTutorial');
     this.socketService.removeListener('gameOver');
@@ -114,6 +116,14 @@ export default class ShakerScene extends Phaser.Scene {
   private shakerContainerX: number;
   private shakerContainerY: number;
   private background: Phaser.GameObjects.TileSprite;
+  private currentShakeObjectNumber = null;
+  private oldShakeObjectNumber = null;
+  private numberOfShakingObjects = 2;
+  private shakingObjectList: Array<number>;
+  private randomShakingObjectNumber = Phaser.Math.Between(1,3);
+
+
+
 
 
   constructor() {
@@ -150,15 +160,17 @@ export default class ShakerScene extends Phaser.Scene {
     // this.createBackground(shakerData[1], shakerData[0]);
     //this.initShakeObjects;
     //this.generateShakeObject();
-
-   this.shakeObject = this.createRandomShakeObject();
-   this.shakeObject.setDepth(70); 
-   /* this.shakeObject = this.add.image(
+    //this.createGameObject();
+    //this.generateShakeObjectList(this.shakingObjectList);
+    
+    console.log("randomshakingObjectNumber: "+this.randomShakingObjectNumber)
+    this.shakeObject = this.add.image(
       this.shakeObjectX,
       this.shakeObjectY,
-      'ShakeObject'
+      this.loadShakeObjectImage(this.randomShakingObjectNumber)
+      //'ShakeObject'
     ); 
-    this.shakeObject.setDepth(70);    */ 
+    this.shakeObject.setDepth(70);    
 
     this.fallingObject = this.add.image(
       this.shakeObjectX,
@@ -217,6 +229,12 @@ export default class ShakerScene extends Phaser.Scene {
 
     this.socketService.on('updateShaking', (shakeEvent) => {
       this.shakeEvent(shakeEvent[0]);
+    });
+
+    this.socketService.on('reachedShaker', reachedShaker => {
+      if (reachedShaker === true) {
+        this.updateShakeObject();
+      }
     });
 
     this.socketService.on('gameOver', finished => {
@@ -294,6 +312,16 @@ export default class ShakerScene extends Phaser.Scene {
     this.add.bitmapText(this.screenCenterX, this.screenCenterY, 'pressStart', text, 32).setOrigin(0.5, 0.5).setCenterAlign();
   }
 
+  private updateShakeObject(): void {
+    this.randomShakingObjectNumber = Phaser.Math.Between(1,3);
+    this.shakeObject = this.add.image(
+      this.shakeObjectX,
+      this.shakeObjectY,
+      this.loadShakeObjectImage(this.randomShakingObjectNumber)
+    ); 
+    const text = ['Next Tree is coming!'];
+  }
+
   update() {
     console.log('running');
   }
@@ -306,10 +334,8 @@ export default class ShakerScene extends Phaser.Scene {
       this.falling();
     } else {
       //this.updateShakeObject();
-      console.log('object reached shaker');      
+      console.log('object reached shaker');
       //change shakeObject after 3000 seconds
-      this.shakeObject = this.createRandomShakeObject();    
-
     }
   }
 
@@ -321,46 +347,97 @@ export default class ShakerScene extends Phaser.Scene {
       this.shakeObjectY = this.shakeObjectY + 10;
       this.fallingObject.setPosition(this.shakeObjectX, this.shakeObjectY);
       setTimeout(this.falling, 3000); // try again in 300 milliseconds
+    } 
+  }
+  
+  // Generates a list of shakingObjects 
+  /* private generateShakeObjectList(shakingObjectList){
+    for (var i = 0; i <= this.numberOfShakingObjects; i++){
+      shakingObjectList[i] = 5;
+      console.log("generateShakingObjectList: "+shakingObjectList[i])
     }
+    return shakingObjectList;      
+  } */
+
+    // todo: randomize the order
+  private loadShakeObjectImage(randomShakingObjectNumber) {
+    console.log("shakingObjectList == 0")
+    if (randomShakingObjectNumber == 0){
+      console.log("shakingObjectList == 0")
+      return 'AppleTree'
+    } else if (randomShakingObjectNumber == 1){
+      console.log("shakingObjectList == 1")
+      return 'BananaTree'
+    } else if (randomShakingObjectNumber == 2){
+      console.log("shakingObjectList == 2")
+      return 'BerryTree'
   }
 
-  //new List shakeObjectsAlreadyPlayed
 
-  private createRandomShakeObject(){
+
+/*   private createShakeObject: string{
+    console.log("createGameObject opened");
+    //this.currentShakeObjectNumber = 3;
+    return this.createRandomShakeObject(1);
+    //if(this.oldShakeObjectNumber == null || this.oldShakeObjectNumber == this.currentShakeObjectNumber){
+    //while(this.oldShakeObjectNumber == null ){
+    //  this.currentShakeObjectNumber = Phaser.Math.Between(1,3);
+    //  console.log("currentShakeObjectNumber - New Generated: "+this.currentShakeObject);
+    //  var shakingObject = this.createRandomShakeObject();
+    //  return shakingObject;
+      //this.shakeObject = this.createRandomShakeObject();
+      //this.shakeObject.setDepth(70);
+     //}else{
+     // console.log("currentShakeObjectNumber2: "+this.currentShakeObject);
+      //return this.createRandomShakeObject;
+    //  var shakingObject = this.createRandomShakeObject();
+    //  return shakingObject;
+      //this.shakeObject = this.createRandomShakeObject();
+      //this.shakeObject.setDepth(70);
+     //}
+    } */
+  
+
+
+  /*  private loadImageOfShakeObject(currentShakeObjectNumber): string{
     console.log("createRandomShakeObject opened")
-    var value = Phaser.Math.Between(1,3);
-    console.log("value: "+value);
-    if (value == 1) {
-      return this.add.image(
-        this.shakeObjectX,
-        this.shakeObjectY,
+    if (currentShakeObjectNumber == 1) {
+      console.log("currentShakeObject = 1 opened");
+      return //this.add.image(
+     //   this.shakeObjectX,
+     //   this.shakeObjectY,
         'AppleTree'
-      );
+      //);
       //this.appleTree.setDepth(70);
 
-    } else if (value == 2) {
-
-      return this.add.image(
-        this.shakeObjectX,
-        this.shakeObjectY,
+    } else if (currentShakeObjectNumber == 2) {
+      return 
+      //this.add.image(
+     //   this.shakeObjectX,
+     //   this.shakeObjectY,
         'BananaTree'
-      );
+      //);
       //this.bananaTree.setDepth(70); 
-    } else if (value == 3) {
-
-      return this.add.image(
-        this.shakeObjectX,
-        this.shakeObjectY,
+    } else if (currentShakeObjectNumber == 3) {
+      console.log("oldShakeObjectNumber 3: "+this.oldShakeObjectNumber);
+      return 
+      //this.add.image(
+     //   this.shakeObjectX,
+     //   this.shakeObjectY,
         'BerryTree'
-      );
+      //);
       //this.berryTree.setDepth(70); 
     }
-  }
+  }  */
 
-  private updateShakeObject(){
-    this.shakeObject = this.createRandomShakeObject();
+  
+  
+
+  /* private updateShakeObject(){
+ //   this.shakeObject = this.createRandomShakeObject();
     console.log("updateShakeObject: "+this.shakeObject);
-  }
+  } */
+}
 }
 
 
