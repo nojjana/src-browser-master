@@ -312,17 +312,7 @@ export default class ShakerScene extends Phaser.Scene {
     this.add.bitmapText(this.screenCenterX, this.screenCenterY, 'pressStart', text, 32).setOrigin(0.5, 0.5).setCenterAlign();
   }
 
-  private updateShakeObject(): void {
-    this.randomShakingObjectNumber = Phaser.Math.Between(1,3);
-    this.shakeObject = this.add.image(
-      this.shakeObjectX,
-      this.shakeObjectY,
-      this.loadShakeObjectImage(this.randomShakingObjectNumber)
-    ); 
-    const text = ['Next Tree is coming!'];
-  }
-
-  update() {
+    update() {
     console.log('running');
   }
 
@@ -332,9 +322,10 @@ export default class ShakerScene extends Phaser.Scene {
     console.log('this.shakerContainerY = '+this.shakerContainerY);
     if (this.shakeObjectY < this.shakerContainerY) {
       this.falling();
-    } else {
+    } else if (this.shakeObjectY >= this.shakerContainerY) {
       //this.updateShakeObject();
       console.log('object reached shaker');
+      this.updateShakeObject();
       //change shakeObject after 3000 seconds
     }
   }
@@ -348,6 +339,17 @@ export default class ShakerScene extends Phaser.Scene {
       this.fallingObject.setPosition(this.shakeObjectX, this.shakeObjectY);
       setTimeout(this.falling, 3000); // try again in 300 milliseconds
     } 
+  }
+
+  private updateShakeObject(): void {
+    console.log("updateShakeobject called")
+    this.randomShakingObjectNumber = Phaser.Math.Between(1,3);
+    this.shakeObject = this.add.image(
+      this.shakeObjectX,
+      this.shakeObjectY,
+      this.loadShakeObjectImage(this.randomShakingObjectNumber)
+    ); 
+    const text = ['Next Tree is coming!'];
   }
   
   // Generates a list of shakingObjects 
