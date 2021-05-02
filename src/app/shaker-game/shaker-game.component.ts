@@ -1,3 +1,4 @@
+import { verifyHostBindings } from '@angular/compiler';
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import Phaser from 'phaser';
 import {SocketService} from '../socket-service/socket.service';
@@ -51,6 +52,8 @@ export class ShakerGameComponent implements OnInit, OnDestroy {
     this.socketService.removeListener('updateHammer');
     this.socketService.removeListener('updateShaking');
 
+    this.socketService.removeListener('reachedShaker');
+
     this.socketService.removeListener('controllerEndedTutorial');
     this.socketService.removeListener('gameOver');
 
@@ -94,6 +97,11 @@ export default class ShakerScene extends Phaser.Scene {
   private mole: Phaser.GameObjects.Image;
   private hammer: Phaser.GameObjects.Image;
   private shakeObject: Phaser.GameObjects.Image;
+  private currentShakeObject: Phaser.GameObjects.Image;
+  private shakeObjects: Phaser.GameObjects.Group;                  //groupe shakeObjects
+  private appleTree: Phaser.GameObjects.Image;                     //Image appleTree
+  private bananaTree: Phaser.GameObjects.Image;                    //Image bananaTree
+  private berryTree: Phaser.GameObjects.Image;                     //Image bananaTree
   private fallingObject: Phaser.GameObjects.Image;
   private shakerContainer: Phaser.GameObjects.Image;
   private scoreText: Phaser.GameObjects.BitmapText;
@@ -109,6 +117,13 @@ export default class ShakerScene extends Phaser.Scene {
   private shakerContainerX: number;
   private shakerContainerY: number;
   private background: Phaser.GameObjects.TileSprite;
+  private currentShakeObjectNumber = null;
+  private oldShakeObjectNumber = null;
+  private numberOfShakingObjects = 2;
+  private shakingObjectList: Array<number>;
+
+  private randomShakingObjectNumber = Phaser.Math.Between(0,2);
+  private objectReachedShaker = false;
 
 
   constructor() {
@@ -122,7 +137,12 @@ export default class ShakerScene extends Phaser.Scene {
     this.load.image('HammerHit', '../../assets/shaker/HammerHit.png');
     this.load.image('Grass', '../../assets/shaker/Grass.png');
     this.load.image('ShakeObject', '../../assets/shaker/ShakeObject-Apple.png');
-    this.load.image('FallingObject', '../../assets/shaker/Apple.png');
+    this.load.image('AppleTree', '../../assets/shaker/ShakeObject-Apple.png');
+    this.load.image('BananaTree', '../../assets/shaker/ShakeObject-Banana.png');
+    this.load.image('BerryTree', '../../assets/shaker/ShakeObject-Berry.png');
+    this.load.image('Apple', '../../assets/shaker/Apple.png');
+    this.load.image('Banana', '../../assets/shaker/Banana.PNG');
+    this.load.image('Berry', '../../assets/shaker/Berry.png');
     this.load.image('ShakerContainer', '../../assets/shaker/ShakerContainer.png');
     this.load.bitmapFont('pressStart', '../../assets/font/PressStartWhite.png', '../../assets/font/PressStartWhite.fnt');
   }
@@ -140,13 +160,17 @@ export default class ShakerScene extends Phaser.Scene {
     this.shakerContainerY = this.screenEndY * 0.8;
 
     // this.createBackground(shakerData[1], shakerData[0]);
-
+    //this.initShakeObjects;
+    //this.generateShakeObject();
+    //this.createGameObject();
+    //this.generateShakeObjectList(this.shakingObjectList);
+    
     this.shakeObject = this.add.image(
       this.shakeObjectX,
       this.shakeObjectY,
-      'ShakeObject'
-    );
-    this.shakeObject.setDepth(70);
+      this.loadShakeObjectImage(this.randomShakingObjectNumber)
+    ); 
+    this.shakeObject.setDepth(70);  
 
     this.fallingObject = this.add.image(
       this.shakeObjectX,
@@ -207,6 +231,11 @@ export default class ShakerScene extends Phaser.Scene {
       this.shakeEvent(shakeEvent[0]);
     });
 
+    this.socketService.on('reachedShaker', (objectReachedShakerEvent) => {
+        this.objectReachedShaker = objectReachedShakerEvent;
+        this.updateShakeObject();
+    });
+
     this.socketService.on('gameOver', finished => {
       if (finished === true) {
         this.showGameOver();
@@ -227,7 +256,6 @@ export default class ShakerScene extends Phaser.Scene {
     // this.background = this.add.tileSprite(0, 0, 2 * this.game.canvas.width, 2 * this.game.canvas.height, 'Grass');
    //  this.background.setDepth(0);
   }
-
 
   private hammerHit(hammerElement: any): void {
     // console.log('hammerHit');
@@ -263,13 +291,14 @@ export default class ShakerScene extends Phaser.Scene {
     this.scoreText.destroy();
     // this.holes.destroy(true);
     this.shakeObject.destroy();
+    this.currentShakeObject.destroy();
     this.shakerContainer.destroy();
     this.fallingObject.destroy();
     const text = ['Game Over', 'You got: ' + this.score + ' Points'];
     this.add.bitmapText(this.screenCenterX, this.screenCenterY, 'pressStart', text, 32).setOrigin(0.5, 0.5).setCenterAlign();
   }
 
-  update() {
+    update() {
     console.log('running');
   }
 
@@ -279,7 +308,7 @@ export default class ShakerScene extends Phaser.Scene {
     console.log('this.shakerContainerY = '+this.shakerContainerY);
     if (this.shakeObjectY < this.shakerContainerY) {
       this.falling();
-    } else {
+    } else { 
       console.log('object reached shaker');
     }
   }
@@ -292,9 +321,48 @@ export default class ShakerScene extends Phaser.Scene {
       this.shakeObjectY = this.shakeObjectY + 10;
       this.fallingObject.setPosition(this.shakeObjectX, this.shakeObjectY);
       setTimeout(this.falling, 3000); // try again in 300 milliseconds
-    }
+    } 
   }
 
+  private updateShakeObject(): void {
+    if (this.objectReachedShaker == true) {
+      this.shakeObject.destroy();                 //destroy old shake object
+      this.fallingObject.destroy();
+      this.shakeObjectX = this.screenCenterX,
+      this.shakeObjectY = this.screenCenterY * 0.5,
+      this.randomShakingObjectNumber = Phaser.Math.Between(0,2);
+      this.shakeObject = this.add.image(
+        this.shakeObjectX,
+        this.shakeObjectY,
+        this.loadShakeObjectImage(this.randomShakingObjectNumber)
+      ); 
+      this.fallingObject = this.add.image(
+        this.shakeObjectX,
+        this.shakeObjectY,
+        this.loadFallingObjectImage(this.randomShakingObjectNumber)
+      );
+      this.objectReachedShaker = false;
+    }  
+  }
+  
+  private loadShakeObjectImage(randomShakingObjectNumber) {
+    if (randomShakingObjectNumber == 0){
+      return 'AppleTree'
+    } else if (randomShakingObjectNumber == 1){
+      return 'BananaTree'
+    } else if (randomShakingObjectNumber == 2){
+      return 'BerryTree'
+    }
+  }
+  private loadFallingObjectImage(randomShakingObjectNumber) {
+    if (randomShakingObjectNumber == 0){
+      return 'Apple'
+    } else if (randomShakingObjectNumber == 1){
+      return 'Banana'
+    } else if (randomShakingObjectNumber == 2){
+      return 'Berry'
+    }
+  }
 }
 
 
