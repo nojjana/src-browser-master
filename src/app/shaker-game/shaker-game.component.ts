@@ -51,6 +51,7 @@ export class ShakerGameComponent implements OnInit, OnDestroy {
     this.socketService.removeListener('shakerData');
     this.socketService.removeListener('updateHammer');
     this.socketService.removeListener('updateShaking');
+    //GO
     this.socketService.removeListener('reachedShaker');
 
     this.socketService.removeListener('controllerEndedTutorial');
@@ -100,7 +101,7 @@ export default class ShakerScene extends Phaser.Scene {
   private shakeObjects: Phaser.GameObjects.Group;                  //groupe shakeObjects
   private appleTree: Phaser.GameObjects.Image;                     //Image appleTree
   private bananaTree: Phaser.GameObjects.Image;                    //Image bananaTree
-  private berryTree: Phaser.GameObjects.Image;                    //Image bananaTree
+  private berryTree: Phaser.GameObjects.Image;                     //Image bananaTree
   private fallingObject: Phaser.GameObjects.Image;
   private shakerContainer: Phaser.GameObjects.Image;
   private scoreText: Phaser.GameObjects.BitmapText;
@@ -120,7 +121,9 @@ export default class ShakerScene extends Phaser.Scene {
   private oldShakeObjectNumber = null;
   private numberOfShakingObjects = 2;
   private shakingObjectList: Array<number>;
-  private randomShakingObjectNumber = Phaser.Math.Between(1,3);
+
+  private randomShakingObjectNumber = Phaser.Math.Between(0,2);
+  private objectReachedShaker = false;
 
 
 
@@ -231,8 +234,10 @@ export default class ShakerScene extends Phaser.Scene {
       this.shakeEvent(shakeEvent[0]);
     });
 
-    this.socketService.on('reachedShaker', reachedShaker => {
-      if (reachedShaker === true) {
+    //TODO: this.socketService.on ('updateShakeObject', (updateEvent) => {this.updateEvent(updateEvent[0])}
+    this.socketService.on('reachedShaker', objectReachedShaker => {
+      if (objectReachedShaker === true) {
+        this.objectReachedShaker = true;
         this.updateShakeObject();
       }
     });
@@ -299,6 +304,13 @@ export default class ShakerScene extends Phaser.Scene {
     }
   }
 
+  private updateShakeObjectEvent(): void {  
+    console.log('shakeObject true');
+    //TODO: MAYBE NOT NEEDED
+    this.objectReachedShaker = true;
+    this.updateShakeObject();
+  }
+
   private showGameOver(): void {
     this.hammer.destroy();
     this.mole.destroy();
@@ -322,11 +334,8 @@ export default class ShakerScene extends Phaser.Scene {
     console.log('this.shakerContainerY = '+this.shakerContainerY);
     if (this.shakeObjectY < this.shakerContainerY) {
       this.falling();
-    } else if (this.shakeObjectY >= this.shakerContainerY) {
-      //this.updateShakeObject();
+    } else { 
       console.log('object reached shaker');
-      this.updateShakeObject();
-      //change shakeObject after 3000 seconds
     }
   }
 
@@ -342,14 +351,26 @@ export default class ShakerScene extends Phaser.Scene {
   }
 
   private updateShakeObject(): void {
-    console.log("updateShakeobject called")
-    this.randomShakingObjectNumber = Phaser.Math.Between(1,3);
-    this.shakeObject = this.add.image(
-      this.shakeObjectX,
-      this.shakeObjectY,
-      this.loadShakeObjectImage(this.randomShakingObjectNumber)
-    ); 
-    const text = ['Next Tree is coming!'];
+    console.log("updateShakeobject called");
+    console.log("objectReachShaker boolean: "+this.objectReachedShaker);
+    if (this.objectReachedShaker === true) {
+      this.shakeObject.destroy();                 //destroy old shake Object
+      this.fallingObject.destroy();
+      this.shakeObjectX = this.screenCenterX,
+      this.shakeObjectY = this.screenCenterY * 0.5,
+      this.randomShakingObjectNumber = Phaser.Math.Between(0,2);
+      this.shakeObject = this.add.image(
+        this.shakeObjectX,
+        this.shakeObjectY,
+        this.loadShakeObjectImage(this.randomShakingObjectNumber)
+      ); 
+      this.fallingObject = this.add.image(
+        this.shakeObjectX,
+        this.shakeObjectY,
+        'FallingObject'
+      );
+      this.objectReachedShaker = false;
+    }  
   }
   
   // Generates a list of shakingObjects 
@@ -363,7 +384,7 @@ export default class ShakerScene extends Phaser.Scene {
 
     // todo: randomize the order
   private loadShakeObjectImage(randomShakingObjectNumber) {
-    console.log("shakingObjectList == 0")
+    console.log("loadShakeObjectImage called")
     if (randomShakingObjectNumber == 0){
       console.log("shakingObjectList == 0")
       return 'AppleTree'
