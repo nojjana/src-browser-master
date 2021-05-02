@@ -51,7 +51,7 @@ export class ShakerGameComponent implements OnInit, OnDestroy {
     this.socketService.removeListener('shakerData');
     this.socketService.removeListener('updateHammer');
     this.socketService.removeListener('updateShaking');
-    //GO
+
     this.socketService.removeListener('reachedShaker');
 
     this.socketService.removeListener('controllerEndedTutorial');
@@ -171,7 +171,6 @@ export default class ShakerScene extends Phaser.Scene {
       this.shakeObjectX,
       this.shakeObjectY,
       this.loadShakeObjectImage(this.randomShakingObjectNumber)
-      //'ShakeObject'
     ); 
     this.shakeObject.setDepth(70);    
 
@@ -231,15 +230,14 @@ export default class ShakerScene extends Phaser.Scene {
     });
 
     this.socketService.on('updateShaking', (shakeEvent) => {
+      console.log("------ socketService shakeEvent")
       this.shakeEvent(shakeEvent[0]);
     });
 
-    //TODO: this.socketService.on ('updateShakeObject', (updateEvent) => {this.updateEvent(updateEvent[0])}
-    this.socketService.on('reachedShaker', objectReachedShaker => {
-      if (objectReachedShaker === true) {
-        this.objectReachedShaker = true;
+    this.socketService.on('reachedShaker', (objectReachedShakerEvent) => {
+      //console.log("------ socketService objectReachedShakerEVENT: " +objectReachedShakerEvent)
+        this.objectReachedShaker = objectReachedShakerEvent;
         this.updateShakeObject();
-      }
     });
 
     this.socketService.on('gameOver', finished => {
@@ -351,9 +349,8 @@ export default class ShakerScene extends Phaser.Scene {
   }
 
   private updateShakeObject(): void {
-    console.log("updateShakeobject called");
-    console.log("objectReachShaker boolean: "+this.objectReachedShaker);
-    if (this.objectReachedShaker === true) {
+    console.log("objectReachShaker boolean BEFORE: "+this.objectReachedShaker);
+    if (this.objectReachedShaker == true) {
       this.shakeObject.destroy();                 //destroy old shake Object
       this.fallingObject.destroy();
       this.shakeObjectX = this.screenCenterX,
