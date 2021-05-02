@@ -126,9 +126,6 @@ export default class ShakerScene extends Phaser.Scene {
   private objectReachedShaker = false;
 
 
-
-
-
   constructor() {
     super({ key: 'shakerScene' });
   }
@@ -166,7 +163,6 @@ export default class ShakerScene extends Phaser.Scene {
     //this.createGameObject();
     //this.generateShakeObjectList(this.shakingObjectList);
     
-    console.log("randomshakingObjectNumber: "+this.randomShakingObjectNumber)
     this.shakeObject = this.add.image(
       this.shakeObjectX,
       this.shakeObjectY,
@@ -230,12 +226,10 @@ export default class ShakerScene extends Phaser.Scene {
     });
 
     this.socketService.on('updateShaking', (shakeEvent) => {
-      console.log("------ socketService shakeEvent")
       this.shakeEvent(shakeEvent[0]);
     });
 
     this.socketService.on('reachedShaker', (objectReachedShakerEvent) => {
-      //console.log("------ socketService objectReachedShakerEVENT: " +objectReachedShakerEvent)
         this.objectReachedShaker = objectReachedShakerEvent;
         this.updateShakeObject();
     });
@@ -249,12 +243,6 @@ export default class ShakerScene extends Phaser.Scene {
     this.socketService.emit('shakerBuild');
   }
 
-/*   //TODO: load random ShakeObject
-  private generateShakeObject(){
-    return this.shakeObject = this.appleTree;
-    console.log("TODO: generate random ShakeObject")
-  }
- */
   private createBackground(height: number, width: number): void {
     // this.holes = new Group(this);
     // for (let i = 0; i < height; i++) {
@@ -266,13 +254,6 @@ export default class ShakerScene extends Phaser.Scene {
     // this.background = this.add.tileSprite(0, 0, 2 * this.game.canvas.width, 2 * this.game.canvas.height, 'Grass');
    //  this.background.setDepth(0);
   }
-
-  //create group of shakeObjects
-/*   private initShakeObjects(): void {
-    this.shakeObjects = new Group(this);
-    this.shakeObjects.add(this.appleTree);
-    this.shakeObjects.add(this.bananaTree);
-  } */
 
   private hammerHit(hammerElement: any): void {
     // console.log('hammerHit');
@@ -300,13 +281,6 @@ export default class ShakerScene extends Phaser.Scene {
         // fruit falls?
       this.fall();
     }
-  }
-
-  private updateShakeObjectEvent(): void {  
-    console.log('shakeObject true');
-    //TODO: MAYBE NOT NEEDED
-    this.objectReachedShaker = true;
-    this.updateShakeObject();
   }
 
   private showGameOver(): void {
@@ -349,9 +323,8 @@ export default class ShakerScene extends Phaser.Scene {
   }
 
   private updateShakeObject(): void {
-    console.log("objectReachShaker boolean BEFORE: "+this.objectReachedShaker);
     if (this.objectReachedShaker == true) {
-      this.shakeObject.destroy();                 //destroy old shake Object
+      this.shakeObject.destroy();                 //destroy old shake object
       this.fallingObject.destroy();
       this.shakeObjectX = this.screenCenterX,
       this.shakeObjectY = this.screenCenterY * 0.5,
@@ -370,94 +343,15 @@ export default class ShakerScene extends Phaser.Scene {
     }  
   }
   
-  // Generates a list of shakingObjects 
-  /* private generateShakeObjectList(shakingObjectList){
-    for (var i = 0; i <= this.numberOfShakingObjects; i++){
-      shakingObjectList[i] = 5;
-      console.log("generateShakingObjectList: "+shakingObjectList[i])
-    }
-    return shakingObjectList;      
-  } */
-
-    // todo: randomize the order
   private loadShakeObjectImage(randomShakingObjectNumber) {
-    console.log("loadShakeObjectImage called")
     if (randomShakingObjectNumber == 0){
-      console.log("shakingObjectList == 0")
       return 'AppleTree'
     } else if (randomShakingObjectNumber == 1){
-      console.log("shakingObjectList == 1")
       return 'BananaTree'
     } else if (randomShakingObjectNumber == 2){
-      console.log("shakingObjectList == 2")
       return 'BerryTree'
-  }
-
-
-
-/*   private createShakeObject: string{
-    console.log("createGameObject opened");
-    //this.currentShakeObjectNumber = 3;
-    return this.createRandomShakeObject(1);
-    //if(this.oldShakeObjectNumber == null || this.oldShakeObjectNumber == this.currentShakeObjectNumber){
-    //while(this.oldShakeObjectNumber == null ){
-    //  this.currentShakeObjectNumber = Phaser.Math.Between(1,3);
-    //  console.log("currentShakeObjectNumber - New Generated: "+this.currentShakeObject);
-    //  var shakingObject = this.createRandomShakeObject();
-    //  return shakingObject;
-      //this.shakeObject = this.createRandomShakeObject();
-      //this.shakeObject.setDepth(70);
-     //}else{
-     // console.log("currentShakeObjectNumber2: "+this.currentShakeObject);
-      //return this.createRandomShakeObject;
-    //  var shakingObject = this.createRandomShakeObject();
-    //  return shakingObject;
-      //this.shakeObject = this.createRandomShakeObject();
-      //this.shakeObject.setDepth(70);
-     //}
-    } */
-  
-
-
-  /*  private loadImageOfShakeObject(currentShakeObjectNumber): string{
-    console.log("createRandomShakeObject opened")
-    if (currentShakeObjectNumber == 1) {
-      console.log("currentShakeObject = 1 opened");
-      return //this.add.image(
-     //   this.shakeObjectX,
-     //   this.shakeObjectY,
-        'AppleTree'
-      //);
-      //this.appleTree.setDepth(70);
-
-    } else if (currentShakeObjectNumber == 2) {
-      return 
-      //this.add.image(
-     //   this.shakeObjectX,
-     //   this.shakeObjectY,
-        'BananaTree'
-      //);
-      //this.bananaTree.setDepth(70); 
-    } else if (currentShakeObjectNumber == 3) {
-      console.log("oldShakeObjectNumber 3: "+this.oldShakeObjectNumber);
-      return 
-      //this.add.image(
-     //   this.shakeObjectX,
-     //   this.shakeObjectY,
-        'BerryTree'
-      //);
-      //this.berryTree.setDepth(70); 
     }
-  }  */
-
-  
-  
-
-  /* private updateShakeObject(){
- //   this.shakeObject = this.createRandomShakeObject();
-    console.log("updateShakeObject: "+this.shakeObject);
-  } */
-}
+  }
 }
 
 
