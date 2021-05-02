@@ -139,8 +139,10 @@ export default class ShakerScene extends Phaser.Scene {
     this.load.image('ShakeObject', '../../assets/shaker/ShakeObject-Apple.png');
     this.load.image('AppleTree', '../../assets/shaker/ShakeObject-Apple.png');
     this.load.image('BananaTree', '../../assets/shaker/ShakeObject-Banana.png');
-    this.load.image('BerryTree', '../../assets/shaker/ShakeObject-Berry.gif');
-    this.load.image('FallingObject', '../../assets/shaker/Apple.png');
+    this.load.image('BerryTree', '../../assets/shaker/ShakeObject-Berry.png');
+    this.load.image('Apple', '../../assets/shaker/Apple.png');
+    this.load.image('Banana', '../../assets/shaker/Banana.PNG');
+    this.load.image('Berry', '../../assets/shaker/Berry.png');
     this.load.image('ShakerContainer', '../../assets/shaker/ShakerContainer.png');
     this.load.bitmapFont('pressStart', '../../assets/font/PressStartWhite.png', '../../assets/font/PressStartWhite.fnt');
   }
@@ -168,7 +170,7 @@ export default class ShakerScene extends Phaser.Scene {
       this.shakeObjectY,
       this.loadShakeObjectImage(this.randomShakingObjectNumber)
     ); 
-    this.shakeObject.setDepth(70);    
+    this.shakeObject.setDepth(70);  
 
     this.fallingObject = this.add.image(
       this.shakeObjectX,
@@ -337,7 +339,7 @@ export default class ShakerScene extends Phaser.Scene {
       this.fallingObject = this.add.image(
         this.shakeObjectX,
         this.shakeObjectY,
-        'FallingObject'
+        this.loadFallingObjectImage(this.randomShakingObjectNumber)
       );
       this.objectReachedShaker = false;
     }  
@@ -350,6 +352,15 @@ export default class ShakerScene extends Phaser.Scene {
       return 'BananaTree'
     } else if (randomShakingObjectNumber == 2){
       return 'BerryTree'
+    }
+  }
+  private loadFallingObjectImage(randomShakingObjectNumber) {
+    if (randomShakingObjectNumber == 0){
+      return 'Apple'
+    } else if (randomShakingObjectNumber == 1){
+      return 'Banana'
+    } else if (randomShakingObjectNumber == 2){
+      return 'Berry'
     }
   }
 }
