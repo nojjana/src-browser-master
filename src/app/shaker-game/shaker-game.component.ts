@@ -141,7 +141,7 @@ export default class ShakerScene extends Phaser.Scene {
     this.load.image('BananaTree', '../../assets/shaker/ShakeObject-Banana.png');
     this.load.image('BerryTree', '../../assets/shaker/ShakeObject-Berry.png');
     this.load.image('Apple', '../../assets/shaker/Apple.png');
-    this.load.image('Banana', '../../assets/shaker/Banana.PNG');
+    this.load.image('Banana', '../../assets/shaker/Banana.png');
     this.load.image('Berry', '../../assets/shaker/Berry.png');
     this.load.image('ShakerContainer', '../../assets/shaker/ShakerContainer.png');
     this.load.bitmapFont('pressStart', '../../assets/font/PressStartWhite.png', '../../assets/font/PressStartWhite.fnt');
@@ -164,13 +164,13 @@ export default class ShakerScene extends Phaser.Scene {
     //this.generateShakeObject();
     //this.createGameObject();
     //this.generateShakeObjectList(this.shakingObjectList);
-    
+
     this.shakeObject = this.add.image(
       this.shakeObjectX,
       this.shakeObjectY,
       this.loadShakeObjectImage(this.randomShakingObjectNumber)
-    ); 
-    this.shakeObject.setDepth(70);  
+    );
+    this.shakeObject.setDepth(70);
 
     this.fallingObject = this.add.image(
       this.shakeObjectX,
@@ -308,7 +308,7 @@ export default class ShakerScene extends Phaser.Scene {
     console.log('this.shakerContainerY = '+this.shakerContainerY);
     if (this.shakeObjectY < this.shakerContainerY) {
       this.falling();
-    } else { 
+    } else {
       console.log('object reached shaker');
     }
   }
@@ -321,7 +321,7 @@ export default class ShakerScene extends Phaser.Scene {
       this.shakeObjectY = this.shakeObjectY + 10;
       this.fallingObject.setPosition(this.shakeObjectX, this.shakeObjectY);
       setTimeout(this.falling, 3000); // try again in 300 milliseconds
-    } 
+    }
   }
 
   private updateShakeObject(): void {
@@ -335,16 +335,16 @@ export default class ShakerScene extends Phaser.Scene {
         this.shakeObjectX,
         this.shakeObjectY,
         this.loadShakeObjectImage(this.randomShakingObjectNumber)
-      ); 
+      );
       this.fallingObject = this.add.image(
         this.shakeObjectX,
         this.shakeObjectY,
         this.loadFallingObjectImage(this.randomShakingObjectNumber)
       );
       this.objectReachedShaker = false;
-    }  
+    }
   }
-  
+
   private loadShakeObjectImage(randomShakingObjectNumber) {
     if (randomShakingObjectNumber == 0){
       return 'AppleTree'
