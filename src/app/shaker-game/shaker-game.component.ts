@@ -53,7 +53,7 @@ export class ShakerGameComponent implements OnInit, OnDestroy {
     this.socketService.removeListener('updateShaking');
 
     this.socketService.removeListener('reachedShaker');
-    // this.socketService.removeListener('updateFall');
+    this.socketService.removeListener('updateFall');
     // this.socketService.removeListener('updateScore');
 
     this.socketService.removeListener('controllerEndedTutorial');
@@ -247,7 +247,7 @@ export default class ShakerScene extends Phaser.Scene {
 
     // TODO NOT WORKING YET
     this.socketService.on('updateFall', (fallEvent) => {
-      this.fallEvent(fallEvent);
+      this.fallEvent(fallEvent[0]);
     });
 
     // this.socketService.on('updateScore', (scoreEvent) => {
@@ -256,8 +256,10 @@ export default class ShakerScene extends Phaser.Scene {
     // });
 
     this.socketService.on('reachedShaker', (objectReachedShakerEvent) => {
-        this.objectReachedShaker = objectReachedShakerEvent;
-        this.updateShakeObject();
+      // TODO: event muss ggf gar nicht vom server kommen, da's in der view (browser) passiert?
+      // ABER evtl sollte browser melden dass objekt angekommen ist und server gibt dann den befehlt zum wechseln?
+        // this.objectReachedShaker = objectReachedShakerEvent;
+        // this.updateShakeObject();
     });
 
     this.socketService.on('gameOver', finished => {
@@ -306,7 +308,7 @@ export default class ShakerScene extends Phaser.Scene {
 
 
       // TODO!
-      this.fall();
+      //this.fall();
     }
   }
 
@@ -326,16 +328,22 @@ export default class ShakerScene extends Phaser.Scene {
     console.log('this.fallingObjectY = '+this.fallingObjectY);
     console.log('this.shakerContainerY = '+this.shakerContainerY);
     this.falling = true;
-    if (this.fallingObjectY < this.shakerContainerY) {
-      this.keepFalling();
-    } else {
-      console.log('object reached shaker (in fall() )');
-      this.falling = false;
-      // TODO event auslösen!
-    }
+    // if (this.fallingObjectY < this.shakerContainerY && this.falling) {
+    //   //this.keepFalling();
+
+    //   this.fallingObjectY = this.fallingObjectY + 5;
+    //   this.fallingObject.setPosition(this.fallingObjectX, this.fallingObjectY);
+    //   //setTimeout(this.fall, 3000); // try again in 300 milliseconds
+
+    // } else {
+    //   console.log('object reached shaker (in fall() )');
+    //   this.falling = false;
+    //   // TODO event auslösen!
+    // }
   }
 
   private keepFalling(): void  {
+    console.log('keepFalling() called');
     // TODO compare triggerFall branch
 
     // console.log('increasing Y of object');
@@ -344,17 +352,20 @@ export default class ShakerScene extends Phaser.Scene {
     if (this.fallingObjectY < this.shakerContainerY) {
       this.fallingObjectY = this.fallingObjectY + 10;
       this.fallingObject.setPosition(this.fallingObjectX, this.fallingObjectY);
-      setTimeout(this.keepFalling, 3000); // try again in 300 milliseconds
+      // setTimeout(this.keepFalling, 3000); // try again in 300 milliseconds
     } else {
       console.log('object reached shaker ( in keepFalling() )');
       this.falling = false;
-      // TODO event auslösen!
+      // TODO event an server schicken? anstatt selber auslösen...
+      this.objectReachedShaker = true;
+      //setTimeout(this.updateShakeObject, 300); // wait for 1 second and change tree
+      this.updateShakeObject();
     }
   }
 
   private updateShakeObject(): void {
-    if (this.objectReachedShaker == true) {
-      console.log('Updating shake object...');
+     if (this.objectReachedShaker == true) {
+      console.log('updateShakeObject() called');
       this.shakeObject.destroy();                 //destroy old shake object
       this.fallingObject.destroy();
       this.shakeObjectX = this.initShakeObjectX,
@@ -416,6 +427,7 @@ export default class ShakerScene extends Phaser.Scene {
       // test if working like that... not yet.
       this.keepFalling();
     }
+
   }
 
 }
