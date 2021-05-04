@@ -36,7 +36,7 @@ export class ShakerGameComponent implements OnInit, OnDestroy {
         height: 572,
         width: 640,
       },
-      // backgroundColor: 0x0cb010,
+      //backgroundColor: 0x0cb010,
       transparent: true,
       parent: 'gameContainer'
     };
@@ -106,6 +106,7 @@ export default class ShakerScene extends Phaser.Scene {
   private berryTree: Phaser.GameObjects.Image;                     //Image bananaTree
   private fallingIngredient: Phaser.GameObjects.Image;
   private ingredientInShaker: Phaser.GameObjects.Image;
+  private oldIngredientInShaker: Phaser.GameObjects.Image;
   private shakerContainer: Phaser.GameObjects.Image;
   private scoreText: Phaser.GameObjects.BitmapText;
   private score: any;
@@ -129,7 +130,7 @@ export default class ShakerScene extends Phaser.Scene {
   private numberOfShakingObjects = 2;
   private shakingObjectList: Array<number>;
 
-  private randomShakingObjectNumber = Phaser.Math.Between(0, 2);
+  private currentRandomShakingObjectNumber = Phaser.Math.Between(0, 2);
   private objectReachedShaker = false;
   private falling = false;
 
@@ -171,7 +172,7 @@ export default class ShakerScene extends Phaser.Scene {
     this.shakerContainerX = this.screenCenterX;
     this.shakerContainerY = this.screenEndY * 0.8;
 
-    // this.createBackground(shakerData[1], shakerData[0]);
+    this.createBackground(shakerData[1], shakerData[0]);
     //this.initShakeObjects;
     //this.generateShakeObject();
     //this.createGameObject();
@@ -180,7 +181,7 @@ export default class ShakerScene extends Phaser.Scene {
     this.shakeObject = this.add.image(
       this.shakeObjectX,
       this.shakeObjectY,
-      this.loadShakeObjectImage(this.randomShakingObjectNumber)
+      this.loadShakeObjectImage(this.currentRandomShakingObjectNumber)
     );
     this.shakeObject.setDepth(70);
 
@@ -189,7 +190,7 @@ export default class ShakerScene extends Phaser.Scene {
       // this.shakeObjectY,
       this.fallingIngredientX,
       this.fallingIngredientY,
-      this.loadFallingIngredientImage(this.randomShakingObjectNumber)
+      this.loadFallingIngredientImage(this.currentRandomShakingObjectNumber)
     );
     this.fallingIngredient.setDepth(80);
 
@@ -197,10 +198,12 @@ export default class ShakerScene extends Phaser.Scene {
     this.ingredientInShaker = this.add.image(
       this.shakerContainerX,
       this.shakerContainerY,
-      this.loadFallingIngredientImage(this.randomShakingObjectNumber)
+      this.loadFallingIngredientImage(this.currentRandomShakingObjectNumber)
     );
     this.ingredientInShaker.setDepth(79);
     this.ingredientInShaker.setVisible(false);
+
+    this.oldIngredientInShaker = this.ingredientInShaker;
 
     this.shakerContainer = this.add.image(
       this.shakerContainerX,
@@ -267,12 +270,15 @@ export default class ShakerScene extends Phaser.Scene {
     //   this.score = scoreEvent;
     // });
 
-    this.socketService.on('changeShakeObject', (changeEvent) => {
+    this.socketService.on('changeShakeObject', (doChangeShakeObject) => {
       // TODO: event muss ggf gar nicht vom server kommen, da's in der view (browser) passiert?
-      // ABER evtl sollte browser melden dass objekt angekommen ist und server gibt dann den befehlt zum wechseln?
+      // sollte aber. matter collision?
+      // evtl sollte browser melden dass objekt angekommen ist (geht das??) und server gibt dann den befehlt zum wechseln?
       // this.changeShakeObject();
-      this.objectReachedShaker = changeEvent;
-      // this.updateShakeObject();
+      // this.objectReachedShaker = doChangeShakeObject;
+      if (doChangeShakeObject === true) {
+        this.updateShakeObject();
+      }
     });
 
     this.socketService.on('gameOver', finished => {
@@ -285,15 +291,15 @@ export default class ShakerScene extends Phaser.Scene {
   }
 
   private createBackground(height: number, width: number): void {
-    // this.holes = new Group(this);
-    // for (let i = 0; i < height; i++) {
-    //   for (let j = 0; j < width; j++) {
-    //     this.holes.add(this.add.image(this.halfPixelSize + j * this.pixelSize, this.halfPixelSize + i * this.pixelSize, 'MoleHole')
-    //       .setDepth(1));
-    //   }
-    // }
-    // this.background = this.add.tileSprite(0, 0, 2 * this.game.canvas.width, 2 * this.game.canvas.height, 'Grass');
-    //  this.background.setDepth(0);
+    this.holes = new Group(this);
+    for (let i = 0; i < height; i++) {
+      for (let j = 0; j < width; j++) {
+        this.holes.add(this.add.image(this.halfPixelSize + j * this.pixelSize, this.halfPixelSize + i * this.pixelSize, 'MoleHole')
+          .setDepth(1));
+      }
+    }
+    this.background = this.add.tileSprite(0, 0, 2 * this.game.canvas.width, 2 * this.game.canvas.height, 'Grass');
+    this.background.setDepth(0);
   }
 
   private hammerHit(hammerElement: any): void {
@@ -346,56 +352,63 @@ export default class ShakerScene extends Phaser.Scene {
       this.falling = false;
       // TODO event an server schicken? anstatt selber auslösen...
       this.objectReachedShaker = true;
-
-      this.ingredientInShaker = this.add.image(
-        this.shakerContainerX,
-        this.shakerContainerY,
-        this.loadFallingIngredientImage(this.randomShakingObjectNumber)
-      );
-      this.ingredientInShaker.setVisible(true);
+      this.updateIngredientInShaker(this.currentRandomShakingObjectNumber);
 
       //setTimeout(this.updateShakeObject, 300); // wait for 1 second and change tree
       //this.updateShakeObject();
-      setTimeout(() => { this.respawnIngredient(); }, 300);
+      setTimeout(() => { this.regrowIngredient(); }, 300);
      // this.respawnIngredient()
     }
   }
 
-  private respawnIngredient(): void {
+  private updateIngredientInShaker(randomShakingObjectNumber: number): void {
+    console.log('updateIngredientInShaker() called');
+
+    this.oldIngredientInShaker.destroy();
+    this.oldIngredientInShaker = this.ingredientInShaker;
+
+    this.ingredientInShaker = this.add.image(
+      this.shakerContainerX,
+      this.shakerContainerY,
+      this.loadFallingIngredientImage(randomShakingObjectNumber)
+    );
+    this.ingredientInShaker.setDepth(75);
+    this.ingredientInShaker.setVisible(true);
+
+  }
+
+  private regrowIngredient(): void {
     this.fallingIngredient.destroy();
     this.fallingIngredientX = this.initShakeObjectX,
     this.fallingIngredientY = this.initShakeObjectY,
     this.fallingIngredient = this.add.image(
       this.fallingIngredientX,
       this.fallingIngredientY,
-      this.loadFallingIngredientImage(this.randomShakingObjectNumber)
+      this.loadFallingIngredientImage(this.currentRandomShakingObjectNumber)
     );
     this.fallingIngredient.setDepth(80);
   }
 
   private updateShakeObject(): void {
-    if (this.objectReachedShaker == true) {
+    // if (this.objectReachedShaker == true) {
       console.log('updateShakeObject() called');
-      this.shakeObject.destroy();                 //destroy old shake object
-      this.fallingIngredient.destroy();
-      this.shakeObjectX = this.initShakeObjectX,
-        this.shakeObjectY = this.initShakeObjectY,
-        this.fallingIngredientX = this.initShakeObjectX,
-        this.fallingIngredientY = this.initShakeObjectY,
 
-        this.randomShakingObjectNumber = Phaser.Math.Between(0, 2);
+      this.currentRandomShakingObjectNumber = Phaser.Math.Between(0, 2);
+
+      this.shakeObject.destroy();                 //destroy old shake object
+      this.shakeObjectX = this.initShakeObjectX,
+      this.shakeObjectY = this.initShakeObjectY,
       this.shakeObject = this.add.image(
         this.shakeObjectX,
         this.shakeObjectY,
-        this.loadShakeObjectImage(this.randomShakingObjectNumber)
+        this.loadShakeObjectImage(this.currentRandomShakingObjectNumber)
       );
-      this.fallingIngredient = this.add.image(
-        this.fallingIngredientX,
-        this.fallingIngredientY,
-        this.loadFallingIngredientImage(this.randomShakingObjectNumber)
-      );
-      this.objectReachedShaker = false;
-    }
+      this.shakeObject.setDepth(70);
+
+      this.regrowIngredient();
+
+      // this.objectReachedShaker = false;
+    // }
   }
 
   private loadShakeObjectImage(randomShakingObjectNumber) {
@@ -422,11 +435,13 @@ export default class ShakerScene extends Phaser.Scene {
     this.hammer.destroy();
     this.mole.destroy();
     this.scoreText.destroy();
-    // this.holes.destroy(true);
+    this.holes.destroy(true);
     this.shakeObject.destroy();
     // this.currentShakeObject.destroy();
     this.shakerContainer.destroy();
     this.fallingIngredient.destroy();
+    this.ingredientInShaker.destroy();
+    this.oldIngredientInShaker.destroy();
     const text = ['Game Over', 'You got: ' + this.score + ' Points'];
     this.add.bitmapText(this.screenCenterX, this.screenCenterY, 'pressStart', text, 32).setOrigin(0.5, 0.5).setCenterAlign();
   }
@@ -434,8 +449,12 @@ export default class ShakerScene extends Phaser.Scene {
   update() {
     console.log('running');
     if (this.falling) {
-      // test if working like that... not yet.
       this.keepFalling();
+    }
+    if (this.objectReachedShaker) {
+      console.log('objectReachedShaker. in update()');
+      // do sth here? or just send to server as soon as set true?
+      this.objectReachedShaker = false;
     }
 
   }
