@@ -104,7 +104,8 @@ export default class ShakerScene extends Phaser.Scene {
   private appleTree: Phaser.GameObjects.Image;                     //Image appleTree
   private bananaTree: Phaser.GameObjects.Image;                    //Image bananaTree
   private berryTree: Phaser.GameObjects.Image;                     //Image bananaTree
-  private fallingIngredient: Phaser.GameObjects.Image;
+  private ingredientOnShakeObject: Phaser.GameObjects.Image;
+  private ingredientFalling: Phaser.GameObjects.Image;
   private ingredientInShaker: Phaser.GameObjects.Image;
   private oldIngredientInShaker: Phaser.GameObjects.Image;
   private shakerContainer: Phaser.GameObjects.Image;
@@ -120,8 +121,10 @@ export default class ShakerScene extends Phaser.Scene {
   private initShakeObjectY: number;
   private shakeObjectX: number;
   private shakeObjectY: number;
-  private fallingIngredientX: number;
-  private fallingIngredientY: number;
+  private ingredientOnShakeObjectX: number;
+  private ingredientOnShakeObjectY: number;
+  private ingredientFallingX: number;
+  private ingredientFallingY: number;
   private shakerContainerX: number;
   private shakerContainerY: number;
   private background: Phaser.GameObjects.TileSprite;
@@ -144,11 +147,9 @@ export default class ShakerScene extends Phaser.Scene {
     this.load.image('HammerArea', '../../assets/shaker/HammerArea.png');
     this.load.image('HammerHit', '../../assets/shaker/HammerHit.png');
     this.load.image('Grass', '../../assets/shaker/Grass.png');
-    this.load.image('ShakeObject', '../../assets/shaker/ShakeObject-Apple.png');
     this.load.image('AppleTree', '../../assets/shaker/ShakeObject-Apple.png');
     this.load.image('BananaTree', '../../assets/shaker/ShakeObject-Banana.png');
     this.load.image('BerryTree', '../../assets/shaker/ShakeObject-Berry.png');
-    this.load.image('FallingIngredient', '../../assets/shaker/Apple.png');
     this.load.image('Apple', '../../assets/shaker/Apple.png');
     this.load.image('Banana', '../../assets/shaker/Banana.png');
     this.load.image('Berry', '../../assets/shaker/Berry.png');
@@ -167,8 +168,10 @@ export default class ShakerScene extends Phaser.Scene {
     this.initShakeObjectY = this.screenCenterY * 0.5;
     this.shakeObjectX = this.initShakeObjectX;
     this.shakeObjectY = this.initShakeObjectY;
-    this.fallingIngredientX = this.initShakeObjectX;
-    this.fallingIngredientY = this.initShakeObjectY;
+    this.ingredientOnShakeObjectX = this.initShakeObjectX;
+    this.ingredientOnShakeObjectY = this.initShakeObjectY;
+    this.ingredientFallingX = this.initShakeObjectX;
+    this.ingredientFallingY = this.initShakeObjectY;
     this.shakerContainerX = this.screenCenterX;
     this.shakerContainerY = this.screenEndY * 0.8;
 
@@ -185,20 +188,24 @@ export default class ShakerScene extends Phaser.Scene {
     );
     this.shakeObject.setDepth(70);
 
-    this.fallingIngredient = this.add.image(
-      // this.shakeObjectX,
-      // this.shakeObjectY,
-      this.fallingIngredientX,
-      this.fallingIngredientY,
-      this.loadFallingIngredientImage(this.currentRandomShakingObjectNumber)
+    this.ingredientOnShakeObject = this.add.image(
+      this.ingredientOnShakeObjectX,
+      this.ingredientOnShakeObjectY,
+      this.loadIngredientImage(this.currentRandomShakingObjectNumber)
     );
-    this.fallingIngredient.setDepth(80);
+    this.ingredientOnShakeObject.setDepth(80);
 
+    this.ingredientFalling = this.add.image(
+      this.ingredientFallingX,
+      this.ingredientFallingY,
+      this.loadIngredientImage(this.currentRandomShakingObjectNumber)
+    );
+    this.ingredientOnShakeObject.setDepth(85);
 
     this.ingredientInShaker = this.add.image(
       this.shakerContainerX,
       this.shakerContainerY,
-      this.loadFallingIngredientImage(this.currentRandomShakingObjectNumber)
+      this.loadIngredientImage(this.currentRandomShakingObjectNumber)
     );
     this.ingredientInShaker.setDepth(79);
     this.ingredientInShaker.setVisible(false);
@@ -325,77 +332,104 @@ export default class ShakerScene extends Phaser.Scene {
 
   private triggerFallOfIngredient(): void {
     console.log('triggerFallOfIngredient() called');
-    console.log('this.fallingIngredientY = ' + this.fallingIngredientY);
-    console.log('this.shakerContainerY = ' + this.shakerContainerY);
+
+    // TODO: more than one ingredient should be falling - how?
+    this.prepareFallingIngredient(this.currentRandomShakingObjectNumber);
     this.falling = true;
-    // if (this.fallingObjectY < this.shakerContainerY && this.falling) {
-    //   //this.keepFalling();
+    setTimeout(() => { this.regrowIngredient(this.currentRandomShakingObjectNumber); }, 300);
 
-    //   this.fallingObjectY = this.fallingObjectY + 5;
-    //   this.fallingObject.setPosition(this.fallingObjectX, this.fallingObjectY);
-    //   //setTimeout(this.fall, 3000); // try again in 300 milliseconds
+  }
 
-    // } else {
-    //   console.log('object reached shaker (in fall() )');
-    //   this.falling = false;
-    //   // TODO event auslösen!
-    // }
+  private prepareFallingIngredient(shakingObjectNumber: number) {
+    if (this.ingredientOnShakeObject != null) {
+      this.ingredientOnShakeObject.destroy();
+    }
+
+    this.ingredientFallingX = this.initShakeObjectX,
+      this.ingredientFallingY = this.initShakeObjectY,
+      this.ingredientFalling = this.add.image(
+        this.ingredientFallingX,
+        this.ingredientFallingY,
+        this.loadIngredientImage(shakingObjectNumber)
+      );
+    this.ingredientFalling.setDepth(85);
+    this.ingredientFalling.setVisible(true);
   }
 
   private keepFalling(): void {
-    if (this.fallingIngredientY < this.shakerContainerY) {
-      this.fallingIngredientY = this.fallingIngredientY + 7;
-      this.fallingIngredient.setPosition(this.fallingIngredientX, this.fallingIngredientY);
+    if (this.ingredientFallingY < this.shakerContainerY) {
+      this.ingredientFallingY = this.ingredientFallingY + 7;
+      this.ingredientFalling.setPosition(this.ingredientFallingX, this.ingredientFallingY);
       // setTimeout(this.keepFalling, 3000); // try again in 300 milliseconds
     } else {
       console.log('Ingredient reached shaker!');
       this.falling = false;
       // TODO event an server schicken? anstatt selber auslösen...
       this.objectReachedShaker = true;
-      this.updateIngredientInShaker(this.currentRandomShakingObjectNumber);
 
-      //setTimeout(this.updateShakeObject, 300); // wait for 1 second and change tree
-      //this.updateShakeObject();
-      setTimeout(() => { this.regrowIngredient(); }, 300);
-     // this.respawnIngredient()
+      this.updateIngredientInShaker(this.currentRandomShakingObjectNumber);
     }
   }
 
-  private updateIngredientInShaker(randomShakingObjectNumber: number): void {
+  private updateIngredientInShaker(shakingObjectNumber: number): void {
     console.log('updateIngredientInShaker() called');
 
-    this.oldIngredientInShaker.destroy();
-    this.oldIngredientInShaker = this.ingredientInShaker;
+    if (this.oldIngredientInShaker != null) {
+      this.oldIngredientInShaker.destroy();
+    }
 
-    this.ingredientInShaker = this.add.image(
-      this.shakerContainerX,
-      this.shakerContainerY,
-      this.loadFallingIngredientImage(randomShakingObjectNumber)
-    );
-    this.ingredientInShaker.setDepth(75);
-    this.ingredientInShaker.setVisible(true);
+    if (this.ingredientInShaker != null) {
+      this.oldIngredientInShaker = this.ingredientInShaker;
+      // this.ingredientInShaker.destroy();
+    }
+
+    if (this.ingredientFalling != null) {
+      this.ingredientInShaker = this.ingredientFalling;
+      this.ingredientInShaker.setPosition(this.shakerContainerX, this.shakerContainerY);
+
+      // TODO: how to get image (bzw. number) of falling ingredient? (may change in the meantime! timer...)
+      // this.ingredientInShaker = this.add.image(
+      //   this.shakerContainerX,
+      //   this.shakerContainerY,
+      //   this.loadIngredientImage(shakingObjectNumber)
+      // );
+      this.ingredientInShaker.setDepth(75);
+      this.ingredientInShaker.setVisible(true);
+
+      // this.ingredientFalling.destroy();
+    }
 
   }
 
-  private regrowIngredient(): void {
-    this.fallingIngredient.destroy();
-    this.fallingIngredientX = this.initShakeObjectX,
-    this.fallingIngredientY = this.initShakeObjectY,
-    this.fallingIngredient = this.add.image(
-      this.fallingIngredientX,
-      this.fallingIngredientY,
-      this.loadFallingIngredientImage(this.currentRandomShakingObjectNumber)
+  private regrowIngredient(shakingObjectNumber: number): void {
+    if (this.ingredientOnShakeObject != null) {
+      this.ingredientOnShakeObject.destroy();
+    }
+    this.ingredientOnShakeObjectX = this.initShakeObjectX,
+    this.ingredientOnShakeObjectY = this.initShakeObjectY,
+    this.ingredientOnShakeObject = this.add.image(
+      this.ingredientOnShakeObjectX,
+      this.ingredientOnShakeObjectY,
+      this.loadIngredientImage(shakingObjectNumber)
     );
-    this.fallingIngredient.setDepth(80);
+    this.ingredientOnShakeObject.setDepth(80);
   }
 
   private updateShakeObject(): void {
     // if (this.objectReachedShaker == true) {
       console.log('updateShakeObject() called');
 
+      this.oldShakeObjectNumber = this.currentRandomShakingObjectNumber;
       this.currentRandomShakingObjectNumber = Phaser.Math.Between(0, 2);
+      while (this.oldShakeObjectNumber == this.currentRandomShakingObjectNumber) {
+        // avoid changing to the same shakeObject (i.e. 2x apple tree)
+        this.currentRandomShakingObjectNumber = Phaser.Math.Between(0, 2);
+      }
 
+
+    if (this.shakeObject != null) {
       this.shakeObject.destroy();                 //destroy old shake object
+    }
       this.shakeObjectX = this.initShakeObjectX,
       this.shakeObjectY = this.initShakeObjectY,
       this.shakeObject = this.add.image(
@@ -405,7 +439,7 @@ export default class ShakerScene extends Phaser.Scene {
       );
       this.shakeObject.setDepth(70);
 
-      this.regrowIngredient();
+      this.regrowIngredient(this.currentRandomShakingObjectNumber);
 
       // this.objectReachedShaker = false;
     // }
@@ -420,7 +454,7 @@ export default class ShakerScene extends Phaser.Scene {
       return 'BerryTree'
     }
   }
-  private loadFallingIngredientImage(randomShakingObjectNumber) {
+  private loadIngredientImage(randomShakingObjectNumber) {
     if (randomShakingObjectNumber == 0) {
       return 'Apple'
     } else if (randomShakingObjectNumber == 1) {
@@ -439,7 +473,7 @@ export default class ShakerScene extends Phaser.Scene {
     this.shakeObject.destroy();
     // this.currentShakeObject.destroy();
     this.shakerContainer.destroy();
-    this.fallingIngredient.destroy();
+    this.ingredientOnShakeObject.destroy();
     this.ingredientInShaker.destroy();
     this.oldIngredientInShaker.destroy();
     const text = ['Game Over', 'You got: ' + this.score + ' Points'];
