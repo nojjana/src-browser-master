@@ -33,8 +33,10 @@ export class ShakerGameComponent implements OnInit, OnDestroy {
       scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
-        height: 572,
-        width: 640,
+        //height: 572,
+        //width: 640,
+        height: 1440,
+        width: 2560,
       },
       // backgroundColor: 0x0cb010,
       transparent: true,
@@ -104,8 +106,15 @@ export default class ShakerScene extends Phaser.Scene {
   private appleTree: Phaser.GameObjects.Image;                     //Image appleTree
   private bananaTree: Phaser.GameObjects.Image;                    //Image bananaTree
   private berryTree: Phaser.GameObjects.Image;                     //Image bananaTree
+  private beeHouse: Phaser.GameObjects.Image;
   private fallingObject: Phaser.GameObjects.Image;
   private shakerContainer: Phaser.GameObjects.Image;
+  private ingredientList: Phaser.GameObjects.Image;
+  private ingredientListX: number;
+  private ingredientListY: number;
+  private progressbar: Phaser.GameObjects.Image;
+  private progressbarX: number;
+  private progressbarY: number;
   private scoreText: Phaser.GameObjects.BitmapText;
   private score: any;
   private holes: Phaser.GameObjects.Group;
@@ -146,11 +155,14 @@ export default class ShakerScene extends Phaser.Scene {
     this.load.image('AppleTree', '../../assets/shaker/ShakeObject-Apple.png');
     this.load.image('BananaTree', '../../assets/shaker/ShakeObject-Banana.png');
     this.load.image('BerryTree', '../../assets/shaker/ShakeObject-Berry.png');
+    this.load.image('BeeHome', '../../assets/shaker/ShakeObject-BeeHome.png');
     this.load.image('FallingObject', '../../assets/shaker/Apple.png');
     this.load.image('Apple', '../../assets/shaker/Apple.png');
     this.load.image('Banana', '../../assets/shaker/Banana.png');
     this.load.image('Berry', '../../assets/shaker/Berry.png');
     this.load.image('ShakerContainer', '../../assets/shaker/ShakerContainer.png');
+    this.load.image('IngredientList', '../../assets/shaker/IngredientList.png');
+    this.load.image('Progressbar', '../../assets/shaker/Progressbar.png');
     this.load.bitmapFont('pressStart', '../../assets/font/PressStartWhite.png', '../../assets/font/PressStartWhite.fnt');
   }
 
@@ -169,6 +181,10 @@ export default class ShakerScene extends Phaser.Scene {
     this.fallingObjectY = this.initShakeObjectY;
     this.shakerContainerX = this.screenCenterX;
     this.shakerContainerY = this.screenEndY * 0.8;
+    this.ingredientListX = this.screenCenterX * 0.2;
+    this.ingredientListY = this.screenCenterY;
+    this.progressbarX = this.screenCenterX * 1.6;
+    this.progressbarY = this.screenCenterY * 0.2;
 
     // this.createBackground(shakerData[1], shakerData[0]);
     //this.initShakeObjects;
@@ -198,6 +214,18 @@ export default class ShakerScene extends Phaser.Scene {
       'ShakerContainer'
     );
     this.shakerContainer.setDepth(100);
+
+    this.ingredientList = this.add.image(
+      this.ingredientListX,
+      this.ingredientListY,
+      'IngredientList'
+    );
+
+    this.progressbar = this.add.image(
+      this.progressbarX,
+      this.progressbarY,
+      'Progressbar'
+    );
 
     this.hammer = this.add.image(
       this.shakeObjectX,
@@ -373,7 +401,7 @@ export default class ShakerScene extends Phaser.Scene {
       this.fallingObjectX = this.initShakeObjectX,
       this.fallingObjectY = this.initShakeObjectY,
 
-      this.randomShakingObjectNumber = Phaser.Math.Between(0,2);
+      this.randomShakingObjectNumber = Phaser.Math.Between(0,3);
       this.shakeObject = this.add.image(
         this.shakeObjectX,
         this.shakeObjectY,
@@ -395,6 +423,8 @@ export default class ShakerScene extends Phaser.Scene {
       return 'BananaTree'
     } else if (randomShakingObjectNumber == 2){
       return 'BerryTree'
+    } else if (randomShakingObjectNumber == 3) {
+      return 'BeeHome'
     }
   }
   private loadFallingObjectImage(randomShakingObjectNumber) {
@@ -404,10 +434,12 @@ export default class ShakerScene extends Phaser.Scene {
       return 'Banana'
     } else if (randomShakingObjectNumber == 2){
       return 'Berry'
+    } else if (randomShakingObjectNumber == 3) {
+      return 'Berry'
     }
   }
 
-
+  
   private showGameOver(): void {
     this.hammer.destroy();
     this.mole.destroy();
