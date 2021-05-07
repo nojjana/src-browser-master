@@ -112,6 +112,8 @@ export default class ShakerScene extends Phaser.Scene {
   private ingredientList: Phaser.GameObjects.Image;
   private ingredientListX: number;
   private ingredientListY: number;
+  private ingredientOnListX: number;
+  private ingredientOnListY: number;
   private progressbar: Phaser.GameObjects.Image;
   private progressbarX: number;
   private progressbarY: number;
@@ -136,8 +138,9 @@ export default class ShakerScene extends Phaser.Scene {
   private oldShakeObjectNumber = null;
   private numberOfShakingObjects = 2;
   private shakingObjectList: Array<number>;
-
-  private randomShakingObjectNumber = Phaser.Math.Between(0,2);
+  private maxAmountOfFallingObjects = 2;
+  private randomShakingObjectNumber = Phaser.Math.Between(0,this.maxAmountOfFallingObjects);
+  private shakingObjectNumber = 0;
   private objectReachedShaker = false;
   private falling = false;
 
@@ -183,6 +186,8 @@ export default class ShakerScene extends Phaser.Scene {
     this.shakerContainerY = this.screenEndY * 0.8;
     this.ingredientListX = this.screenCenterX * 0.2;
     this.ingredientListY = this.screenCenterY;
+    this.ingredientOnListX = this.screenCenterX * 0.2;
+    this.ingredientOnListY = this.screenCenterY * 0.5;
     this.progressbarX = this.screenCenterX * 1.6;
     this.progressbarY = this.screenCenterY * 0.2;
 
@@ -220,6 +225,8 @@ export default class ShakerScene extends Phaser.Scene {
       this.ingredientListY,
       'IngredientList'
     );
+
+    this.loadIngredientList(this.shakingObjectNumber, this.ingredientOnListY);
 
     this.progressbar = this.add.image(
       this.progressbarX,
@@ -401,7 +408,7 @@ export default class ShakerScene extends Phaser.Scene {
       this.fallingObjectX = this.initShakeObjectX,
       this.fallingObjectY = this.initShakeObjectY,
 
-      this.randomShakingObjectNumber = Phaser.Math.Between(0,3);
+      this.randomShakingObjectNumber = Phaser.Math.Between(0,this.maxAmountOfFallingObjects);
       this.shakeObject = this.add.image(
         this.shakeObjectX,
         this.shakeObjectY,
@@ -423,9 +430,7 @@ export default class ShakerScene extends Phaser.Scene {
       return 'BananaTree'
     } else if (randomShakingObjectNumber == 2){
       return 'BerryTree'
-    } else if (randomShakingObjectNumber == 3) {
-      return 'BeeHome'
-    }
+    } 
   }
   private loadFallingObjectImage(randomShakingObjectNumber) {
     if (randomShakingObjectNumber == 0){
@@ -434,8 +439,22 @@ export default class ShakerScene extends Phaser.Scene {
       return 'Banana'
     } else if (randomShakingObjectNumber == 2){
       return 'Berry'
-    } else if (randomShakingObjectNumber == 3) {
-      return 'Berry'
+    } 
+  }
+
+  private loadIngredientList(shakingObjectNumber) {
+    console.log("loadIngredientList started/ shakingObjectnumber: "+shakingObjectNumber)
+    while (shakingObjectNumber <= this.maxAmountOfFallingObjects){
+      this.fallingObject = this.add.image(
+        this.ingredientOnListX,
+        this.ingredientOnListY,
+        this.loadFallingObjectImage(shakingObjectNumber)
+      );
+      console.log("shakingObjectNumberInWhileLoop: "+shakingObjectNumber)
+      shakingObjectNumber++;
+      this.ingredientOnListY += 300;
+      console.log("ingredientOnListY: "+this.ingredientOnListY)
+
     }
   }
 
