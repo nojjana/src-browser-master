@@ -200,7 +200,8 @@ export default class ShakerScene extends Phaser.Scene {
       this.ingredientFallingY,
       this.loadIngredientImage(this.currentRandomShakingObjectNumber)
     );
-    this.ingredientOnShakeObject.setDepth(85);
+    this.ingredientFalling.setDepth(85);
+    this.ingredientFalling.setVisible(false);
 
     this.ingredientInShaker = this.add.image(
       this.shakerContainerX,
@@ -380,6 +381,7 @@ export default class ShakerScene extends Phaser.Scene {
 
     if (this.ingredientInShaker != null) {
       this.oldIngredientInShaker = this.ingredientInShaker;
+     // this.oldIngredientInShaker.setDepth(85);
       // this.ingredientInShaker.destroy();
     }
 
@@ -393,7 +395,7 @@ export default class ShakerScene extends Phaser.Scene {
       //   this.shakerContainerY,
       //   this.loadIngredientImage(shakingObjectNumber)
       // );
-      this.ingredientInShaker.setDepth(75);
+      this.ingredientInShaker.setDepth(87);
       this.ingredientInShaker.setVisible(true);
 
       // this.ingredientFalling.destroy();
@@ -476,6 +478,9 @@ export default class ShakerScene extends Phaser.Scene {
     this.ingredientOnShakeObject.destroy();
     this.ingredientInShaker.destroy();
     this.oldIngredientInShaker.destroy();
+    if (this.ingredientFalling != null) {
+      this.ingredientFalling.destroy();
+    }
     const text = ['Game Over', 'You got: ' + this.score + ' Points'];
     this.add.bitmapText(this.screenCenterX, this.screenCenterY, 'pressStart', text, 32).setOrigin(0.5, 0.5).setCenterAlign();
   }
