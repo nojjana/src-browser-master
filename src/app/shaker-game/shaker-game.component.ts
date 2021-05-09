@@ -431,7 +431,7 @@ export default class ShakerScene extends Phaser.Scene {
       console.log('Shaking');
       
       //TODO: add sound
-      this.shakeLeavesSound.play();
+      //this.shakeLeavesSound.play();
       
       // TODO: make tree shake
       //this.shakeEffectOnPlant = true;
@@ -744,8 +744,8 @@ export default class ShakerScene extends Phaser.Scene {
     this.catchedShakeObject2.destroy();
     this.catchedShakeObject3.destroy();
     this.appleTall.destroy();
-    this.fallingObject.destroy();
-    this.strikethroughObject.destroy();
+    this.fallingObject.destroy();             //TODO: checkout why still visible when GameOver
+    this.strikethroughObject.destroy();       //TODO: checkout why still visible when GameOver
 
     if (this.ingredientFalling != null) {
       this.ingredientFalling.destroy();
