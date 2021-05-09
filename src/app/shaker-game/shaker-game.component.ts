@@ -1,6 +1,7 @@
 import { verifyHostBindings } from '@angular/compiler';
 import { Component, destroyPlatform, OnDestroy, OnInit } from '@angular/core';
 import Phaser from 'phaser';
+//import { clearInterval } from 'timers';
 import { SocketService } from '../socket-service/socket.service';
 import Group = Phaser.GameObjects.Group;
 
@@ -45,7 +46,8 @@ export class ShakerGameComponent implements OnInit, OnDestroy {
       },
       //backgroundColor: 0x0cb010,
       transparent: true,
-      parent: 'gameContainer'
+      parent: 'gameContainer',
+      audio: {disableWebAudio: true}
     };
   }
 
@@ -135,6 +137,9 @@ export default class ShakerScene extends Phaser.Scene {
   private ingredientFallingY: number;
   private shakerContainerX: number;
   private shakerContainerY: number;
+  private shakeEffectOnPlant = false;
+  private shakeLeavesSound: any;
+
   private background: Phaser.GameObjects.TileSprite;
   private currentShakeObjectNumber = null;
   private oldShakeObjectNumber = null;
@@ -148,7 +153,6 @@ export default class ShakerScene extends Phaser.Scene {
 
   //TODO beeHouse
   private beeHouse: Phaser.GameObjects.Image;
-
 
   private maxAmountOfFallingObjects = 2;
   private randomShakingObjectNumber = Phaser.Math.Between(0,this.maxAmountOfFallingObjects);
@@ -176,7 +180,6 @@ export default class ShakerScene extends Phaser.Scene {
   private catchedShakeObjectNumber3 = 1;
 
   //TODO: progress bar
-  
   private progressbar: Phaser.GameObjects.Image;
   private progressbarX: number;
   private progressbarY: number;
@@ -192,15 +195,22 @@ export default class ShakerScene extends Phaser.Scene {
     this.load.image('HammerArea', '../../assets/shaker/HammerArea.png');
     this.load.image('HammerHit', '../../assets/shaker/HammerHit.png');
     this.load.image('Grass', '../../assets/shaker/Grass.png');
+    
     this.load.image('AppleTree', '../../assets/shaker/ShakeObject-Apple.png');
     this.load.image('BananaTree', '../../assets/shaker/ShakeObject-Banana.png');
     this.load.image('BerryTree', '../../assets/shaker/ShakeObject-Berry.png');
+    this.load.image('BerryTree1', '../../assets/shaker/ShakeObject-Berry1.png');
+    this.load.image('BerryTree2', '../../assets/shaker/ShakeObject-Berry2.png');
+
     this.load.image('Apple', '../../assets/shaker/Apple.png');
     this.load.image('Banana', '../../assets/shaker/Banana.png');
     this.load.image('Berry', '../../assets/shaker/Berry.png');
+
+    
     this.load.image('AppleTall', '../../assets/shaker/AppleTall.png');
     this.load.image('BananaTall', '../../assets/shaker/BananaTall.png');
     this.load.image('BerryTall', '../../assets/shaker/BerryTall.png');
+
     this.load.image('Strikethrough1', '../../assets/shaker/Strikethrough1.png');
     this.load.image('Strikethrough2', '../../assets/shaker/Strikethrough2.png');
     this.load.image('Strikethrough3', '../../assets/shaker/Strikethrough3.png');
@@ -215,6 +225,8 @@ export default class ShakerScene extends Phaser.Scene {
     this.load.image('IngredientList', '../../assets/shaker/IngredientList.png');
     this.load.image('Progressbar', '../../assets/shaker/Progressbar.png');
     this.load.bitmapFont('pressStart', '../../assets/font/PressStartWhite.png', '../../assets/font/PressStartWhite.fnt');
+  
+    this.load.audio('ShakingLeaves', '../../assets/shaker/rustling-bushes.mp3');
   }
 
   create(data) {
@@ -240,6 +252,9 @@ export default class ShakerScene extends Phaser.Scene {
     this.ingredientOnListY = this.screenCenterY * 0.5;
     this.progressbarX = this.screenCenterX * 1.6;
     this.progressbarY = this.screenCenterY * 0.2;
+
+    //TODO: add sound (https://rexrainbow.github.io/phaser3-rex-notes/docs/site/audio/)
+    //this.shakeLeavesSound = this.add.audio('ShakingLeaves');
 
     // TODO create own background
     this.createBackground(shakerData[1], shakerData[0]);
@@ -414,10 +429,43 @@ export default class ShakerScene extends Phaser.Scene {
     // meldung von server, ob geschlagen/geschüttelt wurde, hier view effekte zeigen
     if (isShaking === true) {
       console.log('Shaking');
+      
+      //TODO: add sound
+      this.shakeLeavesSound.play();
+      
       // TODO: make tree shake
       //this.shakeEffectOnPlant = true;
+      //var shakeEffectOnPlantMakeTrue = setInterval(() => this.shakeEffectOnPlant = true, 500)  //changes every 0,5 sek
+      //var shakeEfectOnPlantMakeFalse = setInterval(() => this.shakeEffectOnPlant = false, 500)
+      
+      //TODO: change shakingObject image when shaking
+     /*  if (this.shakeEffectOnPlant === true){
+      this.shakeObject.destroy();
+        this.shakeObject = this.add.image(
+          this.shakeObjectX+50,
+          this.shakeObjectY,
+          this.loadShakeObjectWhenShakingImage(this.currentRandomShakingObjectNumber),
+          //setTimeout(this.loadShakeObjectImage(this.currentRandomShakingObjectNumber), 300)
+        );
+      } else if (this.shakeEffectOnPlant === false){
+          this.shakeObject.destroy();
+          this.shakeObject = this.add.image(
+            this.shakeObjectX-100,
+            this.shakeObjectY,
+            //this.loadShakeObjectWhenShakingImage(this.currentRandomShakingObjectNumber),
+            this.loadShakeObjectImage(this.currentRandomShakingObjectNumber)
+          )
+        }   */
+    } else {
+      //TODO: sound
+      //this.shakeLeavesSound.stop();
+
+      //TODO: change shakingObject image when shaking
+      //setTimeout(() => {clearInterval(shakeEffectOnPlantMakeTrue)})
+      //setTimeout(() => {clearInterval(shakeEfectOnPlantMakeFalse)})
     }
   }
+
 
   private updateProgressBar(shakeScore: number): void {
     // TODO fortschrittsbalken
@@ -430,7 +478,6 @@ export default class ShakerScene extends Phaser.Scene {
     this.prepareFallingIngredient(this.currentRandomShakingObjectNumber);
     this.falling = true;
     setTimeout(() => { this.regrowIngredient(this.currentRandomShakingObjectNumber); }, 300);
-
   }
 
   private prepareFallingIngredient(shakingObjectNumber: number) {
@@ -459,15 +506,10 @@ export default class ShakerScene extends Phaser.Scene {
       this.falling = false;
       // TODO event an server schicken? anstatt selber auslösen...
       this.objectReachedShaker = true;
-
-
-      // this.strikethroughCatchedIngredient(this.randomShakingObjectNumber);
       this.strikethroughCatchedIngredient(this.currentRandomShakingObjectNumber);
       this.updateIngredientInShaker(this.currentRandomShakingObjectNumber);
-      this.updateCatchedIngredientCounter(this.currentRandomShakingObjectNumber);
-      
+      this.updateCatchedIngredientCounter(this.currentRandomShakingObjectNumber)   
     
-      //this.updateShakeObject();
     }
   }
 
@@ -554,6 +596,7 @@ export default class ShakerScene extends Phaser.Scene {
   }
 
   private loadShakeObjectImage(randomShakingObjectNumber) {
+    console.log("loadShakeObject called")
     if (randomShakingObjectNumber == 0) {
       return 'AppleTree'
     } else if (randomShakingObjectNumber == 1) {
@@ -562,6 +605,18 @@ export default class ShakerScene extends Phaser.Scene {
       return 'BerryTree'
     } 
   }
+
+  private loadShakeObjectWhenShakingImage(randomShakingObjectNumber) {
+    console.log("loadShakeObjectWhenShakingImage called")
+    if (randomShakingObjectNumber == 0) {
+      return 'BerryTree2'
+    } else if (randomShakingObjectNumber == 1) {
+      return 'BerryTree2'
+    } else if (randomShakingObjectNumber == 2) {
+      return 'BerryTree2'
+    } 
+  }
+
   private loadIngredientImage(randomShakingObjectNumber) {
     if (randomShakingObjectNumber == 0) {
       return 'Apple'
@@ -696,7 +751,7 @@ export default class ShakerScene extends Phaser.Scene {
       this.ingredientFalling.destroy();
     }
     const text = ['Der Saft ist fertig!', 'Gesammelte Punkte: ' + this.score, 'Das macht ' + this.getNumberOfGlasses(this.score) + ' Portionen. Toll!'];
-    this.add.bitmapText(this.screenCenterX, this.screenCenterY, 'pressStartBlack', text, 30).setOrigin(0.5, 0.5).setCenterAlign();
+    this.add.bitmapText(this.screenCenterX, this.screenCenterY, 'pressStartBlack', text, 16).setOrigin(0.5, 0.5).setCenterAlign();
   }
 
   private getNumberOfGlasses(score: number) {
