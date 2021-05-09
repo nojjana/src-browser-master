@@ -110,6 +110,7 @@ export default class ShakerScene extends Phaser.Scene {
   private fallingObject: Phaser.GameObjects.Image;
   private shakerContainer: Phaser.GameObjects.Image;
   private ingredientList: Phaser.GameObjects.Image;
+  private strikethroughObject: Phaser.GameObjects.Image;
   private ingredientListX: number;
   private ingredientListY: number;
   private ingredientOnListX: number;
@@ -163,6 +164,12 @@ export default class ShakerScene extends Phaser.Scene {
     this.load.image('Apple', '../../assets/shaker/Apple.png');
     this.load.image('Banana', '../../assets/shaker/Banana.png');
     this.load.image('Berry', '../../assets/shaker/Berry.png');
+    this.load.image('AppleTall', '../../assets/shaker/AppleTall.png');
+    this.load.image('BananaTall', '../../assets/shaker/BananaTall.png');
+    this.load.image('BerryTall', '../../assets/shaker/BerryTall.png');
+    this.load.image('Strikethrough1', '../../assets/shaker/Strikethrough1.png');
+    this.load.image('Strikethrough2', '../../assets/shaker/Strikethrough2.png');
+    this.load.image('Strikethrough3', '../../assets/shaker/Strikethrough3.png');
     this.load.image('ShakerContainer', '../../assets/shaker/ShakerContainer.png');
     this.load.image('IngredientList', '../../assets/shaker/IngredientList.png');
     this.load.image('Progressbar', '../../assets/shaker/Progressbar.png');
@@ -226,7 +233,7 @@ export default class ShakerScene extends Phaser.Scene {
       'IngredientList'
     );
 
-    this.loadIngredientList(this.shakingObjectNumber, this.ingredientOnListY);
+    this.loadIngredientList(this.shakingObjectNumber);
 
     this.progressbar = this.add.image(
       this.progressbarX,
@@ -394,6 +401,7 @@ export default class ShakerScene extends Phaser.Scene {
       // TODO event an server schicken? anstatt selber auslösen...
       this.objectReachedShaker = true;
       //setTimeout(this.updateShakeObject, 300); // wait for 1 second and change tree
+      this.strikethroughCatchedIngredient(this.randomShakingObjectNumber);
       this.updateShakeObject();
     }
   }
@@ -442,19 +450,54 @@ export default class ShakerScene extends Phaser.Scene {
     } 
   }
 
-  private loadIngredientList(shakingObjectNumber) {
-    console.log("loadIngredientList started/ shakingObjectnumber: "+shakingObjectNumber)
-    while (shakingObjectNumber <= this.maxAmountOfFallingObjects){
+  private loadIngredientList(ingredientObjectNumber) {
+    console.log("loadIngredientList started/ shakingObjectnumber: "+ingredientObjectNumber)
+    while (ingredientObjectNumber <= this.maxAmountOfFallingObjects){
       this.fallingObject = this.add.image(
         this.ingredientOnListX,
         this.ingredientOnListY,
-        this.loadFallingObjectImage(shakingObjectNumber)
+        this.loadFallingObjectImageTall(ingredientObjectNumber)
       );
-      console.log("shakingObjectNumberInWhileLoop: "+shakingObjectNumber)
-      shakingObjectNumber++;
-      this.ingredientOnListY += 300;
+      console.log("shakingObjectNumberInWhileLoop: "+ingredientObjectNumber)
+      ingredientObjectNumber++;
+      this.ingredientOnListY += 250;
       console.log("ingredientOnListY: "+this.ingredientOnListY)
 
+    }
+  }
+
+  private loadFallingObjectImageTall(ingredientObjectNumber) {
+    if (ingredientObjectNumber == 0){
+      return 'AppleTall'
+    } else if (ingredientObjectNumber == 1){
+      return 'BananaTall'
+    } else if (ingredientObjectNumber == 2){
+      return 'BerryTall'
+    } 
+  }
+
+  private strikethroughCatchedIngredient(currentShakeObjectNumber){
+    console.log("strikethroughCatched called / currentShakeObjectNumber: "+currentShakeObjectNumber);
+    this.ingredientOnListY = this.screenCenterY * 0.5;
+
+    if (currentShakeObjectNumber == 0){
+        this.strikethroughObject = this.add.image(
+        this.ingredientOnListX,
+        this.ingredientOnListY,
+        'Strikethrough1'
+        );
+    } else if (currentShakeObjectNumber == 1){
+        this.strikethroughObject = this.add.image(
+        this.ingredientOnListX,
+        this.ingredientOnListY+= 250,
+        'Strikethrough2'
+        );
+    } else if (currentShakeObjectNumber == 2){
+        this.strikethroughObject = this.add.image(
+        this.ingredientOnListX,
+        this.ingredientOnListY+= 250,
+        'Strikethrough3'
+        );
     }
   }
 
