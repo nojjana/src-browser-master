@@ -33,8 +33,10 @@ export class ShakerGameComponent implements OnInit, OnDestroy {
       scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
-        height: 572,
-        width: 640,
+        //height: 572,
+        //width: 640,
+        height: 1440,
+        width: 2560,
       },
       //backgroundColor: 0x0cb010,
       transparent: true,
@@ -109,6 +111,15 @@ export default class ShakerScene extends Phaser.Scene {
   private ingredientInShaker: Phaser.GameObjects.Image;
   private oldIngredientInShaker: Phaser.GameObjects.Image;
   private shakerContainer: Phaser.GameObjects.Image;
+  private ingredientList: Phaser.GameObjects.Image;
+  private strikethroughObject: Phaser.GameObjects.Image;
+  private ingredientListX: number;
+  private ingredientListY: number;
+  private ingredientOnListX: number;
+  private ingredientOnListY: number;
+  private progressbar: Phaser.GameObjects.Image;
+  private progressbarX: number;
+  private progressbarY: number;
   private scoreText: Phaser.GameObjects.BitmapText;
   private score: any;
   private holes: Phaser.GameObjects.Group;
@@ -138,6 +149,14 @@ export default class ShakerScene extends Phaser.Scene {
   private falling = false;
   private speedOfFalling: number = 12;  //+ y delta
 
+  //TODO
+  private beeHouse: Phaser.GameObjects.Image;
+  private fallingObject: Phaser.GameObjects.Image;
+
+  private maxAmountOfFallingObjects = 2;
+  private randomShakingObjectNumber = Phaser.Math.Between(0,this.maxAmountOfFallingObjects);
+  private shakingObjectNumber = 0;
+
   constructor() {
     super({ key: 'shakerScene' });
   }
@@ -154,9 +173,23 @@ export default class ShakerScene extends Phaser.Scene {
     this.load.image('Apple', '../../assets/shaker/Apple.png');
     this.load.image('Banana', '../../assets/shaker/Banana.png');
     this.load.image('Berry', '../../assets/shaker/Berry.png');
+    this.load.image('AppleTall', '../../assets/shaker/AppleTall.png');
+    this.load.image('BananaTall', '../../assets/shaker/BananaTall.png');
+    this.load.image('BerryTall', '../../assets/shaker/BerryTall.png');
+    this.load.image('Strikethrough1', '../../assets/shaker/Strikethrough1.png');
+    this.load.image('Strikethrough2', '../../assets/shaker/Strikethrough2.png');
+    this.load.image('Strikethrough3', '../../assets/shaker/Strikethrough3.png');
     this.load.image('ShakerContainer', '../../assets/shaker/ShakerContainer.png');
+    
     this.load.bitmapFont('pressStartWhite', '../../assets/font/PressStartWhite.png', '../../assets/font/PressStartWhite.fnt');
     this.load.bitmapFont('pressStartBlack', '../../assets/font/PressStart.png', '../../assets/font/PressStart.fnt');
+    
+    this.load.image('BeeHome', '../../assets/shaker/ShakeObject-BeeHome.png');
+    this.load.image('FallingObject', '../../assets/shaker/Apple.png');
+    
+    this.load.image('IngredientList', '../../assets/shaker/IngredientList.png');
+    this.load.image('Progressbar', '../../assets/shaker/Progressbar.png');
+    this.load.bitmapFont('pressStart', '../../assets/font/PressStartWhite.png', '../../assets/font/PressStartWhite.fnt');
   }
 
   create(data) {
@@ -176,6 +209,12 @@ export default class ShakerScene extends Phaser.Scene {
     this.ingredientFallingY = this.initShakeObjectY;
     this.shakerContainerX = this.screenCenterX;
     this.shakerContainerY = this.screenEndY * 0.8;
+    this.ingredientListX = this.screenCenterX * 0.2;
+    this.ingredientListY = this.screenCenterY;
+    this.ingredientOnListX = this.screenCenterX * 0.2;
+    this.ingredientOnListY = this.screenCenterY * 0.5;
+    this.progressbarX = this.screenCenterX * 1.6;
+    this.progressbarY = this.screenCenterY * 0.2;
 
     // TODO create own background
     this.createBackground(shakerData[1], shakerData[0]);
@@ -232,6 +271,20 @@ export default class ShakerScene extends Phaser.Scene {
       'ShakerContainer'
     );
     this.shakerContainer.setDepth(100);
+
+    this.ingredientList = this.add.image(
+      this.ingredientListX,
+      this.ingredientListY,
+      'IngredientList'
+    );
+
+    this.loadIngredientList(this.shakingObjectNumber);
+
+    this.progressbar = this.add.image(
+      this.progressbarX,
+      this.progressbarY,
+      'Progressbar'
+    );
 
     this.hammer = this.add.image(
       this.shakeObjectX,
@@ -382,6 +435,10 @@ export default class ShakerScene extends Phaser.Scene {
       this.objectReachedShaker = true;
 
       this.updateIngredientInShaker(this.currentRandomShakingObjectNumber);
+      
+      //todo
+      //this.strikethroughCatchedIngredient(this.randomShakingObjectNumber);
+      //this.updateShakeObject();
     }
   }
 
@@ -447,6 +504,13 @@ export default class ShakerScene extends Phaser.Scene {
     }
       this.shakeObjectX = this.initShakeObjectX,
       this.shakeObjectY = this.initShakeObjectY,
+      
+      //TODO
+      //this.fallingObjectX = this.initShakeObjectX,
+      //this.fallingObjectY = this.initShakeObjectY,
+       //      this.randomShakingObjectNumber = Phaser.Math.Between(0,this.maxAmountOfFallingObjects);
+
+      
       this.shakeObject = this.add.image(
         this.shakeObjectX,
         this.shakeObjectY,
@@ -467,7 +531,7 @@ export default class ShakerScene extends Phaser.Scene {
       return 'BananaTree'
     } else if (randomShakingObjectNumber == 2) {
       return 'BerryTree'
-    }
+    } 
   }
   private loadIngredientImage(randomShakingObjectNumber) {
     if (randomShakingObjectNumber == 0) {
@@ -476,10 +540,61 @@ export default class ShakerScene extends Phaser.Scene {
       return 'Banana'
     } else if (randomShakingObjectNumber == 2) {
       return 'Berry'
+    } 
+  }
+
+  private loadIngredientList(ingredientObjectNumber) {
+    console.log("loadIngredientList started/ shakingObjectnumber: "+ingredientObjectNumber)
+    while (ingredientObjectNumber <= this.maxAmountOfFallingObjects){
+      this.fallingObject = this.add.image(
+        this.ingredientOnListX,
+        this.ingredientOnListY,
+        this.loadFallingObjectImageTall(ingredientObjectNumber)
+      );
+      console.log("shakingObjectNumberInWhileLoop: "+ingredientObjectNumber)
+      ingredientObjectNumber++;
+      this.ingredientOnListY += 250;
+      console.log("ingredientOnListY: "+this.ingredientOnListY)
+
     }
   }
 
+  private loadFallingObjectImageTall(ingredientObjectNumber) {
+    if (ingredientObjectNumber == 0){
+      return 'AppleTall'
+    } else if (ingredientObjectNumber == 1){
+      return 'BananaTall'
+    } else if (ingredientObjectNumber == 2){
+      return 'BerryTall'
+    } 
+  }
 
+  private strikethroughCatchedIngredient(currentShakeObjectNumber){
+    console.log("strikethroughCatched called / currentShakeObjectNumber: "+currentShakeObjectNumber);
+    this.ingredientOnListY = this.screenCenterY * 0.5;
+
+    if (currentShakeObjectNumber == 0){
+        this.strikethroughObject = this.add.image(
+        this.ingredientOnListX,
+        this.ingredientOnListY,
+        'Strikethrough1'
+        );
+    } else if (currentShakeObjectNumber == 1){
+        this.strikethroughObject = this.add.image(
+        this.ingredientOnListX,
+        this.ingredientOnListY+= 250,
+        'Strikethrough2'
+        );
+    } else if (currentShakeObjectNumber == 2){
+        this.strikethroughObject = this.add.image(
+        this.ingredientOnListX,
+        this.ingredientOnListY+= 250,
+        'Strikethrough3'
+        );
+    }
+  }
+
+  
   private showGameOver(): void {
     this.hammer.destroy();
     this.mole.destroy();
