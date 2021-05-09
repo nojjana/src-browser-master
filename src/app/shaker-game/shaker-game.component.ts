@@ -35,6 +35,11 @@ export class ShakerGameComponent implements OnInit, OnDestroy {
         autoCenter: Phaser.Scale.CENTER_BOTH,
         //height: 572,
         //width: 640,
+
+        //SD Auflösung: 720 x 576
+        //hd ready: 1280 x 720
+        //full hd: 1920 x 1080
+
         height: 1440,
         width: 2560,
       },
@@ -149,8 +154,9 @@ export default class ShakerScene extends Phaser.Scene {
   private falling = false;
   private speedOfFalling: number = 12;  //+ y delta
 
-  //TODO
+  //TODO beeHouse
   private beeHouse: Phaser.GameObjects.Image;
+
   private fallingObject: Phaser.GameObjects.Image;
 
   private maxAmountOfFallingObjects = 2;
@@ -250,7 +256,7 @@ export default class ShakerScene extends Phaser.Scene {
     this.ingredientFalling.setVisible(false);
 
     this.ingredientInShaker = this.add.image(
-      this.shakerContainerX,
+      this.shakerContainerX*1.2,
       this.shakerContainerY,
       this.loadIngredientImage(this.currentRandomShakingObjectNumber)
     );
@@ -258,8 +264,8 @@ export default class ShakerScene extends Phaser.Scene {
     this.ingredientInShaker.setVisible(false);
 
     this.oldIngredientInShaker = this.add.image(
-      this.shakerContainerX,
-      this.shakerContainerY,
+      this.shakerContainerX*1.2,
+      this.shakerContainerY*0.5,
       this.loadIngredientImage(this.currentRandomShakingObjectNumber)
     );
     this.oldIngredientInShaker.setDepth(75);
@@ -280,11 +286,12 @@ export default class ShakerScene extends Phaser.Scene {
 
     this.loadIngredientList(this.shakingObjectNumber);
 
-    this.progressbar = this.add.image(
+    // TODO fortschrittsbalken
+    /* this.progressbar = this.add.image(
       this.progressbarX,
       this.progressbarY,
       'Progressbar'
-    );
+    ); */
 
     this.hammer = this.add.image(
       this.shakeObjectX,
@@ -310,7 +317,7 @@ export default class ShakerScene extends Phaser.Scene {
     this.mole.setDepth(2);
     this.mole.setVisible(false);
 
-    this.scoreText = this.add.bitmapText(this.screenCenterX, 550, 'pressStartBlack', 'Punkte: 0', 16)
+    this.scoreText = this.add.bitmapText(this.screenCenterX * 1.8 , this.screenCenterY * 0.2, 'pressStartBlack', 'Punkte: 0', 28)
       .setOrigin(0.5)
       .setDepth(100);
 
@@ -412,7 +419,7 @@ export default class ShakerScene extends Phaser.Scene {
       this.ingredientOnShakeObject.destroy();
     }
 
-    this.ingredientFallingX = this.initShakeObjectX,
+    this.ingredientFallingX = this.initShakeObjectX+30,
       this.ingredientFallingY = this.initShakeObjectY,
       this.ingredientFalling = this.add.image(
         this.ingredientFallingX,
@@ -424,7 +431,7 @@ export default class ShakerScene extends Phaser.Scene {
   }
 
   private keepFalling(): void {
-    if (this.ingredientFallingY < this.shakerContainerY - 10) {
+    if (this.ingredientFallingY < this.shakerContainerY-30) {
       this.ingredientFallingY = this.ingredientFallingY + this.speedOfFalling;
       this.ingredientFalling.setPosition(this.ingredientFallingX, this.ingredientFallingY);
       // setTimeout(this.keepFalling, 3000); // try again in 300 milliseconds
@@ -434,10 +441,13 @@ export default class ShakerScene extends Phaser.Scene {
       // TODO event an server schicken? anstatt selber auslösen...
       this.objectReachedShaker = true;
 
+
+      // this.strikethroughCatchedIngredient(this.randomShakingObjectNumber);
+      this.strikethroughCatchedIngredient(this.currentRandomShakingObjectNumber);
       this.updateIngredientInShaker(this.currentRandomShakingObjectNumber);
       
-      //todo
-      //this.strikethroughCatchedIngredient(this.randomShakingObjectNumber);
+      //TODO debby
+    
       //this.updateShakeObject();
     }
   }
@@ -588,7 +598,7 @@ export default class ShakerScene extends Phaser.Scene {
     } else if (currentShakeObjectNumber == 2){
         this.strikethroughObject = this.add.image(
         this.ingredientOnListX,
-        this.ingredientOnListY+= 250,
+        this.ingredientOnListY+= 500,
         'Strikethrough3'
         );
     }
