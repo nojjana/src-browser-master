@@ -109,16 +109,16 @@ export default class ShakerScene extends Phaser.Scene {
   private hammer: Phaser.GameObjects.Image;
   private shakeObject: Phaser.GameObjects.Image;
   private currentShakeObject: Phaser.GameObjects.Image;
-  private shakeObjects: Phaser.GameObjects.Group;                 
-  private appleTree: Phaser.GameObjects.Image;                     
-  private bananaTree: Phaser.GameObjects.Image;                    
-  private berryTree: Phaser.GameObjects.Image;                     
+  private shakeObjects: Phaser.GameObjects.Group;
+  private appleTree: Phaser.GameObjects.Image;
+  private bananaTree: Phaser.GameObjects.Image;
+  private berryTree: Phaser.GameObjects.Image;
   private ingredientOnShakeObject: Phaser.GameObjects.Image;
   private ingredientFalling: Phaser.GameObjects.Image;
   private ingredientInShaker: Phaser.GameObjects.Image;
   private oldIngredientInShaker: Phaser.GameObjects.Image;
   private shakerContainer: Phaser.GameObjects.Image;
-  
+
   private scoreText: Phaser.GameObjects.BitmapText;
   private score: any;
   private holes: Phaser.GameObjects.Group;
@@ -167,9 +167,9 @@ export default class ShakerScene extends Phaser.Scene {
   private ingredientOnListY: number;
 
   private fallingObject: Phaser.GameObjects.Image;
-  private appleTall: Phaser.GameObjects.Image;                  
-  private bananaTall: Phaser.GameObjects.Image;                   
-  private berryTall: Phaser.GameObjects.Image;  
+  private appleTall: Phaser.GameObjects.Image;
+  private bananaTall: Phaser.GameObjects.Image;
+  private berryTall: Phaser.GameObjects.Image;
   //TODO: shakeObject as array
   private catchedShakeObject1: Phaser.GameObjects.BitmapText;
   private catchedShakeObject2: Phaser.GameObjects.BitmapText;
@@ -183,7 +183,7 @@ export default class ShakerScene extends Phaser.Scene {
   private progressbar: Phaser.GameObjects.Image;
   private progressbarX: number;
   private progressbarY: number;
-  
+
 
   constructor() {
     super({ key: 'shakerScene' });
@@ -195,7 +195,7 @@ export default class ShakerScene extends Phaser.Scene {
     this.load.image('HammerArea', '../../assets/shaker/HammerArea.png');
     this.load.image('HammerHit', '../../assets/shaker/HammerHit.png');
     this.load.image('Grass', '../../assets/shaker/Grass.png');
-    
+
     this.load.image('AppleTree', '../../assets/shaker/ShakeObject-Apple.png');
     this.load.image('BananaTree', '../../assets/shaker/ShakeObject-Banana.png');
     this.load.image('BerryTree', '../../assets/shaker/ShakeObject-Berry.png');
@@ -206,7 +206,7 @@ export default class ShakerScene extends Phaser.Scene {
     this.load.image('Banana', '../../assets/shaker/Banana.png');
     this.load.image('Berry', '../../assets/shaker/Berry.png');
 
-    
+
     this.load.image('AppleTall', '../../assets/shaker/AppleTall.png');
     this.load.image('BananaTall', '../../assets/shaker/BananaTall.png');
     this.load.image('BerryTall', '../../assets/shaker/BerryTall.png');
@@ -215,17 +215,17 @@ export default class ShakerScene extends Phaser.Scene {
     this.load.image('Strikethrough2', '../../assets/shaker/Strikethrough2.png');
     this.load.image('Strikethrough3', '../../assets/shaker/Strikethrough3.png');
     this.load.image('ShakerContainer', '../../assets/shaker/ShakerContainer.png');
-    
+
     this.load.bitmapFont('pressStartWhite', '../../assets/font/PressStartWhite.png', '../../assets/font/PressStartWhite.fnt');
     this.load.bitmapFont('pressStartBlack', '../../assets/font/PressStart.png', '../../assets/font/PressStart.fnt');
-    
+
     this.load.image('BeeHome', '../../assets/shaker/ShakeObject-BeeHome.png');
     this.load.image('FallingObject', '../../assets/shaker/Apple.png');
-    
+
     this.load.image('IngredientList', '../../assets/shaker/IngredientList.png');
     this.load.image('Progressbar', '../../assets/shaker/Progressbar.png');
     this.load.bitmapFont('pressStart', '../../assets/font/PressStartWhite.png', '../../assets/font/PressStartWhite.fnt');
-  
+
     this.load.audio('ShakingLeaves', '../../assets/shaker/rustling-bushes.mp3');
   }
 
@@ -429,15 +429,15 @@ export default class ShakerScene extends Phaser.Scene {
     // meldung von server, ob geschlagen/geschüttelt wurde, hier view effekte zeigen
     if (isShaking === true) {
       console.log('Shaking');
-      
+
       //TODO: add sound
       //this.shakeLeavesSound.play();
-      
+
       // TODO: make tree shake
       //this.shakeEffectOnPlant = true;
       //var shakeEffectOnPlantMakeTrue = setInterval(() => this.shakeEffectOnPlant = true, 500)  //changes every 0,5 sek
       //var shakeEfectOnPlantMakeFalse = setInterval(() => this.shakeEffectOnPlant = false, 500)
-      
+
       //TODO: change shakingObject image when shaking
      /*  if (this.shakeEffectOnPlant === true){
       this.shakeObject.destroy();
@@ -508,8 +508,8 @@ export default class ShakerScene extends Phaser.Scene {
       this.objectReachedShaker = true;
       this.strikethroughCatchedIngredient(this.currentRandomShakingObjectNumber);
       this.updateIngredientInShaker(this.currentRandomShakingObjectNumber);
-      this.updateCatchedIngredientCounter(this.currentRandomShakingObjectNumber)   
-    
+      this.updateCatchedIngredientCounter(this.currentRandomShakingObjectNumber)
+
     }
   }
 
@@ -522,7 +522,7 @@ export default class ShakerScene extends Phaser.Scene {
 
     if (this.ingredientInShaker != null) {
       this.oldIngredientInShaker = this.ingredientInShaker;
-      this.oldIngredientInShaker.setDepth(85);
+        this.oldIngredientInShaker?.setDepth(85);
       // this.ingredientInShaker.destroy();
     }
 
@@ -575,13 +575,13 @@ export default class ShakerScene extends Phaser.Scene {
     }
       this.shakeObjectX = this.initShakeObjectX,
       this.shakeObjectY = this.initShakeObjectY,
-      
+
       //TODO
       //this.fallingObjectX = this.initShakeObjectX,
       //this.fallingObjectY = this.initShakeObjectY,
        //      this.randomShakingObjectNumber = Phaser.Math.Between(0,this.maxAmountOfFallingObjects);
 
-      
+
       this.shakeObject = this.add.image(
         this.shakeObjectX,
         this.shakeObjectY,
@@ -603,7 +603,7 @@ export default class ShakerScene extends Phaser.Scene {
       return 'BananaTree'
     } else if (randomShakingObjectNumber == 2) {
       return 'BerryTree'
-    } 
+    }
   }
 
   private loadShakeObjectWhenShakingImage(randomShakingObjectNumber) {
@@ -614,7 +614,7 @@ export default class ShakerScene extends Phaser.Scene {
       return 'BerryTree2'
     } else if (randomShakingObjectNumber == 2) {
       return 'BerryTree2'
-    } 
+    }
   }
 
   private loadIngredientImage(randomShakingObjectNumber) {
@@ -624,7 +624,7 @@ export default class ShakerScene extends Phaser.Scene {
       return 'Banana'
     } else if (randomShakingObjectNumber == 2) {
       return 'Berry'
-    } 
+    }
   }
 
   private loadIngredientList(ingredientObjectNumber) {
@@ -647,13 +647,14 @@ export default class ShakerScene extends Phaser.Scene {
       return 'BananaTall'
     } else if (ingredientObjectNumber == 2){
       return 'BerryTall'
-    } 
+    }
   }
 
   private strikethroughCatchedIngredient(currentShakeObjectNumber){
     console.log("strikethroughCatched called / currentShakeObjectNumber: "+currentShakeObjectNumber);
     this.ingredientOnListY = this.screenCenterY * 0.5;
 
+    // TODO how to destroy all? a lot will be generated and connection will be lost when next comes..
     if (currentShakeObjectNumber == 0){
         this.strikethroughObject = this.add.image(
         this.ingredientOnListX,
@@ -685,14 +686,14 @@ export default class ShakerScene extends Phaser.Scene {
         this.catchedShakeObject1.destroy();
       }
       this.catchedShakeObject1 = this.add.bitmapText(
-        this.ingredientOnListX-100, 
-        this.ingredientOnListY-50, 
-        'pressStartBlack', 
-        text, 
+        this.ingredientOnListX-100,
+        this.ingredientOnListY-50,
+        'pressStartBlack',
+        text,
         25)
         .setOrigin(0.5, 0.5)
         .setCenterAlign();
-      this.catchedShakeObjectNumber1++;  
+      this.catchedShakeObjectNumber1++;
 
     } else if (currentShakeObjectNumber == 1){
       const text = String(this.catchedShakeObjectNumber2);
@@ -700,34 +701,34 @@ export default class ShakerScene extends Phaser.Scene {
         this.catchedShakeObject2.destroy();
       }
       this.catchedShakeObject2 = this.add.bitmapText(
-        this.ingredientOnListX-100, 
-        this.ingredientOnListY+200, 
-        'pressStartBlack', 
-        text, 
+        this.ingredientOnListX-100,
+        this.ingredientOnListY+200,
+        'pressStartBlack',
+        text,
         25)
         .setOrigin(0.5, 0.5)
         .setCenterAlign();
-      this.catchedShakeObjectNumber2++;  
-  
+      this.catchedShakeObjectNumber2++;
+
     } else if (currentShakeObjectNumber == 2){
       const text = String(this.catchedShakeObjectNumber3);
       if (this.catchedShakeObject3 != null){
         this.catchedShakeObject3.destroy();
       }
       this.catchedShakeObject3 = this.add.bitmapText(
-        this.ingredientOnListX-100, 
-        this.ingredientOnListY+450, 
-        'pressStartBlack', 
-        text, 
+        this.ingredientOnListX-100,
+        this.ingredientOnListY+450,
+        'pressStartBlack',
+        text,
         25)
         .setOrigin(0.5, 0.5)
         .setCenterAlign();
-      this.catchedShakeObjectNumber3++; 
+      this.catchedShakeObjectNumber3++;
     }
   }
 
 
-  
+
   private showGameOver(): void {
     this.hammer.destroy();
     this.mole.destroy();
@@ -739,19 +740,16 @@ export default class ShakerScene extends Phaser.Scene {
     this.ingredientOnShakeObject.destroy();
     this.ingredientInShaker.destroy();
     this.oldIngredientInShaker.destroy();
-    this.ingredientList.destroy();
-    this.catchedShakeObject1.destroy();
-    this.catchedShakeObject2.destroy();
-    this.catchedShakeObject3.destroy();
-    this.appleTall.destroy();
-    this.fallingObject.destroy();             //TODO: checkout why still visible when GameOver
-    this.strikethroughObject.destroy();       //TODO: checkout why still visible when GameOver
-
-    if (this.ingredientFalling != null) {
-      this.ingredientFalling.destroy();
-    }
-    const text = ['Der Saft ist fertig!', 'Gesammelte Punkte: ' + this.score, 'Das macht ' + this.getNumberOfGlasses(this.score) + ' Portionen. Toll!'];
-    this.add.bitmapText(this.screenCenterX, this.screenCenterY, 'pressStartBlack', text, 16).setOrigin(0.5, 0.5).setCenterAlign();
+    // this.ingredientList.destroy();
+    this.catchedShakeObject1?.destroy();
+    this.catchedShakeObject2?.destroy();
+    this.catchedShakeObject3?.destroy();
+    this.appleTall?.destroy();
+    // this.fallingObject?.destroy();             //TODO: checkout why still visible when GameOver (because new one generated and old one lost without destroying?)
+    // this.strikethroughObject?.destroy();       //TODO: checkout why still visible when GameOver
+    this.ingredientFalling?.destroy();
+    const text = ['Der Saft ist fertig!\n\n\n\n\n\nGesammelte Punkte: ' + this.score + '\n\nDas macht ' + this.getNumberOfGlasses(this.score) + ' Becher. Toll!'];
+    this.add.bitmapText(this.screenCenterX, this.screenCenterY, 'pressStartBlack', text, 45).setOrigin(0.5, 0.5).setCenterAlign();
   }
 
   private getNumberOfGlasses(score: number) {
