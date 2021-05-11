@@ -119,6 +119,9 @@ export default class ShakerScene extends Phaser.Scene {
   private oldIngredientInShaker: Phaser.GameObjects.Image;
   private shakerContainer: Phaser.GameObjects.Image;
 
+  private allFallingIngredients: Phaser.GameObjects.Image[] = new Array();
+  private allIngredientsInShaker: Phaser.GameObjects.Image[] = new Array();
+
   private scoreText: Phaser.GameObjects.BitmapText;
   private score: any;
   private holes: Phaser.GameObjects.Group;
@@ -476,11 +479,12 @@ export default class ShakerScene extends Phaser.Scene {
 
     // TODO: more than one ingredient should be falling - how?
     this.prepareFallingIngredient(this.currentRandomShakingObjectNumber);
-    this.falling = true;
+    // this.falling = true;
     setTimeout(() => { this.regrowIngredient(this.currentRandomShakingObjectNumber); }, 300);
   }
 
   private prepareFallingIngredient(shakingObjectNumber: number) {
+
     if (this.ingredientOnShakeObject != null) {
       this.ingredientOnShakeObject.destroy();
     }
@@ -494,55 +498,30 @@ export default class ShakerScene extends Phaser.Scene {
       );
     this.ingredientFalling.setDepth(88);
     this.ingredientFalling.setVisible(true);
+
+    this.allFallingIngredients.push(this.ingredientFalling);
+
   }
 
   private keepFalling(): void {
-    if (this.ingredientFallingY < this.shakerContainerY-30) {
-      this.ingredientFallingY = this.ingredientFallingY + this.speedOfFalling;
-      this.ingredientFalling.setPosition(this.ingredientFallingX, this.ingredientFallingY);
-      // setTimeout(this.keepFalling, 3000); // try again in 300 milliseconds
-    } else {
-      console.log('Ingredient fell into shaker!');
-      this.falling = false;
-      // TODO event an server schicken? anstatt selber auslösen...
-      this.objectReachedShaker = true;
-      this.strikethroughCatchedIngredient(this.currentRandomShakingObjectNumber);
-      this.updateIngredientInShaker(this.currentRandomShakingObjectNumber);
-      this.updateCatchedIngredientCounter(this.currentRandomShakingObjectNumber)
+    // iterate over clone, adjust all positions of falling ingredients, act if one reached shaker
+    const allFallingIngredientsClone = this.allFallingIngredients;
+    allFallingIngredientsClone?.forEach(i => {
+      // drop ingredient a bit more
+        i.y += this.speedOfFalling;
 
-    }
+        if (i.y >= this.shakerContainerY) {
+          console.log('An ingredient fell into shaker!');
+        this.strikethroughCatchedIngredient(this.currentRandomShakingObjectNumber);
+        this.updateCatchedIngredientCounter(this.currentRandomShakingObjectNumber);
+
+        // remove arrived ingredients from allFallingIngredients array
+        this.allFallingIngredients = allFallingIngredientsClone.filter(x => x !== i);
+        this.allIngredientsInShaker.push(i);
+      }
+    });
   }
 
-  private updateIngredientInShaker(shakingObjectNumber: number): void {
-    //  console.log('updateIngredientInShaker() called');
-
-    if (this.oldIngredientInShaker != null) {
-      this.oldIngredientInShaker.destroy();
-    }
-
-    if (this.ingredientInShaker != null) {
-      this.oldIngredientInShaker = this.ingredientInShaker;
-        this.oldIngredientInShaker?.setDepth(85);
-      // this.ingredientInShaker.destroy();
-    }
-
-    if (this.ingredientFalling != null) {
-      this.ingredientInShaker = this.ingredientFalling;
-      this.ingredientInShaker.setPosition(this.ingredientFallingX, this.ingredientFallingY);
-
-      // TODO: how to get image (bzw. number) of falling ingredient? (may change in the meantime! timer...)
-      // this.ingredientInShaker = this.add.image(
-      //   this.shakerContainerX,
-      //   this.shakerContainerY,
-      //   this.loadIngredientImage(shakingObjectNumber)
-      // );
-      this.ingredientInShaker.setDepth(87);
-      this.ingredientInShaker.setVisible(true);
-
-      // this.ingredientFalling.destroy();
-    }
-
-  }
 
   private regrowIngredient(shakingObjectNumber: number): void {
     if (this.ingredientOnShakeObject != null) {
@@ -748,6 +727,10 @@ export default class ShakerScene extends Phaser.Scene {
     // this.fallingObject?.destroy();             //TODO: checkout why still visible when GameOver (because new one generated and old one lost without destroying?)
     // this.strikethroughObject?.destroy();       //TODO: checkout why still visible when GameOver
     this.ingredientFalling?.destroy();
+
+    this.allFallingIngredients.forEach(i => i.destroy());
+    this.allIngredientsInShaker.forEach(i => i.destroy());
+
     const text = ['Der Saft ist fertig!\n\n\n\n\n\nGesammelte Punkte: ' + this.score + '\n\nDas macht ' + this.getNumberOfGlasses(this.score) + ' Becher. Toll!'];
     this.add.bitmapText(this.screenCenterX, this.screenCenterY, 'pressStartBlack', text, 45).setOrigin(0.5, 0.5).setCenterAlign();
   }
@@ -761,14 +744,14 @@ export default class ShakerScene extends Phaser.Scene {
 
   update() {
     console.log('running');
-    if (this.falling) {
+    // if (this.falling) {
       this.keepFalling();
-    }
-    if (this.objectReachedShaker) {
+    // }
+    // if (this.objectReachedShaker) {
       // console.log('objectReachedShaker. in update()');
       // do sth here? or just send to server as soon as set true?
-      this.objectReachedShaker = false;
-    }
+      // this.objectReachedShaker = false;
+    // }
 
   }
 
