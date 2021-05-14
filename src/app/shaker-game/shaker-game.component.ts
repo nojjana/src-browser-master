@@ -21,6 +21,9 @@ export class ShakerGameComponent implements OnInit, OnDestroy {
   private dotInterval;
   public countdown: number = 3;
 
+  public gameOverCountdown: number = 0;
+  public gameOver = false;
+
   constructor(private socketService: SocketService) {
     this.dotInterval = setInterval(() => {
       this.dots++;
@@ -69,6 +72,7 @@ export class ShakerGameComponent implements OnInit, OnDestroy {
     this.socketService.removeListener('gameOver');
 
     this.socketService.removeListener('countdown');
+    this.socketService.removeListener('gameOverCountdown');
 
     clearInterval(this.dotInterval);
   }
@@ -77,7 +81,11 @@ export class ShakerGameComponent implements OnInit, OnDestroy {
     this.socketService.on('controllerEndedTutorial', () => { this.controllerReady(); });
     this.socketService.once('shakerData', (shakerData) => { this.initShaker(shakerData); });
     this.socketService.on('countdown', (number) => this.countdown = number);
-
+    this.socketService.on('gameOverCountdown', (number) => {
+      this.gameOverCountdown = number;
+      console.log("Noch "+this.gameOverCountdown);
+    });
+    this.socketService.on('gameOver', (over) => this.gameOver = over);
     this.socketService.emit('displayReady');
   }
 
@@ -190,7 +198,6 @@ export default class ShakerScene extends Phaser.Scene {
   private allIngredientsOnList: Phaser.GameObjects.Image[] = new Array();
 
   private playing: boolean = false;
-
 
   constructor() {
     super({ key: 'shakerScene' });
