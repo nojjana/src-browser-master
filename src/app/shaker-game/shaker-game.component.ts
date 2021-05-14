@@ -150,11 +150,12 @@ export default class ShakerScene extends Phaser.Scene {
 
   private background: Phaser.GameObjects.TileSprite;
   private currentShakeObjectNumber = null;
-  private oldShakeObjectNumber = null;
   private numberOfShakingObjects = 2;
   private shakingObjectList: Array<number>;
 
-  private currentRandomShakingObjectNumber = Phaser.Math.Between(0, 2);
+  private maxAmountOfFallingObjects = 3;
+
+  private currentRandomShakingObjectNumber = Phaser.Math.Between(0, this.maxAmountOfFallingObjects-1);
   private objectReachedShaker = false;
   private falling = false;
   private speedOfFalling: number = 12;  //+ y delta
@@ -162,8 +163,6 @@ export default class ShakerScene extends Phaser.Scene {
   //TODO beeHouse
   private beeHouse: Phaser.GameObjects.Image;
 
-  private maxAmountOfFallingObjects = 2;
-  private randomShakingObjectNumber = Phaser.Math.Between(0,this.maxAmountOfFallingObjects);
   private shakingObjectNumber = 0;
 
   //IngredientList
@@ -399,15 +398,13 @@ export default class ShakerScene extends Phaser.Scene {
     //   this.score = scoreEvent;
     // });
 
-    this.socketService.on('changeShakeObject', (doChangeShakeObject) => {
+    this.socketService.on('changeShakeObject', (newNumber) => {
       // TODO: event muss ggf gar nicht vom server kommen, da's in der view (browser) passiert?
       // sollte aber. matter collision?
       // evtl sollte browser melden dass objekt angekommen ist (geht das??) und server gibt dann den befehlt zum wechseln?
       // this.changeShakeObject();
       // this.objectReachedShaker = doChangeShakeObject;
-      if (doChangeShakeObject === true) {
-        this.updateShakeObject();
-      }
+      this.updateShakeObject(newNumber);
     });
 
     this.socketService.on('playing', playing => {
@@ -554,17 +551,10 @@ export default class ShakerScene extends Phaser.Scene {
     }
   }
 
-  private updateShakeObject(): void {
+  private updateShakeObject(newNumber: number): void {
     // if (this.objectReachedShaker == true) {
       console.log('Here comes another plant.');
-
-      this.oldShakeObjectNumber = this.currentRandomShakingObjectNumber;
-      this.currentRandomShakingObjectNumber = Phaser.Math.Between(0, 2);
-      while (this.oldShakeObjectNumber == this.currentRandomShakingObjectNumber) {
-        // avoid changing to the same shakeObject (i.e. 2x apple tree)
-        this.currentRandomShakingObjectNumber = Phaser.Math.Between(0, 2);
-      }
-
+      this.currentRandomShakingObjectNumber = newNumber;
 
     if (this.shakeObject != null) {
       this.shakeObject.destroy();                 //destroy old shake object
