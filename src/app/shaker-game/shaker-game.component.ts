@@ -173,7 +173,7 @@ export default class ShakerScene extends Phaser.Scene {
   //TODO: shakeObject as array
   private catchedIngredientCounterText1: Phaser.GameObjects.BitmapText;
   private catchedIngredientCounterText2: Phaser.GameObjects.BitmapText;
-  private catchedIngredientCounterText4: Phaser.GameObjects.BitmapText;
+  private catchedIngredientCounterText3: Phaser.GameObjects.BitmapText;
 
   private catchedShakeObjectNumber1 = 1;
   private catchedShakeObjectNumber2 = 1;
@@ -188,6 +188,8 @@ export default class ShakerScene extends Phaser.Scene {
   private allFallingIngredients: Phaser.GameObjects.Image[] = new Array();
   private allIngredientsInShaker: Phaser.GameObjects.Image[] = new Array();
   private allIngredientsOnList: Phaser.GameObjects.Image[] = new Array();
+
+  private playing: boolean = false;
 
 
   constructor() {
@@ -401,6 +403,10 @@ export default class ShakerScene extends Phaser.Scene {
       }
     });
 
+    this.socketService.on('playing', playing => {
+      this.playing = playing;
+    });
+
     this.socketService.on('gameOver', finished => {
       if (finished === true) {
         this.showGameOver();
@@ -526,17 +532,19 @@ export default class ShakerScene extends Phaser.Scene {
 
 
   private regrowIngredient(shakingObjectNumber: number): void {
-    if (this.ingredientOnShakeObject != null) {
-      this.ingredientOnShakeObject.destroy();
+    if (this.playing) {
+      if (this.ingredientOnShakeObject != null) {
+        this.ingredientOnShakeObject.destroy();
+      }
+      this.ingredientOnShakeObjectX = this.initShakeObjectX,
+      this.ingredientOnShakeObjectY = this.initShakeObjectY,
+      this.ingredientOnShakeObject = this.add.image(
+        this.ingredientOnShakeObjectX,
+        this.ingredientOnShakeObjectY,
+        this.loadIngredientImage(shakingObjectNumber)
+      );
+      this.ingredientOnShakeObject.setDepth(80);
     }
-    this.ingredientOnShakeObjectX = this.initShakeObjectX,
-    this.ingredientOnShakeObjectY = this.initShakeObjectY,
-    this.ingredientOnShakeObject = this.add.image(
-      this.ingredientOnShakeObjectX,
-      this.ingredientOnShakeObjectY,
-      this.loadIngredientImage(shakingObjectNumber)
-    );
-    this.ingredientOnShakeObject.setDepth(80);
   }
 
   private updateShakeObject(): void {
@@ -730,10 +738,10 @@ export default class ShakerScene extends Phaser.Scene {
 
     } else if (currentShakeObjectNumber == 2){
       const text = String(this.catchedShakeObjectNumber3);
-      if (this.catchedIngredientCounterText4 != null){
-        this.catchedIngredientCounterText4.destroy();
+      if (this.catchedIngredientCounterText3 != null){
+        this.catchedIngredientCounterText3.destroy();
       }
-      this.catchedIngredientCounterText4 = this.add.bitmapText(
+      this.catchedIngredientCounterText3 = this.add.bitmapText(
         this.ingredientOnListX-100,
         this.ingredientOnListY+450,
         'pressStartBlack',
@@ -760,9 +768,9 @@ export default class ShakerScene extends Phaser.Scene {
     this.ingredientList.destroy();
     this.catchedIngredientCounterText1?.destroy();
     this.catchedIngredientCounterText2?.destroy();
-    this.catchedIngredientCounterText4?.destroy();
+    this.catchedIngredientCounterText3?.destroy();
     this.appleTall?.destroy();
-    // this.fallingObject?.destroy();             //TODO: checkout why still visible when GameOver (because new one generated and old one lost without destroying?)
+    this.ingredientOnList?.destroy();             //TODO: checkout why still visible when GameOver (because new one generated and old one lost without destroying?)
     // this.strikethroughObject?.destroy();       //TODO: checkout why still visible when GameOver
     this.ingredientFalling?.destroy();
 
@@ -784,7 +792,9 @@ export default class ShakerScene extends Phaser.Scene {
   update() {
     console.log('running');
     // if (this.falling) {
-      this.keepFalling();
+      if (this.playing != undefined && this.playing) {
+        this.keepFalling();
+      }
     // }
     // if (this.objectReachedShaker) {
       // console.log('objectReachedShaker. in update()');
