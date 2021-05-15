@@ -50,7 +50,7 @@ export class ShakerGameComponent implements OnInit, OnDestroy {
       //backgroundColor: 0x0cb010,
       transparent: true,
       parent: 'gameContainer',
-      audio: {disableWebAudio: true}
+      audio: { disableWebAudio: true }
     };
   }
 
@@ -66,7 +66,8 @@ export class ShakerGameComponent implements OnInit, OnDestroy {
 
     this.socketService.removeListener('changeShakeObject');
     this.socketService.removeListener('updateFall');
-    // this.socketService.removeListener('updateScore');
+    this.socketService.removeListener('checkIngredientOnList');
+    this.socketService.removeListener('updateScore');
 
     this.socketService.removeListener('controllerEndedTutorial');
     this.socketService.removeListener('gameOver');
@@ -83,7 +84,7 @@ export class ShakerGameComponent implements OnInit, OnDestroy {
     this.socketService.on('countdown', (number) => this.countdown = number);
     this.socketService.on('gameOverCountdown', (number) => {
       this.gameOverCountdown = number;
-      console.log("Noch "+this.gameOverCountdown);
+      console.log("Noch " + this.gameOverCountdown);
     });
     this.socketService.on('gameOver', (over) => this.gameOver = over);
     this.socketService.emit('displayReady');
@@ -155,7 +156,7 @@ export default class ShakerScene extends Phaser.Scene {
 
   private maxAmountOfFallingObjects = 3;
 
-  private currentRandomShakingObjectNumber = Phaser.Math.Between(0, this.maxAmountOfFallingObjects-1);
+  private currentRandomShakingObjectNumber = 0;
   private objectReachedShaker = false;
   private falling = false;
   private speedOfFalling: number = 12;  //+ y delta
@@ -182,9 +183,9 @@ export default class ShakerScene extends Phaser.Scene {
   private catchedIngredientCounterText2: Phaser.GameObjects.BitmapText;
   private catchedIngredientCounterText3: Phaser.GameObjects.BitmapText;
 
-  private catchedShakeObjectNumber1 = 1;
-  private catchedShakeObjectNumber2 = 1;
-  private catchedShakeObjectNumber3 = 1;
+  private catchedShakeObjectCounter1 = 1;
+  private catchedShakeObjectCounter2 = 1;
+  private catchedShakeObjectCounter3 = 1;
 
   //TODO: progress bar
   private progressbar: Phaser.GameObjects.Image;
@@ -303,7 +304,7 @@ export default class ShakerScene extends Phaser.Scene {
     this.ingredientFalling.setVisible(false);
 
     this.ingredientInShaker = this.add.image(
-      this.shakerContainerX*1.2,
+      this.shakerContainerX * 1.2,
       this.shakerContainerY,
       this.loadIngredientImage(this.currentRandomShakingObjectNumber)
     );
@@ -311,8 +312,8 @@ export default class ShakerScene extends Phaser.Scene {
     this.ingredientInShaker.setVisible(false);
 
     this.oldIngredientInShaker = this.add.image(
-      this.shakerContainerX*1.2,
-      this.shakerContainerY*0.5,
+      this.shakerContainerX * 1.2,
+      this.shakerContainerY * 0.5,
       this.loadIngredientImage(this.currentRandomShakingObjectNumber)
     );
     this.oldIngredientInShaker.setDepth(75);
@@ -330,8 +331,9 @@ export default class ShakerScene extends Phaser.Scene {
       this.ingredientListY,
       'IngredientList'
     );
+    // this.ingredientList.setDepth(10);
 
-    this.loadIngredientList(this.shakingObjectNumber);
+    // this.loadIngredientList(this.allIngredientsOnList);
 
     // TODO fortschrittsbalken
     /* this.progressbar = this.add.image(
@@ -364,7 +366,7 @@ export default class ShakerScene extends Phaser.Scene {
     this.mole.setDepth(2);
     this.mole.setVisible(false);
 
-    this.scoreText = this.add.bitmapText(this.screenCenterX * 1.8 , this.screenCenterY * 0.2, 'pressStartBlack', 'Punkte: 0', 28)
+    this.scoreText = this.add.bitmapText(this.screenCenterX * 1.8, this.screenCenterY * 0.2, 'pressStartBlack', 'Punkte: 0', 28)
       .setOrigin(0.5)
       .setDepth(100);
 
@@ -379,7 +381,7 @@ export default class ShakerScene extends Phaser.Scene {
       this.mole.setPosition(hammer[2], hammer[3]);
       this.hammerHit(hammer[4]);
       this.scoreText.setText('Punkte: ' + hammer[5]);
-      this.score = hammer[5];
+      // this.score = hammer[5];
     });
 
     this.socketService.on('updateShaking', (isShaking) => {
@@ -393,10 +395,17 @@ export default class ShakerScene extends Phaser.Scene {
       //this.fallEvent(fallEvent[0]);
     });
 
-    // this.socketService.on('updateScore', (scoreEvent) => {
-    //   this.scoreText.setText('Score: ' + scoreEvent);
-    //   this.score = scoreEvent;
-    // });
+    this.socketService.on('updateScore', (score) => {
+      this.score = score;
+    });
+
+    this.socketService.on('allIngredientNumbersOnList', (numbers: number[]) => {
+      this.loadIngredientList(numbers);
+    });
+
+    this.socketService.on('checkIngredientOnList', (number) => {
+      this.checkIngredientOnList(number);
+    });
 
     this.socketService.on('changeShakeObject', (newNumber) => {
       // TODO: event muss ggf gar nicht vom server kommen, da's in der view (browser) passiert?
@@ -418,6 +427,11 @@ export default class ShakerScene extends Phaser.Scene {
     });
 
     this.socketService.emit('shakerBuild');
+  }
+
+  private checkIngredientOnList(numberOfIngredient: number) {
+    console.log("got one! checkIngredientOnList with number: " + numberOfIngredient);
+    this.updateCatchedIngredientCounter(numberOfIngredient);
   }
 
   private createBackground(height: number, width: number): void {
@@ -454,23 +468,23 @@ export default class ShakerScene extends Phaser.Scene {
       //var shakeEfectOnPlantMakeFalse = setInterval(() => this.shakeEffectOnPlant = false, 500)
 
       //TODO: change shakingObject image when shaking
-     /*  if (this.shakeEffectOnPlant === true){
-      this.shakeObject.destroy();
-        this.shakeObject = this.add.image(
-          this.shakeObjectX+50,
-          this.shakeObjectY,
-          this.loadShakeObjectWhenShakingImage(this.currentRandomShakingObjectNumber),
-          //setTimeout(this.loadShakeObjectImage(this.currentRandomShakingObjectNumber), 300)
-        );
-      } else if (this.shakeEffectOnPlant === false){
-          this.shakeObject.destroy();
-          this.shakeObject = this.add.image(
-            this.shakeObjectX-100,
-            this.shakeObjectY,
-            //this.loadShakeObjectWhenShakingImage(this.currentRandomShakingObjectNumber),
-            this.loadShakeObjectImage(this.currentRandomShakingObjectNumber)
-          )
-        }   */
+      /*  if (this.shakeEffectOnPlant === true){
+       this.shakeObject.destroy();
+         this.shakeObject = this.add.image(
+           this.shakeObjectX+50,
+           this.shakeObjectY,
+           this.loadShakeObjectWhenShakingImage(this.currentRandomShakingObjectNumber),
+           //setTimeout(this.loadShakeObjectImage(this.currentRandomShakingObjectNumber), 300)
+         );
+       } else if (this.shakeEffectOnPlant === false){
+           this.shakeObject.destroy();
+           this.shakeObject = this.add.image(
+             this.shakeObjectX-100,
+             this.shakeObjectY,
+             //this.loadShakeObjectWhenShakingImage(this.currentRandomShakingObjectNumber),
+             this.loadShakeObjectImage(this.currentRandomShakingObjectNumber)
+           )
+         }   */
     } else {
       //TODO: sound
       //this.shakeLeavesSound.stop();
@@ -501,7 +515,7 @@ export default class ShakerScene extends Phaser.Scene {
       this.ingredientOnShakeObject.destroy();
     }
 
-    this.ingredientFallingX = this.initShakeObjectX+30,
+    this.ingredientFallingX = this.initShakeObjectX + 30,
       this.ingredientFallingY = this.initShakeObjectY,
       this.ingredientFalling = this.add.image(
         this.ingredientFallingX,
@@ -520,12 +534,12 @@ export default class ShakerScene extends Phaser.Scene {
     const allFallingIngredientsClone = this.allFallingIngredients;
     allFallingIngredientsClone?.forEach(i => {
       // drop ingredient a bit more
-        i.y += this.speedOfFalling;
+      i.y += this.speedOfFalling;
 
-        if (i.y >= this.shakerContainerY) {
-          console.log('An ingredient fell into shaker!');
+      if (i.y >= this.shakerContainerY) {
+        console.log('An ingredient fell into shaker!');
         // this.strikethroughCatchedIngredient(this.currentRandomShakingObjectNumber);
-        this.updateCatchedIngredientCounter(this.currentRandomShakingObjectNumber);
+        // this.updateCatchedIngredientCounter(this.currentRandomShakingObjectNumber);
 
         // remove arrived ingredients from allFallingIngredients array
         this.allFallingIngredients = allFallingIngredientsClone.filter(x => x !== i);
@@ -541,31 +555,31 @@ export default class ShakerScene extends Phaser.Scene {
         this.ingredientOnShakeObject.destroy();
       }
       this.ingredientOnShakeObjectX = this.initShakeObjectX,
-      this.ingredientOnShakeObjectY = this.initShakeObjectY,
-      this.ingredientOnShakeObject = this.add.image(
-        this.ingredientOnShakeObjectX,
-        this.ingredientOnShakeObjectY,
-        this.loadIngredientImage(shakingObjectNumber)
-      );
+        this.ingredientOnShakeObjectY = this.initShakeObjectY,
+        this.ingredientOnShakeObject = this.add.image(
+          this.ingredientOnShakeObjectX,
+          this.ingredientOnShakeObjectY,
+          this.loadIngredientImage(shakingObjectNumber)
+        );
       this.ingredientOnShakeObject.setDepth(80);
     }
   }
 
   private updateShakeObject(newNumber: number): void {
     // if (this.objectReachedShaker == true) {
-      console.log('Here comes another plant.');
-      this.currentRandomShakingObjectNumber = newNumber;
+    console.log('Here comes another plant.');
+    this.currentRandomShakingObjectNumber = newNumber;
 
     if (this.shakeObject != null) {
       this.shakeObject.destroy();                 //destroy old shake object
     }
-      this.shakeObjectX = this.initShakeObjectX,
+    this.shakeObjectX = this.initShakeObjectX,
       this.shakeObjectY = this.initShakeObjectY,
 
       //TODO
       //this.fallingObjectX = this.initShakeObjectX,
       //this.fallingObjectY = this.initShakeObjectY,
-       //      this.randomShakingObjectNumber = Phaser.Math.Between(0,this.maxAmountOfFallingObjects);
+      //      this.randomShakingObjectNumber = Phaser.Math.Between(0,this.maxAmountOfFallingObjects);
 
 
       this.shakeObject = this.add.image(
@@ -573,11 +587,11 @@ export default class ShakerScene extends Phaser.Scene {
         this.shakeObjectY,
         this.loadShakeObjectImage(this.currentRandomShakingObjectNumber)
       );
-      this.shakeObject.setDepth(70);
+    this.shakeObject.setDepth(70);
 
-      this.regrowIngredient(this.currentRandomShakingObjectNumber);
+    this.regrowIngredient(this.currentRandomShakingObjectNumber);
 
-      // this.objectReachedShaker = false;
+    // this.objectReachedShaker = false;
     // }
   }
 
@@ -613,143 +627,234 @@ export default class ShakerScene extends Phaser.Scene {
     }
   }
 
-  private loadIngredientList(ingredientObjectNumber) {
-    while (ingredientObjectNumber <= this.maxAmountOfFallingObjects){
-      this.ingredientOnList = this.add.image(
-        this.ingredientOnListX,
-        this.ingredientOnListY,
-        this.loadFallingObjectImageTall(ingredientObjectNumber)
-      );
-      this.ingredientOnList.alpha = 0.3;
-      this.allIngredientsOnList.push(this.ingredientOnList);
+  private loadIngredientList(ingredientNumbers: number[]) {
+    console.log("init list with ingredients, numbers:");
+    ingredientNumbers.forEach(i => {
+      console.log(i);
+    });
+    this.drawIngredientsOnList(ingredientNumbers, 0.5);
 
-      ingredientObjectNumber++;
-      this.ingredientOnListY += 250;
+
+    //TODO: solve like this..
+    // for (let index = 0; index < ingredientNumbers.length; index++) {
+    //   const ingredientObjectNumber = ingredientNumbers[index];
+    //   // TODO: remove THIS. not needed?
+    //   this.ingredientOnList = this.add.image(
+    //     this.ingredientOnListX,
+    //     this.ingredientOnListY,
+    //     this.loadFallingObjectImageTall(ingredientObjectNumber)
+    //   );
+    //   this.ingredientOnList.alpha = 0.5;
+    //   this.allIngredientsOnList.push(this.ingredientOnList);
+    //   this.ingredientOnListY += 250;
+    //   console.log("ingredient on list: "+ingredientObjectNumber);
+    // }
+
+
+    // while (ingredientObjectNumber <= this.maxAmountOfFallingObjects){
+    //   this.ingredientOnList = this.add.image(
+    //     this.ingredientOnListX,
+    //     this.ingredientOnListY,
+    //     this.loadFallingObjectImageTall(ingredientObjectNumber)
+    //   );
+    //   this.ingredientOnList.alpha = 0.3;
+    //   this.allIngredientsOnList.push(this.ingredientOnList);
+
+    //   ingredientObjectNumber++;
+    //   this.ingredientOnListY += 250;
+    // }
+
+  }
+
+
+  private drawIngredientsOnList(ingredientNumbers: number[], alphaNr: number) {
+    for (let index = 0; index < ingredientNumbers.length; index++) {
+      const ingredientObjectNumber = ingredientNumbers[index];
+      this.drawIngredientOnList(ingredientObjectNumber, alphaNr);
     }
   }
 
+  private drawIngredientOnList(ingredientObjectNumber: number, alphaNr: number) {
+    let y = this.getYPosOnListForNumber(ingredientObjectNumber);
+    let image = this.loadFallingObjectImageTall(ingredientObjectNumber);
+    this.ingredientOnList = this.add.image(
+      this.ingredientOnListX,
+      y,
+      image
+    );
+    this.ingredientOnList.alpha = alphaNr;
+    this.ingredientOnList.setDepth(30);
+    this.allIngredientsOnList.push(this.ingredientOnList);
+    console.log("created ingredient on list with number: " + ingredientObjectNumber);
+  }
+
+  private getYPosOnListForNumber(ingredientObjectNumber: number) {
+    let y = this.screenCenterY * 0.5;
+    switch (ingredientObjectNumber) {
+      case 0:
+        y = y;
+        break;
+      case 1:
+        y = y + 250;
+        break;
+      case 2:
+        y = y + 500;
+        break;
+    }
+    return y;
+  }
+
   private loadFallingObjectImageTall(ingredientObjectNumber) {
-    if (ingredientObjectNumber == 0){
-      this.appleTall = this.appleTall
+    if (ingredientObjectNumber == 0) {
+      // this.appleTall = this.appleTall
       return 'AppleTall';
-    } else if (ingredientObjectNumber == 1){
+    } else if (ingredientObjectNumber == 1) {
       return 'BananaTall'
-    } else if (ingredientObjectNumber == 2){
+    } else if (ingredientObjectNumber == 2) {
       return 'BerryTall'
     }
   }
 
-  private maxAlphaOfIngredientOnList(ingredientObjectNumber){
-    this.ingredientOnListY = this.screenCenterY * 0.5;
 
-    if (ingredientObjectNumber == 0){
-      this.ingredientOnList = this.add.image(
-        this.ingredientOnListX,
-        this.ingredientOnListY,
-        this.loadFallingObjectImageTall(ingredientObjectNumber)
-      );
-      this.ingredientOnList.alpha = 1;
-      this.allIngredientsOnList.push(this.ingredientOnList);
-
-    } else if (ingredientObjectNumber == 1){
-      this.ingredientOnList = this.add.image(
-        this.ingredientOnListX,
-        this.ingredientOnListY+= 250,
-        this.loadFallingObjectImageTall(ingredientObjectNumber)
-      );
-      this.ingredientOnList.alpha = 1;
-      this.allIngredientsOnList.push(this.ingredientOnList);
-
-    } else if (ingredientObjectNumber == 2){
-      this.ingredientOnList = this.add.image(
-        this.ingredientOnListX,
-        this.ingredientOnListY+= 500,
-        this.loadFallingObjectImageTall(ingredientObjectNumber)
-      );
-      this.ingredientOnList.alpha = 1;
-      this.allIngredientsOnList.push(this.ingredientOnList);
-    }
-  }
-
-  private strikethroughCatchedIngredient(currentShakeObjectNumber){
-    console.log("strikethroughCatched called / currentShakeObjectNumber: "+currentShakeObjectNumber);
+  private strikethroughCatchedIngredient(currentShakeObjectNumber) {
+    console.log("strikethroughCatched called / currentShakeObjectNumber: " + currentShakeObjectNumber);
     this.ingredientOnListY = this.screenCenterY * 0.5;
 
     // TODO how to destroy all? a lot will be generated and connection will be lost when next comes..
-    if (currentShakeObjectNumber == 0){
-        this.strikethroughObject = this.add.image(
+    if (currentShakeObjectNumber == 0) {
+      this.strikethroughObject = this.add.image(
         this.ingredientOnListX,
         this.ingredientOnListY,
         'Strikethrough1'
-        );
-    } else if (currentShakeObjectNumber == 1){
-        this.strikethroughObject = this.add.image(
+      );
+    } else if (currentShakeObjectNumber == 1) {
+      this.strikethroughObject = this.add.image(
         this.ingredientOnListX,
-        this.ingredientOnListY+= 250,
+        this.ingredientOnListY += 250,
         'Strikethrough2'
-        );
-    } else if (currentShakeObjectNumber == 2){
-        this.strikethroughObject = this.add.image(
+      );
+    } else if (currentShakeObjectNumber == 2) {
+      this.strikethroughObject = this.add.image(
         this.ingredientOnListX,
-        this.ingredientOnListY+= 500,
+        this.ingredientOnListY += 500,
         'Strikethrough3'
-        );
+      );
     }
   }
 
   //TODO: code-quality: written with array and loops:
-  private updateCatchedIngredientCounter(currentShakeObjectNumber){
-    this.maxAlphaOfIngredientOnList(currentShakeObjectNumber);
+  private updateCatchedIngredientCounter(ingredientObjectNumber) {
+    console.log("updateCatchedIngredientCounter called. number: " + ingredientObjectNumber);
 
-    this.ingredientOnListY = this.screenCenterY * 0.5;
+    this.drawIngredientOnList(ingredientObjectNumber, 1);
+    this.increaseCounterForNumber(ingredientObjectNumber);
+    this.drawIngredientCounter(ingredientObjectNumber);
 
-    if (currentShakeObjectNumber == 0) {
-      const text = String(this.catchedShakeObjectNumber1);
-      if (this.catchedIngredientCounterText1 != null){
+      /*
+    if (ingredientObjectNumber == 0) {
+      const text = String(this.catchedShakeObjectCounter1);
+      if (this.catchedIngredientCounterText1 != null) {
         this.catchedIngredientCounterText1.destroy();
       }
       this.catchedIngredientCounterText1 = this.add.bitmapText(
-        this.ingredientOnListX-100,
-        this.ingredientOnListY-50,
+        this.ingredientOnListX - 100,
+        this.ingredientOnListY - 50,
         'pressStartBlack',
         text,
         25)
         .setOrigin(0.5, 0.5)
         .setCenterAlign();
-      this.catchedShakeObjectNumber1++;
+      this.catchedShakeObjectCounter1++;
 
-    } else if (currentShakeObjectNumber == 1){
-      const text = String(this.catchedShakeObjectNumber2);
-      if (this.catchedIngredientCounterText2 != null){
+    } else if (ingredientObjectNumber == 1) {
+      const text = String(this.catchedShakeObjectCounter2);
+      if (this.catchedIngredientCounterText2 != null) {
         this.catchedIngredientCounterText2.destroy();
       }
       this.catchedIngredientCounterText2 = this.add.bitmapText(
-        this.ingredientOnListX-100,
-        this.ingredientOnListY+200,
+        this.ingredientOnListX - 100,
+        this.ingredientOnListY + 200,
         'pressStartBlack',
         text,
         25)
         .setOrigin(0.5, 0.5)
         .setCenterAlign();
-      this.catchedShakeObjectNumber2++;
+      this.catchedShakeObjectCounter2++;
 
-    } else if (currentShakeObjectNumber == 2){
-      const text = String(this.catchedShakeObjectNumber3);
-      if (this.catchedIngredientCounterText3 != null){
+    } else if (ingredientObjectNumber == 2) {
+      const text = String(this.catchedShakeObjectCounter3);
+      if (this.catchedIngredientCounterText3 != null) {
         this.catchedIngredientCounterText3.destroy();
       }
       this.catchedIngredientCounterText3 = this.add.bitmapText(
-        this.ingredientOnListX-100,
-        this.ingredientOnListY+450,
+        this.ingredientOnListX - 100,
+        this.ingredientOnListY + 450,
         'pressStartBlack',
         text,
         25)
         .setOrigin(0.5, 0.5)
         .setCenterAlign();
-      this.catchedShakeObjectNumber3++;
+      this.catchedShakeObjectCounter3++;
+    }
+    */
+  }
+
+  private drawIngredientCounter(ingredientObjectNumber: any) {
+    let x = this.ingredientOnListX - 100;
+    let y = this.getYPosOnListForNumber(ingredientObjectNumber) - 50;
+    let currentCounter = this.getCounterForNumber(ingredientObjectNumber);
+    let counterText = this.add.bitmapText(
+      x,
+      y,
+      'pressStartBlack',
+      currentCounter.toString(),
+      25)
+      .setOrigin(0.5, 0.5)
+      .setCenterAlign();
+    this.setCounterTextForNumber(counterText, ingredientObjectNumber);
+  }
+
+  setCounterTextForNumber(counterText: any, ingredientObjectNumber: any) {
+    switch (ingredientObjectNumber) {
+      case 0:
+        this.catchedIngredientCounterText1?.destroy();
+        this.catchedIngredientCounterText1 = counterText;
+        // this.catchedIngredientCounterText1.text = counterText;
+        break;
+      case 1:
+        this.catchedIngredientCounterText2?.destroy();
+        this.catchedIngredientCounterText2 = counterText;
+        // this.catchedIngredientCounterText2.text = counterText;
+        break;
+      case 2:
+        this.catchedIngredientCounterText3?.destroy();
+        this.catchedIngredientCounterText3 = counterText;
+        // this.catchedIngredientCounterText3.text = counterText;
+        break;
     }
   }
 
+  getCounterForNumber(ingredientObjectNumber: number) {
+      switch (ingredientObjectNumber) {
+        case 0:
+          return this.catchedShakeObjectCounter1;
+        case 1:
+          return this.catchedShakeObjectCounter2;
+        case 2:
+          return this.catchedShakeObjectCounter3;
+      }
+    }
+
+    increaseCounterForNumber(ingredientObjectNumber: number) {
+      switch (ingredientObjectNumber) {
+        case 0:
+          return this.catchedShakeObjectCounter1++;
+        case 1:
+          return this.catchedShakeObjectCounter2++;
+        case 2:
+          return this.catchedShakeObjectCounter3++;
+      }
+    }
 
 
   private showGameOver(): void {
@@ -787,20 +892,28 @@ export default class ShakerScene extends Phaser.Scene {
   }
 
   update() {
-    console.log('running');
+    // console.log('running');
     // if (this.falling) {
-      if (this.playing != undefined && this.playing) {
-        this.keepFalling();
-      }
+    if (this.playing != undefined && this.playing) {
+      this.keepFalling();
+    }
     // }
     // if (this.objectReachedShaker) {
-      // console.log('objectReachedShaker. in update()');
-      // do sth here? or just send to server as soon as set true?
-      // this.objectReachedShaker = false;
+    // console.log('objectReachedShaker. in update()');
+    // do sth here? or just send to server as soon as set true?
+    // this.objectReachedShaker = false;
     // }
 
   }
 
+}
+
+enum IngredientType {
+  APPLE,
+  BANANA,
+  BERRY,
+  // HONEY,
+  // BEE
 }
 
 
