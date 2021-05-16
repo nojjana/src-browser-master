@@ -183,9 +183,9 @@ export default class ShakerScene extends Phaser.Scene {
   private catchedIngredientCounterText2: Phaser.GameObjects.BitmapText;
   private catchedIngredientCounterText3: Phaser.GameObjects.BitmapText;
 
-  private catchedShakeObjectCounter1 = 1;
-  private catchedShakeObjectCounter2 = 1;
-  private catchedShakeObjectCounter3 = 1;
+  private catchedShakeObjectCounter1 = 0;
+  private catchedShakeObjectCounter2 = 0;
+  private catchedShakeObjectCounter3 = 0;
 
   //TODO: progress bar
   private progressbar: Phaser.GameObjects.Image;
@@ -198,6 +198,7 @@ export default class ShakerScene extends Phaser.Scene {
   private allIngredientsOnList: Phaser.GameObjects.Image[] = new Array();
 
   private playing: boolean = false;
+  private allIngredientNumbersOnList: number[];
 
   constructor() {
     super({ key: 'shakerScene' });
@@ -246,6 +247,8 @@ export default class ShakerScene extends Phaser.Scene {
   create(data) {
     this.socketService = data.socketService;
     const shakerData = data.shakerData;
+    this.allIngredientNumbersOnList = shakerData[6];
+
     this.screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
     this.screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
     this.screenEndX = this.cameras.main.worldView.x + this.cameras.main.width;
@@ -333,7 +336,7 @@ export default class ShakerScene extends Phaser.Scene {
     );
     // this.ingredientList.setDepth(10);
 
-    // this.loadIngredientList(this.allIngredientsOnList);
+    this.loadIngredientsOnList(this.allIngredientNumbersOnList);
 
     // TODO fortschrittsbalken
     /* this.progressbar = this.add.image(
@@ -399,9 +402,10 @@ export default class ShakerScene extends Phaser.Scene {
       this.score = score;
     });
 
-    this.socketService.on('allIngredientNumbersOnList', (numbers: number[]) => {
-      this.loadIngredientList(numbers);
-    });
+    // this.socketService.on('allIngredientNumbersOnList', (numbers: number[]) => {
+    //   this.allIngredientNumbersOnList = numbers;
+    //   this.loadIngredientsOnList(numbers);
+    // });
 
     this.socketService.on('checkIngredientOnList', (number) => {
       this.checkIngredientOnList(number);
@@ -627,10 +631,13 @@ export default class ShakerScene extends Phaser.Scene {
     }
   }
 
-  private loadIngredientList(ingredientNumbers: number[]) {
+  private loadIngredientsOnList(ingredientNumbers: number[]) {
     console.log("init list with ingredients, numbers:");
     ingredientNumbers.forEach(i => {
       console.log(i);
+    });
+    this.allIngredientsOnList?.forEach(i => {
+      i.destroy();
     });
     this.drawIngredientsOnList(ingredientNumbers, 0.5);
 
