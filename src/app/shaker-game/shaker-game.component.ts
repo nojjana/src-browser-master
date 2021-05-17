@@ -484,16 +484,6 @@ export default class ShakerScene extends Phaser.Scene {
     this.bar.scaleX = percentage / 100;
   }
 
-  increaseValueOfBar(bar: any) {
-    //scale the bar
-    bar.scaleX += 0.1;
-  }
-
-  decreaseValueOfBar(bar: any) {
-    //scale the bar
-    bar.scaleX -= 0.1;
-  }
-
   initProgressBar(x: number, y: number, color: number): any {
     // draw box as background of bar
     let box = this.add.graphics();
@@ -510,7 +500,7 @@ export default class ShakerScene extends Phaser.Scene {
     bar.fillStyle(color, 1);
 
     //fill the bar with a rectangle
-    bar.fillRect(5, 5, 390, 40);
+    bar.fillRect(10, 10, 360, 30);
 
     //position the bar
     bar.x = x;
@@ -1052,6 +1042,7 @@ export default class ShakerScene extends Phaser.Scene {
     if (this.playing != undefined && this.playing) {
       this.keepFalling();
     }
+
     // }
     // if (this.objectReachedShaker) {
     // console.log('objectReachedShaker. in update()');
