@@ -46,6 +46,7 @@ export class ShakerGameComponent implements OnInit, OnDestroy {
 
         height: 1440,
         width: 2560,
+
       },
       //backgroundColor: 0x0cb010,
       transparent: true,
@@ -203,6 +204,8 @@ export default class ShakerScene extends Phaser.Scene {
   // lostPointsText: Phaser.GameObjects.BitmapText;
   // collectedPointsText: Phaser.GameObjects.BitmapText;
   private adjustedPointsText: Phaser.GameObjects.BitmapText;
+  goodBling: Phaser.Sound.BaseSound;
+  badBling: Phaser.Sound.BaseSound;
 
   constructor() {
     super({ key: 'shakerScene' });
@@ -246,6 +249,11 @@ export default class ShakerScene extends Phaser.Scene {
     this.load.bitmapFont('pressStart', '../../assets/font/PressStartWhite.png', '../../assets/font/PressStartWhite.fnt');
 
     this.load.audio('ShakingLeaves', '../../assets/shaker/rustling-bushes.mp3');
+    this.load.audio('Good', '../../assets/shaker/mixkit-bonus.wav');
+    this.load.audio('Bad', '../../assets/shaker/mixkit-loosing.wav');
+    this.load.audio('Bad2', '../../assets/shaker/mixkit-mechanical-bling.wav');
+    this.load.audio('Bad3', '../../assets/shaker/mixkit-small-hit.wav');
+
   }
 
   create(data) {
@@ -278,8 +286,12 @@ export default class ShakerScene extends Phaser.Scene {
     .setOrigin(0.5)
     .setDepth(100);
 
-    //TODO: add sound (https://rexrainbow.github.io/phaser3-rex-notes/docs/site/audio/)
-    //this.shakeLeavesSound = this.add.audio('ShakingLeaves');
+    // TODO: add sound (https://rexrainbow.github.io/phaser3-rex-notes/docs/site/audio/)
+    // this.shakeLeavesSound = this.add.audio('ShakingLeaves');
+    // this.shakeLeavesSound = this.sound.add.audio('ShakingLeaves');
+    this.goodBling = this.sound.add('Good');
+    this.badBling = this.sound.add('Bad3');
+
 
     // TODO create own background
     this.createBackground(shakerData[1], shakerData[0]);
@@ -420,14 +432,15 @@ export default class ShakerScene extends Phaser.Scene {
     });
 
     this.socketService.on('adjustScoreByCatchedIngredient', (scoreInfo) => {
-      console.log(scoreInfo[0] +" (scoreinfo) --- number of ingr: "+ scoreInfo[1]);
-
       if (scoreInfo[0] < 0) {
         this.showLostPointsByIngredient(scoreInfo[0], scoreInfo[1]);
+        this.playBadSound();
 
       } else if (scoreInfo[0] > 0) {
         this.showCollectedPointsByIngredient(scoreInfo[0], scoreInfo[1]);
+        this.playGoodSound();
       }
+
     });
 
     this.socketService.on('changeShakeObject', (newNumber) => {
@@ -450,6 +463,14 @@ export default class ShakerScene extends Phaser.Scene {
     });
 
     this.socketService.emit('shakerBuild');
+  }
+
+  playBadSound() {
+    this.badBling.play();
+  }
+
+  playGoodSound() {
+    this.goodBling.play();
   }
 
   private showLostPointsByIngredient(scoreDec: number, ingredientNr: number) {
