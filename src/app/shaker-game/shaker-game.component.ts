@@ -206,6 +206,10 @@ export default class ShakerScene extends Phaser.Scene {
   private adjustedPointsText: Phaser.GameObjects.BitmapText;
   goodBling: Phaser.Sound.BaseSound;
   badBling: Phaser.Sound.BaseSound;
+  shakeCounter = 0;
+  shakePointsNeededForFalling = 5;
+  bar: any;
+  box: Phaser.GameObjects.Graphics;
 
   constructor() {
     super({ key: 'shakerScene' });
@@ -260,6 +264,7 @@ export default class ShakerScene extends Phaser.Scene {
     this.socketService = data.socketService;
     const shakerData = data.shakerData;
     this.allIngredientNumbersOnList = shakerData[6];
+    this.shakePointsNeededForFalling = shakerData[7];
 
     this.screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
     this.screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
@@ -279,12 +284,12 @@ export default class ShakerScene extends Phaser.Scene {
     this.ingredientListY = this.screenCenterY;
     this.ingredientOnListX = this.screenCenterX * 0.2;
     this.ingredientOnListY = this.screenCenterY * 0.5;
-    this.progressbarX = this.screenCenterX * 1.6;
-    this.progressbarY = this.screenCenterY * 0.2;
+    this.progressbarX = this.screenCenterX * 1.4;
+    this.progressbarY = this.screenEndY * 0.8;
 
     this.adjustedPointsText = this.add.bitmapText(this.screenCenterX * 1.6, this.screenCenterY * 0.2, 'pressStartBlack', '', 28)
-    .setOrigin(0.5)
-    .setDepth(100);
+      .setOrigin(0.5)
+      .setDepth(100);
 
     // TODO: add sound (https://rexrainbow.github.io/phaser3-rex-notes/docs/site/audio/)
     // this.shakeLeavesSound = this.add.audio('ShakingLeaves');
@@ -359,11 +364,15 @@ export default class ShakerScene extends Phaser.Scene {
     this.loadIngredientsOnList(this.allIngredientNumbersOnList);
 
     // TODO fortschrittsbalken
-    /* this.progressbar = this.add.image(
+    this.progressbar = this.add.image(
       this.progressbarX,
       this.progressbarY,
       'Progressbar'
-    ); */
+    );
+    this.progressbar.setVisible(false);
+
+    this.initProgressBar(this.progressbarX, this.progressbarY, 0x2ecc71);
+    this.setValueOfBar(0);
 
     this.hammer = this.add.image(
       this.shakeObjectX,
@@ -422,6 +431,11 @@ export default class ShakerScene extends Phaser.Scene {
       this.score = score;
     });
 
+    this.socketService.on('updateShakeCounter', (counter) => {
+      this.shakeCounter = counter;
+      this.setValueOfBar(100*(counter/this.shakePointsNeededForFalling));
+    });
+
     // this.socketService.on('allIngredientNumbersOnList', (numbers: number[]) => {
     //   this.allIngredientNumbersOnList = numbers;
     //   this.loadIngredientsOnList(numbers);
@@ -465,6 +479,49 @@ export default class ShakerScene extends Phaser.Scene {
     this.socketService.emit('shakerBuild');
   }
 
+  setValueOfBar(percentage: number) {
+    //scale the bar
+    this.bar.scaleX = percentage / 100;
+  }
+
+  increaseValueOfBar(bar: any) {
+    //scale the bar
+    bar.scaleX += 0.1;
+  }
+
+  decreaseValueOfBar(bar: any) {
+    //scale the bar
+    bar.scaleX -= 0.1;
+  }
+
+  initProgressBar(x: number, y: number, color: number): any {
+    // draw box as background of bar
+    let box = this.add.graphics();
+    box.fillStyle(0x222222, 0.4);
+    box.fillRect(0, 0, 400, 50);
+    box.x = x;
+    box.y = y;
+    this.box = box;
+
+    //draw the bar
+    let bar = this.add.graphics();
+
+    //color the bar
+    bar.fillStyle(color, 1);
+
+    //fill the bar with a rectangle
+    bar.fillRect(5, 5, 390, 40);
+
+    //position the bar
+    bar.x = x;
+    bar.y = y;
+
+    this.bar = bar;
+
+    //return the bar
+    // return bar;
+  }
+
   playBadSound() {
     this.badBling.play();
   }
@@ -474,7 +531,7 @@ export default class ShakerScene extends Phaser.Scene {
   }
 
   private showLostPointsByIngredient(scoreDec: number, ingredientNr: number) {
-    this.adjustedPointsText.setText('Oh nein!\n\n'+scoreDec+' Punkte');
+    this.adjustedPointsText.setText('Oh nein!\n\n' + scoreDec + ' Punkte');
     this.adjustedPointsText.setVisible(true);
     return this.adjustedPointsText;
 
@@ -483,7 +540,7 @@ export default class ShakerScene extends Phaser.Scene {
   }
 
   private showCollectedPointsByIngredient(scoreInc: number, ingredientNr: number) {
-    this.adjustedPointsText.setText('Aufgefangen!\n\n+'+scoreInc+' Punkte');
+    this.adjustedPointsText.setText('Aufgefangen!\n\n+' + scoreInc + ' Punkte');
     this.adjustedPointsText.setVisible(true);
     return this.adjustedPointsText;
 
@@ -820,53 +877,53 @@ export default class ShakerScene extends Phaser.Scene {
     }
 
 
-      /*
-    if (ingredientObjectNumber == 0) {
-      const text = String(this.catchedShakeObjectCounter1);
-      if (this.catchedIngredientCounterText1 != null) {
-        this.catchedIngredientCounterText1.destroy();
-      }
-      this.catchedIngredientCounterText1 = this.add.bitmapText(
-        this.ingredientOnListX - 100,
-        this.ingredientOnListY - 50,
-        'pressStartBlack',
-        text,
-        25)
-        .setOrigin(0.5, 0.5)
-        .setCenterAlign();
-      this.catchedShakeObjectCounter1++;
-
-    } else if (ingredientObjectNumber == 1) {
-      const text = String(this.catchedShakeObjectCounter2);
-      if (this.catchedIngredientCounterText2 != null) {
-        this.catchedIngredientCounterText2.destroy();
-      }
-      this.catchedIngredientCounterText2 = this.add.bitmapText(
-        this.ingredientOnListX - 100,
-        this.ingredientOnListY + 200,
-        'pressStartBlack',
-        text,
-        25)
-        .setOrigin(0.5, 0.5)
-        .setCenterAlign();
-      this.catchedShakeObjectCounter2++;
-
-    } else if (ingredientObjectNumber == 2) {
-      const text = String(this.catchedShakeObjectCounter3);
-      if (this.catchedIngredientCounterText3 != null) {
-        this.catchedIngredientCounterText3.destroy();
-      }
-      this.catchedIngredientCounterText3 = this.add.bitmapText(
-        this.ingredientOnListX - 100,
-        this.ingredientOnListY + 450,
-        'pressStartBlack',
-        text,
-        25)
-        .setOrigin(0.5, 0.5)
-        .setCenterAlign();
-      this.catchedShakeObjectCounter3++;
+    /*
+  if (ingredientObjectNumber == 0) {
+    const text = String(this.catchedShakeObjectCounter1);
+    if (this.catchedIngredientCounterText1 != null) {
+      this.catchedIngredientCounterText1.destroy();
     }
-    */
+    this.catchedIngredientCounterText1 = this.add.bitmapText(
+      this.ingredientOnListX - 100,
+      this.ingredientOnListY - 50,
+      'pressStartBlack',
+      text,
+      25)
+      .setOrigin(0.5, 0.5)
+      .setCenterAlign();
+    this.catchedShakeObjectCounter1++;
+
+  } else if (ingredientObjectNumber == 1) {
+    const text = String(this.catchedShakeObjectCounter2);
+    if (this.catchedIngredientCounterText2 != null) {
+      this.catchedIngredientCounterText2.destroy();
+    }
+    this.catchedIngredientCounterText2 = this.add.bitmapText(
+      this.ingredientOnListX - 100,
+      this.ingredientOnListY + 200,
+      'pressStartBlack',
+      text,
+      25)
+      .setOrigin(0.5, 0.5)
+      .setCenterAlign();
+    this.catchedShakeObjectCounter2++;
+
+  } else if (ingredientObjectNumber == 2) {
+    const text = String(this.catchedShakeObjectCounter3);
+    if (this.catchedIngredientCounterText3 != null) {
+      this.catchedIngredientCounterText3.destroy();
+    }
+    this.catchedIngredientCounterText3 = this.add.bitmapText(
+      this.ingredientOnListX - 100,
+      this.ingredientOnListY + 450,
+      'pressStartBlack',
+      text,
+      25)
+      .setOrigin(0.5, 0.5)
+      .setCenterAlign();
+    this.catchedShakeObjectCounter3++;
+  }
+  */
   }
 
 
@@ -883,7 +940,7 @@ export default class ShakerScene extends Phaser.Scene {
       .setOrigin(0.5, 0.5)
       .setCenterAlign();
 
-      this.setCounterTextForNumber(counterText, ingredientObjectNumber);
+    this.setCounterTextForNumber(counterText, ingredientObjectNumber);
   }
 
   setCounterTextForNumber(counterBitmapText: any, ingredientObjectNumber: any) {
@@ -927,26 +984,26 @@ export default class ShakerScene extends Phaser.Scene {
   }
 
   getCounterForNumber(ingredientObjectNumber: number) {
-      switch (ingredientObjectNumber) {
-        case 0:
-          return this.catchedShakeObjectCounter1;
-        case 1:
-          return this.catchedShakeObjectCounter2;
-        case 2:
-          return this.catchedShakeObjectCounter3;
-      }
+    switch (ingredientObjectNumber) {
+      case 0:
+        return this.catchedShakeObjectCounter1;
+      case 1:
+        return this.catchedShakeObjectCounter2;
+      case 2:
+        return this.catchedShakeObjectCounter3;
     }
+  }
 
-    increaseCounterForNumber(ingredientObjectNumber: number) {
-      switch (ingredientObjectNumber) {
-        case 0:
-          return this.catchedShakeObjectCounter1++;
-        case 1:
-          return this.catchedShakeObjectCounter2++;
-        case 2:
-          return this.catchedShakeObjectCounter3++;
-      }
+  increaseCounterForNumber(ingredientObjectNumber: number) {
+    switch (ingredientObjectNumber) {
+      case 0:
+        return this.catchedShakeObjectCounter1++;
+      case 1:
+        return this.catchedShakeObjectCounter2++;
+      case 2:
+        return this.catchedShakeObjectCounter3++;
     }
+  }
 
 
   private showGameOver(): void {
@@ -973,6 +1030,10 @@ export default class ShakerScene extends Phaser.Scene {
     this.allIngredientsOnList.forEach(i => i.destroy());
 
     this.adjustedPointsText?.destroy();
+
+    this.bar?.destroy();
+    this.box?.destroy();
+
 
     const text = ['Der Saft ist fertig!\n\n\n\n\n\nGesammelte Punkte: ' + this.score + '\n\nDas macht ' + this.getNumberOfGlasses(this.score) + ' Becher. Toll!'];
     this.add.bitmapText(this.screenCenterX, this.screenCenterY, 'pressStartBlack', text, 45).setOrigin(0.5, 0.5).setCenterAlign();
