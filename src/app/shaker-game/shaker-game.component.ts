@@ -210,6 +210,7 @@ export default class ShakerScene extends Phaser.Scene {
   shakePointsNeededForFalling = 5;
   bar: any;
   box: Phaser.GameObjects.Graphics;
+  progressBarColor = 0x66CC33;
 
   constructor() {
     super({ key: 'shakerScene' });
@@ -284,8 +285,8 @@ export default class ShakerScene extends Phaser.Scene {
     this.ingredientListY = this.screenCenterY;
     this.ingredientOnListX = this.screenCenterX * 0.2;
     this.ingredientOnListY = this.screenCenterY * 0.5;
-    this.progressbarX = this.screenCenterX * 1.4;
-    this.progressbarY = this.screenEndY * 0.8;
+    this.progressbarX = this.screenEndX * 0.7;
+    this.progressbarY = this.screenEndY * 0.9;
 
     this.adjustedPointsText = this.add.bitmapText(this.screenCenterX * 1.6, this.screenCenterY * 0.2, 'pressStartBlack', '', 28)
       .setOrigin(0.5)
@@ -371,7 +372,7 @@ export default class ShakerScene extends Phaser.Scene {
     );
     this.progressbar.setVisible(false);
 
-    this.initProgressBar(this.progressbarX, this.progressbarY, 0x2ecc71);
+    this.initProgressBar(this.progressbarX, this.progressbarY, this.progressBarColor);
     this.setValueOfBar(0);
 
     this.hammer = this.add.image(
@@ -487,7 +488,7 @@ export default class ShakerScene extends Phaser.Scene {
   initProgressBar(x: number, y: number, color: number): any {
     // draw box as background of bar
     let box = this.add.graphics();
-    box.fillStyle(0x222222, 0.4);
+    box.fillStyle(0x808080, 0.5);
     box.fillRect(0, 0, 400, 50);
     box.x = x;
     box.y = y;
