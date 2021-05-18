@@ -1,7 +1,7 @@
 <div *ngIf="!socketService.isConnected()" style="padding-top: 100px">
   <div id="connecting-box">
     <div style="margin-top: 50px">
-    <span>Connecting to service</span>
+    <span>Verbindet</span>
     <span *ngIf="dots == 3">...</span>
     <span *ngIf="dots == 2">..&nbsp;</span>
     <span *ngIf="dots == 1">.&nbsp;&nbsp;</span>
@@ -12,10 +12,12 @@
 <div *ngIf="socketService.isConnected()" style="width: 100%;">
   <div style="text-align: center; width: 100%; padding-top: 100px">
     <div class="myButton" (click)="createLobby()">
-      <p style="margin-bottom: 0px">New Lobby</p>
+      <!-- <p style="margin-bottom: 0px">New Lobby</p> -->
+      <p style="font-size: 60px;">Spielen</p>
+
     </div>
   </div>
-  <div style="width: 200px; text-align: center; margin: 100px auto auto;">
+  <!-- <div style="width: 200px; text-align: center; margin: 100px auto auto;">
     <input class="game-code-input" placeholder="Game Code" [(ngModel)]="joinLobbyCode" autofocus>
   </div>
 
@@ -24,4 +26,4 @@
       <p style="margin-bottom: 0px">Join</p>
     </div>
   </div>
-</div>
+</div> -->
