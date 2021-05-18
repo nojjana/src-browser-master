@@ -211,6 +211,7 @@ export default class ShakerScene extends Phaser.Scene {
   bar: any;
   box: Phaser.GameObjects.Graphics;
   progressBarColor = 0x66CC33;
+  adjustedPointsTextVisibleCounter: number;
 
   constructor() {
     super({ key: 'shakerScene' });
@@ -285,19 +286,21 @@ export default class ShakerScene extends Phaser.Scene {
     this.ingredientListY = this.screenCenterY;
     this.ingredientOnListX = this.screenCenterX * 0.2;
     this.ingredientOnListY = this.screenCenterY * 0.5;
-    this.progressbarX = this.screenEndX * 0.7;
-    this.progressbarY = this.screenEndY * 0.9;
+    // this.progressbarX = this.screenEndX * 0.7;
+    // this.progressbarY = this.screenEndY * 0.9;
+    this.progressbarX = this.screenEndX * 0.68;
+    this.progressbarY = this.initShakeObjectY * 0.3;
 
-    this.adjustedPointsText = this.add.bitmapText(this.screenCenterX * 1.6, this.screenCenterY * 0.2, 'pressStartBlack', '', 28)
+    this.scoreText = this.add.bitmapText(this.screenEndX * 0.8, this.screenEndY * 0.9, 'pressStartBlack', 'Punkte: 0', 28)
+    .setOrigin(0.5)
+    .setDepth(100);
+
+    this.adjustedPointsText = this.add.bitmapText(this.screenEndX * 0.68, this.screenEndY * 0.7, 'pressStartBlack', '', 28)
       .setOrigin(0.5)
       .setDepth(100);
 
-    // TODO: add sound (https://rexrainbow.github.io/phaser3-rex-notes/docs/site/audio/)
-    // this.shakeLeavesSound = this.add.audio('ShakingLeaves');
-    // this.shakeLeavesSound = this.sound.add.audio('ShakingLeaves');
-    this.goodBling = this.sound.add('Good');
-    this.badBling = this.sound.add('Bad3');
-
+    this.adjustedPointsText.setVisible(false);
+    this.adjustedPointsTextVisibleCounter = 0;
 
     // TODO create own background
     this.createBackground(shakerData[1], shakerData[0]);
@@ -399,9 +402,13 @@ export default class ShakerScene extends Phaser.Scene {
     this.mole.setDepth(2);
     this.mole.setVisible(false);
 
-    this.scoreText = this.add.bitmapText(this.screenCenterX * 1.6, this.screenCenterY * 0.5, 'pressStartBlack', 'Punkte: 0', 28)
-      .setOrigin(0.5)
-      .setDepth(100);
+
+
+          // TODO: add sound (https://rexrainbow.github.io/phaser3-rex-notes/docs/site/audio/)
+    // this.shakeLeavesSound = this.add.audio('ShakingLeaves');
+    // this.shakeLeavesSound = this.sound.add.audio('ShakingLeaves');
+
+    this.initSoundEffects();
 
     // TODO shaking makes fruit fall ?
     // FROM SERVER SHAKERPROGRAM:
@@ -433,7 +440,11 @@ export default class ShakerScene extends Phaser.Scene {
     });
 
     this.socketService.on('updateShakeCounter', (counter) => {
-      this.shakeCounter = counter;
+      if (counter > this.shakePointsNeededForFalling) {
+        this.shakeCounter = this.shakePointsNeededForFalling
+      } else {
+        this.shakeCounter = counter;
+      }
       this.setValueOfBar(100*(counter/this.shakePointsNeededForFalling));
     });
 
@@ -480,8 +491,16 @@ export default class ShakerScene extends Phaser.Scene {
     this.socketService.emit('shakerBuild');
   }
 
+  initSoundEffects() {
+    this.goodBling = this.sound.add('Good');
+    this.badBling = this.sound.add('Bad3');
+  }
+
   setValueOfBar(percentage: number) {
     //scale the bar
+    if (percentage > 100) {
+      percentage = 100;
+    }
     this.bar.scaleX = percentage / 100;
   }
 
@@ -501,7 +520,9 @@ export default class ShakerScene extends Phaser.Scene {
     bar.fillStyle(color, 1);
 
     //fill the bar with a rectangle
-    bar.fillRect(10, 10, 360, 30);
+    // bar.fillRect(10, 10, 360, 30);
+    bar.fillRect(0, 0, 400, 50);
+
 
     //position the bar
     bar.x = x;
@@ -524,6 +545,7 @@ export default class ShakerScene extends Phaser.Scene {
   private showLostPointsByIngredient(scoreDec: number, ingredientNr: number) {
     this.adjustedPointsText.setText('Oh nein!\n\n' + scoreDec + ' Punkte');
     this.adjustedPointsText.setVisible(true);
+    this.adjustedPointsTextVisibleCounter = 0;
     return this.adjustedPointsText;
 
     // this.time.addEvent({ delay: 2000, callback: () => this.adjustedPointsText.setVisible(false) });
@@ -559,7 +581,7 @@ export default class ShakerScene extends Phaser.Scene {
   private hammerHit(hammerElement: any): void {
     if (hammerElement === true && !this.hit.visible) {
       this.hit.setPosition(this.hammer.x, this.hammer.y);
-      this.hit.setVisible(true);  // bild vom hammerschlag wird sichtbar
+      // this.hit.setVisible(true);  // bild vom hammerschlag wird sichtbar
       this.time.addEvent({ delay: 300, callback: () => this.hit.setVisible(false) });
     }
   }
@@ -1025,6 +1047,7 @@ export default class ShakerScene extends Phaser.Scene {
     this.bar?.destroy();
     this.box?.destroy();
 
+    this.sound?.stopAll();
 
     const text = ['Der Saft ist fertig!\n\n\n\n\n\nGesammelte Punkte: ' + this.score + '\n\nDas macht ' + this.getNumberOfGlasses(this.score) + ' Becher. Toll!'];
     this.add.bitmapText(this.screenCenterX, this.screenCenterY, 'pressStartBlack', text, 45).setOrigin(0.5, 0.5).setCenterAlign();
@@ -1042,6 +1065,14 @@ export default class ShakerScene extends Phaser.Scene {
     // if (this.falling) {
     if (this.playing != undefined && this.playing) {
       this.keepFalling();
+    }
+
+    if (this.adjustedPointsText.visible) {
+      this.adjustedPointsTextVisibleCounter++;
+      if (this.adjustedPointsTextVisibleCounter > 50) {
+        this.adjustedPointsText.setVisible(false);
+        this.adjustedPointsTextVisibleCounter = 0;
+      }
     }
 
     // }
