@@ -14,7 +14,8 @@ main {
     url("../../assets/shaker/Grass.png");
       background-repeat: repeat;
       */
-  background-color: antiquewhite;
+  /*background-color: antiquewhite;*/
+  background: linear-gradient(180deg, #94ACCF 0%, #E9F0F5 16.98%, #EFF8FF 23.23%, #CBDC8D 65.94%);
   height: 100%;
   width: 100%;
 }

@@ -48,7 +48,6 @@ export class ShakerGameComponent implements OnInit, OnDestroy {
         width: 2560,
 
       },
-      //backgroundColor: 0x0cb010,
       transparent: true,
       parent: 'gameContainer',
       audio: { disableWebAudio: true }
