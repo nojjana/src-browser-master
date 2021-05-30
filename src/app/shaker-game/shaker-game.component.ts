@@ -37,13 +37,6 @@ export class ShakerGameComponent implements OnInit, OnDestroy {
       scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
-        //height: 572,
-        //width: 640,
-
-        //SD Auflösung: 720 x 576
-        //hd ready: 1280 x 720
-        //full hd: 1920 x 1080
-
         height: 1440,
         width: 2560,
 
@@ -409,6 +402,10 @@ export default class ShakerScene extends Phaser.Scene {
 
     this.initSoundEffects();
 
+/*      this.input.on('pointerdown', function () {
+      this.cameras.main.shake(500);
+  }, this); */ 
+
     // TODO shaking makes fruit fall ?
     // FROM SERVER SHAKERPROGRAM:
     // this.lobbyController.sendToDisplays('updateHammer',
@@ -424,7 +421,10 @@ export default class ShakerScene extends Phaser.Scene {
     });
 
     this.socketService.on('updateShaking', (isShaking) => {
-      this.shakeEffect(isShaking);
+      if (isShaking == true){
+      //this.shakeEffect(isShaking);
+        this.cameras.main.shake(50);
+      }
     });
 
     this.socketService.on('updateFall', (triggerFall) => {
@@ -767,7 +767,6 @@ export default class ShakerScene extends Phaser.Scene {
       i.destroy();
     });
     this.drawIngredientsOnList(ingredientNumbers, 0.5);
-
 
     //TODO: solve like this..
     // for (let index = 0; index < ingredientNumbers.length; index++) {
