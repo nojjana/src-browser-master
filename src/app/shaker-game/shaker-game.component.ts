@@ -37,13 +37,6 @@ export class ShakerGameComponent implements OnInit, OnDestroy {
       scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
-        //height: 572,
-        //width: 640,
-
-        //SD Auflösung: 720 x 576
-        //hd ready: 1280 x 720
-        //full hd: 1920 x 1080
-
         height: 1440,
         width: 2560,
 
@@ -233,7 +226,6 @@ export default class ShakerScene extends Phaser.Scene {
     this.load.image('Banana', '../../assets/shaker/Banana.png');
     this.load.image('Berry', '../../assets/shaker/Berry.png');
 
-
     this.load.image('AppleTall', '../../assets/shaker/AppleTall.png');
     this.load.image('BananaTall', '../../assets/shaker/BananaTall.png');
     this.load.image('BerryTall', '../../assets/shaker/BerryTall.png');
@@ -258,7 +250,6 @@ export default class ShakerScene extends Phaser.Scene {
     this.load.audio('Bad', '../../assets/shaker/mixkit-loosing.wav');
     this.load.audio('Bad2', '../../assets/shaker/mixkit-mechanical-bling.wav');
     this.load.audio('Bad3', '../../assets/shaker/mixkit-small-hit.wav');
-
   }
 
   create(data) {
@@ -409,6 +400,10 @@ export default class ShakerScene extends Phaser.Scene {
 
     this.initSoundEffects();
 
+/*      this.input.on('pointerdown', function () {
+      this.cameras.main.shake(500);
+  }, this); */ 
+
     // TODO shaking makes fruit fall ?
     // FROM SERVER SHAKERPROGRAM:
     // this.lobbyController.sendToDisplays('updateHammer',
@@ -424,7 +419,11 @@ export default class ShakerScene extends Phaser.Scene {
     });
 
     this.socketService.on('updateShaking', (isShaking) => {
-      this.shakeEffect(isShaking);
+      if (isShaking == true){
+        this.startShakeLoop();
+      } else {
+        this.stopShakeLoop();
+      }
     });
 
     this.socketService.on('updateFall', (triggerFall) => {
@@ -585,51 +584,33 @@ export default class ShakerScene extends Phaser.Scene {
     }
   }
 
-  private shakeEffect(isShaking: boolean): void {
-    // meldung von server, ob geschlagen/geschüttelt wurde, hier view effekte zeigen
-    if (isShaking === true) {
-      console.log('Shaking');
-
-      //TODO: add sound
-      //this.shakeLeavesSound.play();
-
-      // TODO: make tree shake
-      //this.shakeEffectOnPlant = true;
-      //var shakeEffectOnPlantMakeTrue = setInterval(() => this.shakeEffectOnPlant = true, 500)  //changes every 0,5 sek
-      //var shakeEfectOnPlantMakeFalse = setInterval(() => this.shakeEffectOnPlant = false, 500)
-
-      //TODO: change shakingObject image when shaking
-      /*  if (this.shakeEffectOnPlant === true){
-       this.shakeObject.destroy();
-         this.shakeObject = this.add.image(
-           this.shakeObjectX+50,
-           this.shakeObjectY,
-           this.loadShakeObjectWhenShakingImage(this.currentRandomShakingObjectNumber),
-           //setTimeout(this.loadShakeObjectImage(this.currentRandomShakingObjectNumber), 300)
-         );
-       } else if (this.shakeEffectOnPlant === false){
-           this.shakeObject.destroy();
-           this.shakeObject = this.add.image(
-             this.shakeObjectX-100,
-             this.shakeObjectY,
-             //this.loadShakeObjectWhenShakingImage(this.currentRandomShakingObjectNumber),
-             this.loadShakeObjectImage(this.currentRandomShakingObjectNumber)
-           )
-         }   */
-    } else {
-      //TODO: sound
-      //this.shakeLeavesSound.stop();
-
-      //TODO: change shakingObject image when shaking
-      //setTimeout(() => {clearInterval(shakeEffectOnPlantMakeTrue)})
-      //setTimeout(() => {clearInterval(shakeEfectOnPlantMakeFalse)})
-    }
+  private getRandomInt(max: number): number {
+    return Math.floor(Math.random() * Math.floor(max));
   }
 
-
-  private updateProgressBar(shakeScore: number): void {
-    // TODO fortschrittsbalken
+  private startShakeLoop(): void{
+    var shakeX = 10*this.getRandomInt(5);
+    var shakeY = 10*this.getRandomInt(5);
+    console.log("------------------------------------Shake Object: "+this.shakeObject+" X: "+this.shakeObjectX+" Y: "+this.shakeObjectY)
+    this.shakeObject.destroy();                 //destroy old shake object
+    this.shakeObject = this.add.image(
+      this.shakeObjectX += shakeX,
+      this.shakeObjectY = this.initShakeObjectY,
+      this.loadShakeObjectImage(this.currentRandomShakingObjectNumber)
+    );
+    this.shakeObject.rotation += 0.2;
   }
+
+  private stopShakeLoop(): void{
+    this.shakeObject.destroy();                 
+    this.shakeObject = this.add.image(
+      this.shakeObjectX = this.initShakeObjectX,
+      this.shakeObjectY = this.initShakeObjectY,
+      this.loadShakeObjectImage(this.currentRandomShakingObjectNumber)
+    );
+    this.shakeObject.rotation == 0;
+  }
+
 
   private triggerFallOfIngredient(): void {
     console.log('Ingredient falls!');
@@ -704,7 +685,7 @@ export default class ShakerScene extends Phaser.Scene {
     if (this.shakeObject != null) {
       this.shakeObject.destroy();                 //destroy old shake object
     }
-    this.shakeObjectX = this.initShakeObjectX,
+      this.shakeObjectX = this.initShakeObjectX,
       this.shakeObjectY = this.initShakeObjectY,
 
       //TODO
@@ -767,7 +748,6 @@ export default class ShakerScene extends Phaser.Scene {
       i.destroy();
     });
     this.drawIngredientsOnList(ingredientNumbers, 0.5);
-
 
     //TODO: solve like this..
     // for (let index = 0; index < ingredientNumbers.length; index++) {
