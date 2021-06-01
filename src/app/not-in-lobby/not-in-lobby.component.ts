@@ -10,6 +10,7 @@ export class NotInLobbyComponent implements OnDestroy{
   public joinLobbyCode: string = "";
   public dots: number = 0;
   private dotInterval;
+  public lobbyCreated = false;
 
   constructor(public socketService: SocketService) {
     this.dotInterval = setInterval(() => {
@@ -18,14 +19,24 @@ export class NotInLobbyComponent implements OnDestroy{
         this.dots = 0;
       }
     }, 500);
+
+    // TODO testing: skip "Spielen" button, create lobby automatically as soon as connected
+    setInterval(() => {
+      if (this.socketService.isConnected() && !this.lobbyCreated) {
+        this.createLobby();
+        this.lobbyCreated = true;
+      }
+    }, 3000);
+
   }
 
   /* Sends a request to create a lobby to the server */
   public createLobby(): void {
     this.socketService.emit('createLobby');
-    this.toggleFullscreen();
+    // TODO testing: no full screen
+    // this.toggleFullscreen();
   }
-  
+
   private toggleFullscreen(): void {
     const docElmWithBrowsersFullScreenFunctions = document.documentElement as HTMLElement & {
       mozRequestFullScreen(): Promise<void>;
