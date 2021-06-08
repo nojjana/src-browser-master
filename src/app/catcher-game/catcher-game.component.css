@@ -1,0 +1,42 @@
+#tutorial-box{
+  width: 350px;
+  text-align: center;
+  margin: auto;
+  border: 1px solid black;
+  border-radius: 10px;
+  height: 150px;
+  color: white;
+  padding-top: 100px;
+}
+
+main {
+  background: linear-gradient(180deg, #94ACCF 0%, #E9F0F5 16.98%, #EFF8FF 23.23%, #CBDC8D 65.94%);
+  height: 100%;
+  width: 100%;
+}
+
+.shake-object.active{
+  animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+@keyframes shake {
+  10%, 90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+  
+  20%, 80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%, 50%, 70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%, 60% {
+    transform: translate3d(4px, 0, 0);
+  }
+}
+
+
