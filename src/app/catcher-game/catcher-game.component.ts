@@ -293,7 +293,6 @@ export default class CatcherScene extends Phaser.Scene {
 
     if (this.playing != undefined && this.playing) {
       // this.keepFalling();
-      //console.log("this.playing was called");
       console.log("boolean for while: "+this.ingredientTouchedCollider);
       if (this.ingredientTouchedCollider == true){
         console.log("true / update playing called boolean: "+this.ingredientTouchedCollider);
@@ -310,14 +309,6 @@ export default class CatcherScene extends Phaser.Scene {
         this.adjustedPointsTextVisibleCounter = 0;
       }
     }
-
-    //TODO: let new ingredient fall wenn collided
-    /* if (this.ingredientTouchedCollider == true){
-      console.log("true / update playing called")  
-      //TODO: generate random number
-      this.letIngredientsFall(3);
-      this.ingredientTouchedCollider = false;
-    } */
 }
 
 
