@@ -138,7 +138,7 @@ export default class CatcherScene extends Phaser.Scene {
   private adjustedPointsTextVisibleCounter: number;
   private ingredientFallingX: number;
   private ingredientFallingY: number;
-  private ingredientTouchedCollider: boolean = false;
+  public ingredientTouchedCollider: boolean = false;
 
   // säftlimacher sounds
   private goodBling: Phaser.Sound.BaseSound;
@@ -290,9 +290,17 @@ export default class CatcherScene extends Phaser.Scene {
 
 
   update() {
+
     if (this.playing != undefined && this.playing) {
       // this.keepFalling();
-      
+      //console.log("this.playing was called");
+      console.log("boolean for while: "+this.ingredientTouchedCollider);
+      if (this.ingredientTouchedCollider == true){
+        console.log("true / update playing called boolean: "+this.ingredientTouchedCollider);
+        //TODO: generate random number
+        this.letIngredientsFall(3);
+        this.ingredientTouchedCollider = false;
+      }
     }
 
     if (this.adjustedPointsText.visible) {
@@ -304,11 +312,12 @@ export default class CatcherScene extends Phaser.Scene {
     }
 
     //TODO: let new ingredient fall wenn collided
-    if (this.ingredientTouchedCollider === true){
+    /* if (this.ingredientTouchedCollider == true){
       console.log("true / update playing called")  
       //TODO: generate random number
       this.letIngredientsFall(3);
-    }
+      this.ingredientTouchedCollider = false;
+    } */
 }
 
 
@@ -327,17 +336,20 @@ export default class CatcherScene extends Phaser.Scene {
       this.loadIngredientImage(randomIngredientNumber)
     );
     
-
+    // when the fallingIngredients overlaps the ground collider is set to true
     this.physics.add.overlap(
         this.ingredientFalling,
         this.ground,
-        function(){
-          console.log("collider touched");
+         //TODO: callback function cannot get the value of this.ingredientTouchedCollider
+        function(ingredientTouchedCollider){
+          console.log("collider touched   / ingredient Touched Collider: "+this.ingredientTouchedCollider);
           this.ingredientTouchedCollider = true;
           console.log("status of ingredient Touch: "+this.ingredientTouchedCollider);
-        }
+          //return ingredientTouchedCollider;
+        } 
     )
   }
+
 
   private loadIngredientImage(randomIngredientNumber) {
     if (randomIngredientNumber == 0) {
