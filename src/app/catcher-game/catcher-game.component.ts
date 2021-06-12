@@ -105,12 +105,10 @@ export default class CatcherScene extends Phaser.Scene {
 
   // basic game variables
   private playing: boolean = false;
-  private score: any;
+  private score = 0;
   private background: Phaser.GameObjects.TileSprite;
 
   // säftlimacher world dimensions
-  private tileSize = 128;
-  private halfTileSize = this.tileSize / 2;
   private screenCenterX: number;
   private screenCenterY: number;
   private screenEndX: number;
@@ -131,6 +129,8 @@ export default class CatcherScene extends Phaser.Scene {
   // säftlimacher sounds
   private goodBling: Phaser.Sound.BaseSound;
   private badBling: Phaser.Sound.BaseSound;
+  screenWidth: number;
+  screenHeight: number;
 
 
   constructor() {
@@ -170,6 +170,8 @@ export default class CatcherScene extends Phaser.Scene {
     let initShakerPositionY = levelData[2];
 
     // screen dimensions
+    this.screenWidth = this.cameras.main.width;
+    this.screenHeight = this.cameras.main.height;
     this.screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
     this.screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
     this.screenEndX = this.cameras.main.worldView.x + this.cameras.main.width;
@@ -264,6 +266,10 @@ export default class CatcherScene extends Phaser.Scene {
 
     // game build finished
     this.socketService.emit('gameViewBuild');
+    // test dimensions TODO delete
+    console.log(this.cameras.main.worldView.centerX, this.screenCenterX, this.cameras.main.worldView.centerY, this.screenCenterY);
+    console.log(this.cameras.main.worldView.height, this.screenHeight, this.cameras.main.worldView.width, this.screenWidth);
+
   }
 
 
