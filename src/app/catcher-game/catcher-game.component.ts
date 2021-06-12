@@ -1,4 +1,5 @@
 import { verifyHostBindings } from '@angular/compiler';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { Component, destroyPlatform, OnDestroy, OnInit } from '@angular/core';
 import Phaser from 'phaser';
 //import { clearInterval } from 'timers';
@@ -46,7 +47,14 @@ export class CatcherGameComponent implements OnInit, OnDestroy {
       },
       transparent: true,
       parent: 'gameContainer',
-      audio: { disableWebAudio: true }
+      audio: { disableWebAudio: true },
+      physics: {
+        default: 'arcade',
+        arcade: {
+            debug: true,
+            gravity: { y: 150 }
+        }
+      },
     };
   }
 
@@ -115,7 +123,8 @@ export default class CatcherScene extends Phaser.Scene {
   private screenEndY: number;
 
   // säftlimacher visible game objects
-  private ingredientFalling: Phaser.GameObjects.Image;
+  private ground: Phaser.GameObjects.Image;
+  private ingredientFalling: Phaser.GameObjects.Image;x
   private shakerContainer: Phaser.GameObjects.Image;
   private ingredientList: Phaser.GameObjects.Image;
   private ingredientOnList: Phaser.GameObjects.Image;
@@ -125,6 +134,9 @@ export default class CatcherScene extends Phaser.Scene {
   // säftlimacher game variables
   private allIngredientNumbersOnList: number[];
   private adjustedPointsTextVisibleCounter: number;
+  private ingredientFallingX: number;
+  private ingredientFallingY: number;
+  public ingredientTouchedCollider: boolean = false;
 
   // säftlimacher sounds
   private goodBling: Phaser.Sound.BaseSound;
@@ -139,6 +151,7 @@ export default class CatcherScene extends Phaser.Scene {
 
   preload() {
     // säftlimacher visible objects
+    this.load.image('Ground', '../../assets/catcher/Ground.png')
     this.load.image('ShakerContainer', '../../assets/shaker/ShakerContainer.png');
     this.load.image('IngredientList', '../../assets/shaker/IngredientList.png');
 
@@ -178,12 +191,19 @@ export default class CatcherScene extends Phaser.Scene {
     this.screenEndY = this.cameras.main.worldView.y + this.cameras.main.height;
 
     // add säftlimacher visible game objects to scene
+    // ground
+    this.ground = this.physics.add.staticImage(
+      this.screenCenterX,
+      this.screenEndY-39,
+      'Ground'
+    );
+    
     /// shaker/mixer
     this.shakerContainer = this.add.image(
-      initShakerPositionX,
-      initShakerPositionY,
-      // this.screenCenterX,
-      // this.screenEndY * 0.8,
+      //initShakerPositionX,
+      //initShakerPositionY,
+      this.screenCenterX,
+      this.screenEndY * 0.8,
       'ShakerContainer'
     );
     this.shakerContainer.setDepth(100);
@@ -255,6 +275,8 @@ export default class CatcherScene extends Phaser.Scene {
     /// on playing status change
     this.socketService.on('playing', playing => {
       this.playing = playing;
+      // let ingredients fall 
+      this.letIngredientsFall(2);
     });
 
     /// on show game over
@@ -274,8 +296,16 @@ export default class CatcherScene extends Phaser.Scene {
 
 
   update() {
+
     if (this.playing != undefined && this.playing) {
       // this.keepFalling();
+      console.log("boolean for while: "+this.ingredientTouchedCollider);
+      if (this.ingredientTouchedCollider == true){
+        console.log("true / update playing called boolean: "+this.ingredientTouchedCollider);
+        //TODO: generate random number
+        this.letIngredientsFall(3);
+        this.ingredientTouchedCollider = false;
+      }
     }
 
     if (this.adjustedPointsText.visible) {
@@ -285,18 +315,45 @@ export default class CatcherScene extends Phaser.Scene {
         this.adjustedPointsTextVisibleCounter = 0;
       }
     }
-  }
-
+}
 
 
   /* -------------------- SÄFTLIMACHER GAME METHODS --------------------*/
 
-  private loadIngredientImage(randomShakingObjectNumber) {
-    if (randomShakingObjectNumber == 0) {
+  private letIngredientsFall(randomIngredientNumber): void {
+    console.log("let IngredientFall called");
+
+    //TODO: should be random and changing from object to object
+    this.ingredientFallingX = 100,
+    this.ingredientFallingY = 0,
+
+    this.ingredientFalling = this.physics.add.image(
+      this.ingredientFallingX,
+      this.ingredientFallingY,
+      this.loadIngredientImage(randomIngredientNumber)
+    );
+    
+    // when the fallingIngredients overlaps the ground collider is set to true
+    this.physics.add.overlap(
+        this.ingredientFalling,
+        this.ground,
+         //TODO: callback function cannot get the value of this.ingredientTouchedCollider
+        function(ingredientTouchedCollider){
+          console.log("collider touched   / ingredient Touched Collider: "+this.ingredientTouchedCollider);
+          this.ingredientTouchedCollider = true;
+          console.log("status of ingredient Touch: "+this.ingredientTouchedCollider);
+          //return ingredientTouchedCollider;
+        } 
+    )
+  }
+
+
+  private loadIngredientImage(randomIngredientNumber) {
+    if (randomIngredientNumber == 0) {
       return 'Apple'
-    } else if (randomShakingObjectNumber == 1) {
+    } else if (randomIngredientNumber == 1) {
       return 'Banana'
-    } else if (randomShakingObjectNumber == 2) {
+    } else if (randomIngredientNumber == 2) {
       return 'Berry'
     }
   }
