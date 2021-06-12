@@ -124,7 +124,7 @@ export default class CatcherScene extends Phaser.Scene {
 
   // säftlimacher visible game objects
   private ground: Phaser.GameObjects.Image;
-  private ingredientFalling: Phaser.GameObjects.Image;x
+  private ingredientFalling: Phaser.GameObjects.Image;
   private shakerContainer: Phaser.GameObjects.Image;
   private ingredientList: Phaser.GameObjects.Image;
   private ingredientOnList: Phaser.GameObjects.Image;
@@ -197,7 +197,7 @@ export default class CatcherScene extends Phaser.Scene {
       this.screenEndY-39,
       'Ground'
     );
-    
+
     /// shaker/mixer
     this.shakerContainer = this.add.image(
       //initShakerPositionX,
@@ -275,7 +275,7 @@ export default class CatcherScene extends Phaser.Scene {
     /// on playing status change
     this.socketService.on('playing', playing => {
       this.playing = playing;
-      // let ingredients fall 
+      // let ingredients fall
       this.letIngredientsFall(2);
     });
 
@@ -289,7 +289,9 @@ export default class CatcherScene extends Phaser.Scene {
     // game build finished
     this.socketService.emit('gameViewBuild');
     // test dimensions TODO delete
+    //1280 1280 720 720
     console.log(this.cameras.main.worldView.centerX, this.screenCenterX, this.cameras.main.worldView.centerY, this.screenCenterY);
+    //1440 1440 2560 2560
     console.log(this.cameras.main.worldView.height, this.screenHeight, this.cameras.main.worldView.width, this.screenWidth);
 
   }
@@ -332,7 +334,7 @@ export default class CatcherScene extends Phaser.Scene {
       this.ingredientFallingY,
       this.loadIngredientImage(randomIngredientNumber)
     );
-    
+
     // when the fallingIngredients overlaps the ground collider is set to true
     this.physics.add.overlap(
         this.ingredientFalling,
@@ -343,7 +345,7 @@ export default class CatcherScene extends Phaser.Scene {
           this.ingredientTouchedCollider = true;
           console.log("status of ingredient Touch: "+this.ingredientTouchedCollider);
           //return ingredientTouchedCollider;
-        } 
+        }
     )
   }
 
