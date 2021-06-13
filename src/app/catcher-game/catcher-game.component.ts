@@ -179,19 +179,20 @@ export default class CatcherScene extends Phaser.Scene {
     // get level info from CatcherProgram (server)
     const levelData = data.levelData;
     this.allIngredientNumbersOnList = levelData[0];
+    let initShakerPositionX = levelData[1];
+    let initShakerPositionY = levelData[2];
 
     // screen dimensions
-    // 1440 2560
+    // 2560 1440
     this.screenWidth = this.cameras.main.width;
     this.screenHeight = this.cameras.main.height;
-    this.screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
-    this.screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
-    this.screenEndX = this.cameras.main.worldView.x + this.cameras.main.width;
-    this.screenEndY = this.cameras.main.worldView.y + this.cameras.main.height;
+    this.screenCenterX = this.screenWidth / 2;
+    this.screenCenterY = this.screenHeight / 2;
+    this.screenEndX =this.screenWidth;
+    this.screenEndY = this.screenHeight;
 
     // this.socketService.emit('screenDimension', [this.screenWidth, this.screenHeight]);
-    let initShakerPositionX = this.screenCenterX;
-    let initShakerPositionY = this.screenEndY * 0.8;
+
 
     // add säftlimacher visible game objects to scene
     // ground
@@ -234,8 +235,8 @@ export default class CatcherScene extends Phaser.Scene {
     /// falling ingredient
     this.ingredientFalling = this.add.image(
       this.screenCenterX,
-      0,
-      this.loadIngredientImage(0)
+      -100,
+      this.loadIngredientImage(IngredientType.APPLE)
     );
     this.ingredientFalling.setDepth(88);
     this.ingredientFalling.setVisible(false);
@@ -243,7 +244,7 @@ export default class CatcherScene extends Phaser.Scene {
     /// ingredient list
     this.ingredientList = this.add.image(
       this.screenCenterX * 0.2,
-      this.screenCenterY * 0.5,
+      this.screenCenterY * 0.8,
       'IngredientList'
     );
 
@@ -303,9 +304,10 @@ export default class CatcherScene extends Phaser.Scene {
     if (this.playing != undefined && this.playing) {
       // this.keepFalling();
       console.log("boolean for while: "+this.ingredientTouchedCollider);
-      if (this.ingredientTouchedCollider == true){
+      if (this.ingredientTouchedCollider){
         console.log("true / update playing called boolean: "+this.ingredientTouchedCollider);
         //TODO: generate random number
+        // TODO: has to come from server!?
         this.letIngredientsFall(3);
         this.ingredientTouchedCollider = false;
       }
@@ -327,8 +329,8 @@ export default class CatcherScene extends Phaser.Scene {
     console.log("let IngredientFall called");
 
     //TODO: should be random and changing from object to object
-    this.ingredientFallingX = 100,
-    this.ingredientFallingY = 0,
+    this.ingredientFallingX = this.screenCenterX,
+    this.ingredientFallingY = -100,
 
     this.ingredientFalling = this.physics.add.image(
       this.ingredientFallingX,
