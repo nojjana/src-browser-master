@@ -179,16 +179,19 @@ export default class CatcherScene extends Phaser.Scene {
     // get level info from CatcherProgram (server)
     const levelData = data.levelData;
     this.allIngredientNumbersOnList = levelData[0];
-    let initShakerPositionX = levelData[1];
-    let initShakerPositionY = levelData[2];
 
     // screen dimensions
+    // 1440 2560
     this.screenWidth = this.cameras.main.width;
     this.screenHeight = this.cameras.main.height;
     this.screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
     this.screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
     this.screenEndX = this.cameras.main.worldView.x + this.cameras.main.width;
     this.screenEndY = this.cameras.main.worldView.y + this.cameras.main.height;
+
+    // this.socketService.emit('screenDimension', [this.screenWidth, this.screenHeight]);
+    let initShakerPositionX = this.screenCenterX;
+    let initShakerPositionY = this.screenEndY * 0.8;
 
     // add säftlimacher visible game objects to scene
     // ground
@@ -200,10 +203,8 @@ export default class CatcherScene extends Phaser.Scene {
 
     /// shaker/mixer
     this.shakerContainer = this.add.image(
-      //initShakerPositionX,
-      //initShakerPositionY,
-      this.screenCenterX,
-      this.screenEndY * 0.8,
+      initShakerPositionX,
+      initShakerPositionY,
       'ShakerContainer'
     );
     this.shakerContainer.setDepth(100);
