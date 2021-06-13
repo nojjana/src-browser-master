@@ -125,6 +125,7 @@ export default class CatcherScene extends Phaser.Scene {
   // säftlimacher visible game objects
   private ground: Phaser.GameObjects.Image;
   private ingredientFalling: Phaser.GameObjects.Image;
+  private ingredientTest: Phaser.GameObjects.Image;
   private shakerContainer: Phaser.GameObjects.Image;
   private ingredientList: Phaser.GameObjects.Image;
   private ingredientOnList: Phaser.GameObjects.Image;
@@ -210,6 +211,14 @@ export default class CatcherScene extends Phaser.Scene {
     );
     this.shakerContainer.setDepth(100);
 
+    /// ingredient test
+    this.ingredientTest = this.add.image(
+      this.screenCenterX,
+      -100,
+      'Apple'
+    );
+    this.ingredientTest.setDepth(80);
+
     /// score text
     this.scoreText = this.add.bitmapText(
       this.screenEndX * 0.8,
@@ -256,6 +265,11 @@ export default class CatcherScene extends Phaser.Scene {
     this.socketService.on('updateShakerPosition', (pos) => {
       this.shakerContainer.setPosition(pos[0], pos[1]);
     });
+    /// current ingredient position
+    this.socketService.on('updateIngredientPosition', (pos) => {
+      this.ingredientTest.setPosition(pos[0], pos[1]);
+      // console.log("updateIngredientPosition, y: ", this.ingredientTest.y);
+    });
     /// current score
     this.socketService.on('updateScore', (score) => {
       this.score = score;
@@ -290,11 +304,6 @@ export default class CatcherScene extends Phaser.Scene {
 
     // game build finished
     this.socketService.emit('gameViewBuild');
-    // test dimensions TODO delete
-    //1280 1280 720 720
-    console.log(this.cameras.main.worldView.centerX, this.screenCenterX, this.cameras.main.worldView.centerY, this.screenCenterY);
-    //1440 1440 2560 2560
-    console.log(this.cameras.main.worldView.height, this.screenHeight, this.cameras.main.worldView.width, this.screenWidth);
 
   }
 
@@ -303,7 +312,7 @@ export default class CatcherScene extends Phaser.Scene {
 
     if (this.playing != undefined && this.playing) {
       // this.keepFalling();
-      console.log("boolean for while: "+this.ingredientTouchedCollider);
+      // console.log("boolean for while: "+this.ingredientTouchedCollider);
       if (this.ingredientTouchedCollider){
         console.log("true / update playing called boolean: "+this.ingredientTouchedCollider);
         //TODO: generate random number
