@@ -130,6 +130,9 @@ export default class CatcherScene extends Phaser.Scene {
   private ingredientCenter: Phaser.GameObjects.Image;
   private ingredientRight: Phaser.GameObjects.Image;
 
+  private catcherNet1: Phaser.GameObjects.Image;
+  private catcherNet2: Phaser.GameObjects.Image;
+  private catcherNet3: Phaser.GameObjects.Image;
   private shakerContainer: Phaser.GameObjects.Image;
   private ingredientList: Phaser.GameObjects.Image;
   private ingredientOnList: Phaser.GameObjects.Image;
@@ -157,6 +160,9 @@ export default class CatcherScene extends Phaser.Scene {
   preload() {
     // säftlimacher visible objects
     this.load.image('Ground', '../../assets/catcher/Ground.png')
+    this.load.image('CatcherNet1', '../../assets/catcher/NetBlue.PNG');
+    this.load.image('CatcherNet2', '../../assets/catcher/NetLightGreen.PNG');
+    this.load.image('CatcherNet3', '../../assets/catcher/NetOrange.PNG');
     this.load.image('ShakerContainer', '../../assets/shaker/ShakerContainer.png');
     this.load.image('IngredientList', '../../assets/shaker/IngredientList.png');
 
@@ -184,6 +190,16 @@ export default class CatcherScene extends Phaser.Scene {
     // get level info from CatcherProgram (server)
     const levelData = data.levelData;
     this.allIngredientNumbersOnList = levelData[0];
+    //TODO: link to levelData
+    let initCatcherNetBottomX = levelData[1];
+    let initCatcherNetBottomY = levelData[2];
+    //TODO: link to levelData
+    let initCatcherNetMiddleX = levelData[1];
+    let initCatcherNetMiddleY = levelData[2];
+    //TODO: link to levelData
+    let initCatcherNetTopX = levelData[1];
+    let initCatcherNetTopY = levelData[2];
+
     let initShakerPositionX = levelData[1];
     let initShakerPositionY = levelData[2];
 
@@ -207,13 +223,38 @@ export default class CatcherScene extends Phaser.Scene {
       'Ground'
     );
 
+    // catcher net 1 - Bottom
+    this.catcherNet1 = this.add.image(
+      initCatcherNetBottomX,
+      initCatcherNetBottomY,
+      'CatcherNet1'
+    )
+    this.catcherNet1.setDepth(10);
+
+/*     // catcher net 2 - Middle
+    this.catcherNet2 = this.add.image(
+      initCatcherNetMiddleX,
+      initCatcherNetMiddleY,
+      'CatcherNet2'
+    )
+    this.catcherNet2.setDepth(100);
+    
+    // catcher net 3 - Top
+    this.catcherNet3 = this.add.image(
+      initCatcherNetTopX,
+      initCatcherNetTopY,
+      //TODO: load color of controller
+      'CatcherNet3'
+    )
+    this.catcherNet3.setDepth(100);
+
     /// shaker/mixer
     this.shakerContainer = this.add.image(
       initShakerPositionX,
       initShakerPositionY,
       'ShakerContainer'
     );
-    this.shakerContainer.setDepth(100);
+    this.shakerContainer.setDepth(100); */
 
     /// ingredient test
     this.ingredientTest = this.add.image(
@@ -290,8 +331,9 @@ export default class CatcherScene extends Phaser.Scene {
 
     // listeners on updates from server
     /// current shaker position
-    this.socketService.on('updateShakerPosition', (pos) => {
-      this.shakerContainer.setPosition(pos[0], pos[1]);
+    this.socketService.on('catcherNet1Position', (pos) => {
+    //  this.shakerContainer.setPosition(pos[0], pos[1]);
+      this.catcherNet1.setPosition(pos[0], pos[1]);
     });
     // /// current ingredient position
     // this.socketService.on('updateIngredientPosition', (pos) => {
