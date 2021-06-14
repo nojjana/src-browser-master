@@ -121,39 +121,50 @@ export default class CatcherScene extends Phaser.Scene {
   // säftlimacher world dimensions
   private screenCenterX: number;
   private screenCenterY: number;
-  private screenEndX: number;
-  private screenEndY: number;
+  private screenWidth: number;
+  private screenHeight: number;
+  private ingredientOnListX: number;
 
   // säftlimacher visible game objects
-  private ground: Phaser.GameObjects.Image;
-  private ingredientFalling: Phaser.GameObjects.Image;
-  private ingredientTest: Phaser.GameObjects.Image;
+  /// ingredients falling
   private ingredientLeft: Phaser.GameObjects.Image;
   private ingredientCenter: Phaser.GameObjects.Image;
   private ingredientRight: Phaser.GameObjects.Image;
-
+  /// catchers
   private catcherNet1: Phaser.GameObjects.Image;
   private catcherNet2: Phaser.GameObjects.Image;
   private catcherNet3: Phaser.GameObjects.Image;
   private shakerContainer: Phaser.GameObjects.Image;
+  /// ingredient list and counters
   private ingredientList: Phaser.GameObjects.Image;
   private ingredientOnList: Phaser.GameObjects.Image;
+  private allIngredientsOnList: Phaser.GameObjects.Image[] = new Array();
+  private catchedIngredientCounterText1: Phaser.GameObjects.BitmapText;
+  private catchedIngredientCounterText2: Phaser.GameObjects.BitmapText;
+  private catchedIngredientCounterText3: Phaser.GameObjects.BitmapText;
+  /// score text
   private scoreText: Phaser.GameObjects.BitmapText;
   private adjustedPointsText: Phaser.GameObjects.BitmapText;
 
   // säftlimacher game variables
   private allIngredientNumbersOnList: number[];
+  private catchedShakeObjectCounter1 = 0;
+  private catchedShakeObjectCounter2 = 0;
+  private catchedShakeObjectCounter3 = 0;
   private adjustedPointsTextVisibleCounter: number;
-  private ingredientFallingX: number;
-  private ingredientFallingY: number;
-  public ingredientTouchedCollider: boolean = false;
 
   // säftlimacher sounds
   private goodBling: Phaser.Sound.BaseSound;
   private badBling: Phaser.Sound.BaseSound;
-  screenWidth: number;
-  screenHeight: number;
 
+
+    // not needed anymore? TODO delete
+    private ingredientFallingX: number;
+    private ingredientFallingY: number;
+    public ingredientTouchedCollider: boolean = false;
+    private ground: Phaser.GameObjects.Image;
+    private ingredientFalling: Phaser.GameObjects.Image;
+    private ingredientTest: Phaser.GameObjects.Image;
 
   constructor() {
     super({ key: 'catcherScene' });
@@ -211,17 +222,14 @@ export default class CatcherScene extends Phaser.Scene {
     this.screenHeight = this.cameras.main.height;
     this.screenCenterX = this.screenWidth / 2;
     this.screenCenterY = this.screenHeight / 2;
-    this.screenEndX =this.screenWidth;
-    this.screenEndY = this.screenHeight;
-
+    this.ingredientOnListX = this.screenCenterX * 0.2;
     // this.socketService.emit('screenDimension', [this.screenWidth, this.screenHeight]);
-
 
     // add säftlimacher visible game objects to scene
     // ground
     this.ground = this.physics.add.staticImage(
       this.screenCenterX,
-      this.screenEndY-39,
+      this.screenHeight-39,
       'Ground'
     );
 
@@ -258,13 +266,6 @@ export default class CatcherScene extends Phaser.Scene {
     );
     this.shakerContainer.setDepth(100); */
 
-    /// ingredient test
-    this.ingredientTest = this.add.image(
-      0,
-      -100,
-      'Apple'
-    );
-    this.ingredientTest.setDepth(80);
 
     /// ingredient left
     this.ingredientLeft = this.add.image(
@@ -292,8 +293,8 @@ export default class CatcherScene extends Phaser.Scene {
 
     /// score text
     this.scoreText = this.add.bitmapText(
-      this.screenEndX * 0.8,
-      this.screenEndY * 0.9,
+      this.screenWidth * 0.8,
+      this.screenHeight * 0.9,
       'pressStartBlack',
       'Punkte: 0',
       28)
@@ -302,8 +303,8 @@ export default class CatcherScene extends Phaser.Scene {
 
     /// +/- score points text
     this.adjustedPointsText = this.add.bitmapText(
-      this.screenEndX * 0.68,
-      this.screenEndY * 0.7,
+      this.screenWidth * 0.68,
+      this.screenHeight * 0.7,
       'pressStartBlack',
       '',
       28)
@@ -327,6 +328,8 @@ export default class CatcherScene extends Phaser.Scene {
       this.screenCenterY * 0.8,
       'IngredientList'
     );
+
+    this.loadIngredientsOnList(this.allIngredientNumbersOnList);
 
     // add sounds to scene
     this.initSoundEffects();
@@ -386,6 +389,10 @@ export default class CatcherScene extends Phaser.Scene {
    );
    this.ingredientRight.setDepth(80);
   }
+});
+
+this.socketService.on('checkIngredientOnList', (number) => {
+  this.checkIngredientOnList(number);
 });
 
 
@@ -477,6 +484,157 @@ export default class CatcherScene extends Phaser.Scene {
     }
   }
 
+  private loadIngredientsOnList(ingredientNumbers: number[]) {
+    console.log("init list with ingredients, numbers:");
+    ingredientNumbers.forEach(i => {
+      console.log(i);
+    });
+    this.allIngredientsOnList?.forEach(i => {
+      i.destroy();
+    });
+    this.drawIngredientsOnList(ingredientNumbers, 0.5);
+
+  }
+
+
+  private drawIngredientsOnList(ingredientNumbers: number[], alphaNr: number) {
+    for (let index = 0; index < ingredientNumbers.length; index++) {
+      const ingredientObjectNumber = ingredientNumbers[index];
+      this.drawIngredientOnList(ingredientObjectNumber, alphaNr);
+    }
+  }
+
+  private drawIngredientOnList(ingredientObjectNumber: number, alphaNr: number) {
+    let y = this.getYPosOnListForNumber(ingredientObjectNumber);
+    let image = this.loadFallingObjectImageTall(ingredientObjectNumber);
+    this.ingredientOnList = this.add.image(
+      this.ingredientOnListX,
+      y,
+      image
+    );
+    this.ingredientOnList.alpha = alphaNr;
+    this.ingredientOnList.setDepth(30);
+    this.allIngredientsOnList.push(this.ingredientOnList);
+    console.log("created ingredient on list with number: " + ingredientObjectNumber);
+  }
+
+  private getYPosOnListForNumber(ingredientObjectNumber: number) {
+    let y = this.screenCenterY * 0.5;
+    switch (ingredientObjectNumber) {
+      case 0:
+        y = y;
+        break;
+      case 1:
+        y = y + 250;
+        break;
+      case 2:
+        y = y + 500;
+        break;
+    }
+    return y;
+  }
+
+  private loadFallingObjectImageTall(ingredientObjectNumber) {
+    if (ingredientObjectNumber == 0) {
+      return 'AppleTall';
+    } else if (ingredientObjectNumber == 1) {
+      return 'BananaTall'
+    } else if (ingredientObjectNumber == 2) {
+      return 'BerryTall'
+    }
+  }
+
+  private updateCatchedIngredientCounterDisplay(ingredientObjectNumber) {
+    console.log("updateCatchedIngredientCounterDisplay called. number: " + ingredientObjectNumber);
+    this.increaseCounterForNumber(ingredientObjectNumber);
+    if (this.getCounterForNumber(ingredientObjectNumber) > 1) {
+      this.updateCounterTextForNumber(this.getCounterForNumber(ingredientObjectNumber).toString(), ingredientObjectNumber);
+    } else {
+      // first ingredient of this kind catched!
+      this.drawIngredientOnList(ingredientObjectNumber, 1);
+      this.drawIngredientCounter(ingredientObjectNumber);
+    }
+  }
+
+    private drawIngredientCounter(ingredientObjectNumber: number) {
+      let x = this.ingredientOnListX - 100;
+      let y = this.getYPosOnListForNumber(ingredientObjectNumber) - 50;
+      let currentCounter = this.getCounterForNumber(ingredientObjectNumber);
+      let counterText = this.add.bitmapText(
+        x,
+        y,
+        'pressStartBlack',
+        currentCounter.toString(),
+        25)
+        .setOrigin(0.5, 0.5)
+        .setCenterAlign();
+
+      this.setCounterTextForNumber(counterText, ingredientObjectNumber);
+    }
+
+    setCounterTextForNumber(counterBitmapText: any, ingredientObjectNumber: any) {
+      switch (ingredientObjectNumber) {
+        case 0:
+          this.catchedIngredientCounterText1?.destroy();
+          this.catchedIngredientCounterText1 = counterBitmapText;
+          // this.catchedIngredientCounterText1.setText = counterText;
+          break;
+        case 1:
+          this.catchedIngredientCounterText2?.destroy();
+          this.catchedIngredientCounterText2 = counterBitmapText;
+          // this.catchedIngredientCounterText2.setText = counterText;
+          break;
+        case 2:
+          this.catchedIngredientCounterText3?.destroy();
+          this.catchedIngredientCounterText3 = counterBitmapText;
+          // this.catchedIngredientCounterText3.setText = counterText;
+          break;
+      }
+    }
+
+    updateCounterTextForNumber(counterText: string, ingredientObjectNumber: any) {
+      switch (ingredientObjectNumber) {
+        case 0:
+          // this.catchedIngredientCounterText1?.destroy();
+          // this.catchedIngredientCounterText1 = counterText;
+          this.catchedIngredientCounterText1.setText(counterText);
+          break;
+        case 1:
+          // this.catchedIngredientCounterText2?.destroy();
+          // this.catchedIngredientCounterText2 = counterText;
+          this.catchedIngredientCounterText2.setText(counterText);
+          break;
+        case 2:
+          // this.catchedIngredientCounterText3?.destroy();
+          // this.catchedIngredientCounterText3 = counterText;
+          this.catchedIngredientCounterText3.setText(counterText);
+          break;
+      }
+    }
+
+    getCounterForNumber(ingredientObjectNumber: number) {
+      switch (ingredientObjectNumber) {
+        case 0:
+          return this.catchedShakeObjectCounter1;
+        case 1:
+          return this.catchedShakeObjectCounter2;
+        case 2:
+          return this.catchedShakeObjectCounter3;
+      }
+    }
+
+    increaseCounterForNumber(ingredientObjectNumber: number) {
+      switch (ingredientObjectNumber) {
+        case 0:
+          return this.catchedShakeObjectCounter1++;
+        case 1:
+          return this.catchedShakeObjectCounter2++;
+        case 2:
+          return this.catchedShakeObjectCounter3++;
+      }
+    }
+
+
   /* -------------------- SÄFTLIMACHER GAME METHODS WITH INDIVIDUAL IMPLEMENTATION --------------------*/
 
   private getNumberOfGlasses(score: number) {
@@ -499,6 +657,11 @@ export default class CatcherScene extends Phaser.Scene {
     return this.adjustedPointsText;
   }
 
+  private checkIngredientOnList(numberOfIngredient: number) {
+    console.log("got one! checkIngredientOnList with number: " + numberOfIngredient);
+    this.updateCatchedIngredientCounterDisplay(numberOfIngredient);
+  }
+
 
   /* -------------------- BASIC GAME METHODS WITH INDIVIDUAL IMPLEMENTATION --------------------*/
 
@@ -506,12 +669,16 @@ export default class CatcherScene extends Phaser.Scene {
     this.scoreText.destroy();
     this.adjustedPointsText?.destroy();
 
-    this.ingredientList?.destroy();
-    // this.ingredientFalling?.destroy();
     this.ingredientLeft?.destroy();
     this.ingredientCenter?.destroy();
     this.ingredientRight?.destroy();
-    this.shakerContainer?.destroy();
+    this.catcherNet1?.destroy();
+
+    this.ingredientList?.destroy();
+    this.catchedIngredientCounterText1?.destroy();
+    this.catchedIngredientCounterText2?.destroy();
+    this.catchedIngredientCounterText3?.destroy();
+    this.allIngredientsOnList.forEach(i => i.destroy());
 
     this.sound?.stopAll();
 
