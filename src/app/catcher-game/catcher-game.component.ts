@@ -71,6 +71,8 @@ export class CatcherGameComponent implements OnInit, OnDestroy {
 
     this.socketService.removeListener('levelData');
     this.socketService.removeListener('updateScore');
+    this.socketService.removeListener('checkIngredientOnList');
+    // TODO: listeners vervollständigen
 
     clearInterval(this.dotInterval);
   }
@@ -238,7 +240,7 @@ export default class CatcherScene extends Phaser.Scene {
       'CatcherNet2'
     )
     this.catcherNet2.setDepth(100);
-    
+
     // catcher net 3 - Top
     this.catcherNet3 = this.add.image(
       initCatcherNetTopX,
@@ -510,12 +512,12 @@ export default class CatcherScene extends Phaser.Scene {
     this.scoreText.destroy();
     this.adjustedPointsText?.destroy();
 
-    this.shakerContainer.destroy();
-    this.ingredientList.destroy();
-    this.ingredientFalling?.destroy();
+    this.ingredientList?.destroy();
+    // this.ingredientFalling?.destroy();
     this.ingredientLeft?.destroy();
     this.ingredientCenter?.destroy();
     this.ingredientRight?.destroy();
+    this.shakerContainer?.destroy();
 
     this.sound?.stopAll();
 
