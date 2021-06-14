@@ -648,7 +648,7 @@ this.socketService.on('checkIngredientOnList', (number) => {
   private showLostPointsByIngredient(scoreDec: number, ingredientNr: number, x: number, y: number) {
     this.adjustedPointsText.setX(x);
     this.adjustedPointsText.setY(y);
-    this.adjustedPointsText.setText('+' + scoreDec + ' Punkte');
+    this.adjustedPointsText.setText(scoreDec + ' Punkte');
     this.adjustedPointsText.setVisible(true);
     this.adjustedPointsTextVisibleCounter = 0;
     return this.adjustedPointsText;
