@@ -213,14 +213,14 @@ export default class CatcherScene extends Phaser.Scene {
     let initCatcherNetBottomX = levelData[1];
     let initCatcherNetBottomY = levelData[2];
     //TODO: link to levelData
-    let initCatcherNetMiddleX = levelData[1];
-    let initCatcherNetMiddleY = levelData[2];
+    let initCatcherNetMiddleX = levelData[3];
+    let initCatcherNetMiddleY = levelData[4];
     //TODO: link to levelData
-    let initCatcherNetTopX = levelData[1];
-    let initCatcherNetTopY = levelData[2];
+    // let initCatcherNetTopX = levelData[1];
+    // let initCatcherNetTopY = levelData[2];
 
-    let initShakerPositionX = levelData[1];
-    let initShakerPositionY = levelData[2];
+    // let initShakerPositionX = levelData[1];
+    // let initShakerPositionY = levelData[2];
 
     // screen dimensions
     // 2560 1440
@@ -247,30 +247,30 @@ export default class CatcherScene extends Phaser.Scene {
     )
     this.catcherNet1.setDepth(80);
 
-/*     // catcher net 2 - Middle
+     // catcher net 2 - Middle
     this.catcherNet2 = this.add.image(
       initCatcherNetMiddleX,
       initCatcherNetMiddleY,
       'CatcherNet2'
     )
-    this.catcherNet2.setDepth(100);
+    this.catcherNet2.setDepth(80);
 
-    // catcher net 3 - Top
-    this.catcherNet3 = this.add.image(
-      initCatcherNetTopX,
-      initCatcherNetTopY,
-      //TODO: load color of controller
-      'CatcherNet3'
-    )
-    this.catcherNet3.setDepth(100);
+    // // catcher net 3 - Top
+    // this.catcherNet3 = this.add.image(
+    //   initCatcherNetTopX,
+    //   initCatcherNetTopY,
+    //   //TODO: load color of controller
+    //   'CatcherNet3'
+    // )
+    // this.catcherNet3.setDepth(100);
 
-    /// shaker/mixer
-    this.shakerContainer = this.add.image(
-      initShakerPositionX,
-      initShakerPositionY,
-      'ShakerContainer'
-    );
-    this.shakerContainer.setDepth(100); */
+    // /// shaker/mixer
+    // this.shakerContainer = this.add.image(
+    //   initShakerPositionX,
+    //   initShakerPositionY,
+    //   'ShakerContainer'
+    // );
+    // this.shakerContainer.setDepth(100);
 
 
     /// ingredient left
@@ -346,6 +346,10 @@ export default class CatcherScene extends Phaser.Scene {
     this.socketService.on('catcherNet1Position', (pos) => {
     //  this.shakerContainer.setPosition(pos[0], pos[1]);
       this.catcherNet1.setPosition(pos[0], pos[1]);
+    });
+    this.socketService.on('catcherNet2Position', (pos) => {
+    //  this.shakerContainer.setPosition(pos[0], pos[1]);
+      this.catcherNet2.setPosition(pos[0], pos[1]);
     });
     // /// current ingredient position
     // this.socketService.on('updateIngredientPosition', (pos) => {
@@ -685,6 +689,7 @@ this.socketService.on('checkIngredientOnList', (number) => {
     this.ingredientCenter?.destroy();
     this.ingredientRight?.destroy();
     this.catcherNet1?.destroy();
+    this.catcherNet2?.destroy();
 
     this.ingredientList?.destroy();
     this.catchedIngredientCounterText1?.destroy();
