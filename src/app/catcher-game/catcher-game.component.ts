@@ -160,9 +160,9 @@ export default class CatcherScene extends Phaser.Scene {
   preload() {
     // säftlimacher visible objects
     this.load.image('Ground', '../../assets/catcher/Ground.png')
-    this.load.image('CatcherNet1', '../../assets/catcher/NetBlue.PNG');
-    this.load.image('CatcherNet2', '../../assets/catcher/NetLightGreen.PNG');
-    this.load.image('CatcherNet3', '../../assets/catcher/NetOrange.PNG');
+    this.load.image('CatcherNet1', '../../assets/catcher/NetOrange.png');
+    this.load.image('CatcherNet2', '../../assets/catcher/NetLightGreen.png');
+    this.load.image('CatcherNet3', '../../assets/catcher/NetBlue.png');
     this.load.image('ShakerContainer', '../../assets/shaker/ShakerContainer.png');
     this.load.image('IngredientList', '../../assets/shaker/IngredientList.png');
 
@@ -229,7 +229,7 @@ export default class CatcherScene extends Phaser.Scene {
       initCatcherNetBottomY,
       'CatcherNet1'
     )
-    this.catcherNet1.setDepth(10);
+    this.catcherNet1.setDepth(80);
 
 /*     // catcher net 2 - Middle
     this.catcherNet2 = this.add.image(
@@ -442,34 +442,6 @@ export default class CatcherScene extends Phaser.Scene {
 
 
   /* -------------------- SÄFTLIMACHER GAME METHODS --------------------*/
-
-  private letIngredientsFall(randomIngredientNumber): void {
-    console.log("let IngredientFall called");
-
-    //TODO: should be random and changing from object to object
-    this.ingredientFallingX = this.screenCenterX,
-    this.ingredientFallingY = -100,
-
-    this.ingredientFalling = this.physics.add.image(
-      this.ingredientFallingX,
-      this.ingredientFallingY,
-      this.loadIngredientImage(randomIngredientNumber)
-    );
-
-    // when the fallingIngredients overlaps the ground collider is set to true
-    this.physics.add.overlap(
-        this.ingredientFalling,
-        this.ground,
-         //TODO: callback function cannot get the value of this.ingredientTouchedCollider
-        function(ingredientTouchedCollider){
-          console.log("collider touched   / ingredient Touched Collider: "+this.ingredientTouchedCollider);
-          this.ingredientTouchedCollider = true;
-          console.log("status of ingredient Touch: "+this.ingredientTouchedCollider);
-          //return ingredientTouchedCollider;
-        }
-    )
-  }
-
 
   private loadIngredientImage(randomIngredientNumber) {
     if (randomIngredientNumber == 0) {
