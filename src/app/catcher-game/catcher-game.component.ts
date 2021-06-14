@@ -126,6 +126,10 @@ export default class CatcherScene extends Phaser.Scene {
   private ground: Phaser.GameObjects.Image;
   private ingredientFalling: Phaser.GameObjects.Image;
   private ingredientTest: Phaser.GameObjects.Image;
+  private ingredientLeft: Phaser.GameObjects.Image;
+  private ingredientCenter: Phaser.GameObjects.Image;
+  private ingredientRight: Phaser.GameObjects.Image;
+
   private shakerContainer: Phaser.GameObjects.Image;
   private ingredientList: Phaser.GameObjects.Image;
   private ingredientOnList: Phaser.GameObjects.Image;
@@ -213,11 +217,35 @@ export default class CatcherScene extends Phaser.Scene {
 
     /// ingredient test
     this.ingredientTest = this.add.image(
-      this.screenCenterX,
+      0,
       -100,
       'Apple'
     );
     this.ingredientTest.setDepth(80);
+
+    /// ingredient left
+    this.ingredientLeft = this.add.image(
+      this.screenCenterX,
+      -100,
+      'Apple'
+    );
+    this.ingredientLeft.setDepth(80);
+
+    /// ingredient right
+    this.ingredientRight = this.add.image(
+      this.screenCenterX,
+      -100,
+      'Banana'
+    );
+    this.ingredientRight.setDepth(80);
+
+    /// ingredient center
+    this.ingredientCenter = this.add.image(
+      this.screenCenterX,
+      -100,
+      'Berry'
+    );
+    this.ingredientCenter.setDepth(80);
 
     /// score text
     this.scoreText = this.add.bitmapText(
@@ -265,11 +293,39 @@ export default class CatcherScene extends Phaser.Scene {
     this.socketService.on('updateShakerPosition', (pos) => {
       this.shakerContainer.setPosition(pos[0], pos[1]);
     });
-    /// current ingredient position
-    this.socketService.on('updateIngredientPosition', (pos) => {
-      this.ingredientTest.setPosition(pos[0], pos[1]);
-      // console.log("updateIngredientPosition, y: ", this.ingredientTest.y);
+    // /// current ingredient position
+    // this.socketService.on('updateIngredientPosition', (pos) => {
+    //   this.ingredientTest.setPosition(pos[0], pos[1]);
+    // });
+     /// current ingredient position left
+     this.socketService.on('updateIngredientLeft', (pos) => {
+      this.ingredientLeft.setPosition(pos[0], pos[1]);
     });
+    /// current ingredient position right
+    this.socketService.on('updateIngredientRight', (pos) => {
+      console.log("ingredientRight Nr:", pos[2]);
+      this.ingredientRight.setPosition(pos[0], pos[1]);
+    });   
+    /// current ingredient position center
+    this.socketService.on('updateIngredientCenter', (pos) => {
+      this.ingredientCenter.setPosition(pos[0], pos[1]);
+    });
+
+
+    // this.socketService.on('newIngredient', (ingr) => {
+    //   // type, x, y, name
+    //   console.log("newIngredient NR X Y: ", ingr[0], ingr[1], ingr[2]);
+    //   let newIngr = this.add.image(
+    //     ingr[1],
+    //     ingr[2],
+    //     this.loadIngredientImage(ingr[0])
+    //     // 'Apple'
+    //     // ingr[3]
+    //   );
+    //   newIngr.setDepth(80);
+    //   // this.ingrFalling.push(newIngr);
+    // });
+
     /// current score
     this.socketService.on('updateScore', (score) => {
       this.score = score;
