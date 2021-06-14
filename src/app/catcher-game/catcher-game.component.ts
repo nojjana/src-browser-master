@@ -194,7 +194,7 @@ export default class CatcherScene extends Phaser.Scene {
 
     // sounds
     this.load.audio('Good', '../../assets/shaker/mixkit-bonus.wav');
-    this.load.audio('Bad', '../../assets/shaker/mixkit-loosing.wav');
+    this.load.audio('Bad', '../../assets/shaker/mixkit-small-hit.wav');
   }
 
   create(data) {
@@ -331,9 +331,6 @@ export default class CatcherScene extends Phaser.Scene {
 
     this.loadIngredientsOnList(this.allIngredientNumbersOnList);
 
-    // add sounds to scene
-    this.initSoundEffects();
-
     // listeners on updates from server
     /// current shaker position
     this.socketService.on('catcherNet1Position', (pos) => {
@@ -419,11 +416,11 @@ this.socketService.on('checkIngredientOnList', (number) => {
     /// on +/- score points
     this.socketService.on('adjustScoreByCatchedIngredient', (scoreInfo) => {
       if (scoreInfo[0] < 0) {
-        this.showLostPointsByIngredient(scoreInfo[0], scoreInfo[1]);
+        this.showLostPointsByIngredient(scoreInfo[0], scoreInfo[1], scoreInfo[2], scoreInfo[3]);
         this.playBadSound();
 
       } else if (scoreInfo[0] > 0) {
-        this.showCollectedPointsByIngredient(scoreInfo[0], scoreInfo[1]);
+        this.showCollectedPointsByIngredient(scoreInfo[0], scoreInfo[1], scoreInfo[2], scoreInfo[3]);
         this.playGoodSound();
       }
     });
@@ -444,6 +441,10 @@ this.socketService.on('checkIngredientOnList', (number) => {
 
     // game build finished
     this.socketService.emit('gameViewBuild');
+
+    // TODO: fix error which shows after restarting game
+    // add sounds to scene
+    this.initSoundEffects();
 
   }
 
@@ -644,16 +645,21 @@ this.socketService.on('checkIngredientOnList', (number) => {
   }
 
 
-  private showLostPointsByIngredient(scoreDec: number, ingredientNr: number) {
-    this.adjustedPointsText.setText('Oh nein!\n\n' + scoreDec + ' Punkte');
+  private showLostPointsByIngredient(scoreDec: number, ingredientNr: number, x: number, y: number) {
+    this.adjustedPointsText.setX(x);
+    this.adjustedPointsText.setY(y);
+    this.adjustedPointsText.setText('+' + scoreDec + ' Punkte');
     this.adjustedPointsText.setVisible(true);
     this.adjustedPointsTextVisibleCounter = 0;
     return this.adjustedPointsText;
   }
 
-  private showCollectedPointsByIngredient(scoreInc: number, ingredientNr: number) {
-    this.adjustedPointsText.setText('Aufgefangen!\n\n+' + scoreInc + ' Punkte');
+  private showCollectedPointsByIngredient(scoreInc: number, ingredientNr: number, x: number, y: number) {
+    this.adjustedPointsText.setX(x);
+    this.adjustedPointsText.setY(y);
+    this.adjustedPointsText.setText('+' + scoreInc + ' Punkte');
     this.adjustedPointsText.setVisible(true);
+    this.adjustedPointsTextVisibleCounter = 0;
     return this.adjustedPointsText;
   }
 
