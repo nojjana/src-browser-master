@@ -303,9 +303,9 @@ export default class CatcherScene extends Phaser.Scene {
     });
     /// current ingredient position right
     this.socketService.on('updateIngredientRight', (pos) => {
-      console.log("ingredientRight Nr:", pos[2]);
+      // console.log("ingredientRight Nr:", pos[2]);
       this.ingredientRight.setPosition(pos[0], pos[1]);
-    });   
+    });
     /// current ingredient position center
     this.socketService.on('updateIngredientCenter', (pos) => {
       this.ingredientCenter.setPosition(pos[0], pos[1]);
@@ -348,7 +348,7 @@ export default class CatcherScene extends Phaser.Scene {
     this.socketService.on('playing', playing => {
       this.playing = playing;
       // let ingredients fall
-      this.letIngredientsFall(2);
+      // this.letIngredientsFall(2);
     });
 
     /// on show game over
@@ -373,7 +373,7 @@ export default class CatcherScene extends Phaser.Scene {
         console.log("true / update playing called boolean: "+this.ingredientTouchedCollider);
         //TODO: generate random number
         // TODO: has to come from server!?
-        this.letIngredientsFall(3);
+        // this.letIngredientsFall(3);
         this.ingredientTouchedCollider = false;
       }
     }
