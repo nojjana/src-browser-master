@@ -460,6 +460,9 @@ export default class CatcherScene extends Phaser.Scene {
     this.shakerContainer.destroy();
     this.ingredientList.destroy();
     this.ingredientFalling?.destroy();
+    this.ingredientLeft?.destroy();
+    this.ingredientCenter?.destroy();
+    this.ingredientRight?.destroy();
 
     this.sound?.stopAll();
 
