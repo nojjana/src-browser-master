@@ -79,7 +79,10 @@ export class CatcherGameComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.socketService.on('controllerEndedTutorial', () => { this.controllerReady(); });
-    this.socketService.on('countdown', (number) => this.countdown = number);
+    this.socketService.on('countdown', (number) => {
+      // TODO countdown sound
+      this.countdown = number;
+    });
     this.socketService.on('gameOverCountdown', (number) => {
       this.gameOverCountdown = number;
       console.log("Noch " + this.gameOverCountdown);
@@ -151,12 +154,13 @@ export default class CatcherScene extends Phaser.Scene {
   private catchedShakeObjectCounter1 = 0;
   private catchedShakeObjectCounter2 = 0;
   private catchedShakeObjectCounter3 = 0;
-  private adjustedPointsTextVisibleCounter: number;
+  private adjustedPointsTextVisibleCounter = 0;
 
   // säftlimacher sounds
   private goodBling: Phaser.Sound.BaseSound;
   private badBling: Phaser.Sound.BaseSound;
-
+  private startBling: Phaser.Sound.BaseSound;
+  private endBling: Phaser.Sound.BaseSound;
 
     // not needed anymore? TODO delete
     private ingredientFallingX: number;
@@ -195,6 +199,8 @@ export default class CatcherScene extends Phaser.Scene {
     // sounds
     this.load.audio('Good', '../../assets/shaker/mixkit-bonus.wav');
     this.load.audio('Bad', '../../assets/shaker/mixkit-small-hit.wav');
+    this.load.audio('Start', '../../assets/catcher/mixkit-game-ball-tap.wav');
+    this.load.audio('End', '../../assets/catcher/mixkit-bling-achievement.wav');
   }
 
   create(data) {
@@ -331,6 +337,10 @@ export default class CatcherScene extends Phaser.Scene {
 
     this.loadIngredientsOnList(this.allIngredientNumbersOnList);
 
+    // TODO: fix error which shows after restarting game
+    // add sounds to scene
+    this.initSoundEffects();
+
     // listeners on updates from server
     /// current shaker position
     this.socketService.on('catcherNet1Position', (pos) => {
@@ -416,12 +426,11 @@ this.socketService.on('checkIngredientOnList', (number) => {
     /// on +/- score points
     this.socketService.on('adjustScoreByCatchedIngredient', (scoreInfo) => {
       if (scoreInfo[0] < 0) {
-        this.showLostPointsByIngredient(scoreInfo[0], scoreInfo[1], scoreInfo[2], scoreInfo[3]);
         this.playBadSound();
-
+        this.showLostPointsByIngredient(scoreInfo[0], scoreInfo[1], scoreInfo[2]+150, scoreInfo[3]-120);
       } else if (scoreInfo[0] > 0) {
-        this.showCollectedPointsByIngredient(scoreInfo[0], scoreInfo[1], scoreInfo[2], scoreInfo[3]);
         this.playGoodSound();
+        this.showCollectedPointsByIngredient(scoreInfo[0], scoreInfo[1], scoreInfo[2]+150, scoreInfo[3]-120);
       }
     });
 
@@ -436,15 +445,12 @@ this.socketService.on('checkIngredientOnList', (number) => {
     this.socketService.on('gameOver', finished => {
       if (finished === true) {
         this.showGameOver();
+        this.playGameOverSound();
       }
     });
 
     // game build finished
     this.socketService.emit('gameViewBuild');
-
-    // TODO: fix error which shows after restarting game
-    // add sounds to scene
-    this.initSoundEffects();
 
   }
 
@@ -651,7 +657,7 @@ this.socketService.on('checkIngredientOnList', (number) => {
     this.adjustedPointsText.setText(scoreDec + ' Punkte');
     this.adjustedPointsText.setVisible(true);
     this.adjustedPointsTextVisibleCounter = 0;
-    return this.adjustedPointsText;
+    // return this.adjustedPointsText;
   }
 
   private showCollectedPointsByIngredient(scoreInc: number, ingredientNr: number, x: number, y: number) {
@@ -660,7 +666,7 @@ this.socketService.on('checkIngredientOnList', (number) => {
     this.adjustedPointsText.setText('+' + scoreInc + ' Punkte');
     this.adjustedPointsText.setVisible(true);
     this.adjustedPointsTextVisibleCounter = 0;
-    return this.adjustedPointsText;
+    // return this.adjustedPointsText;
   }
 
   private checkIngredientOnList(numberOfIngredient: number) {
@@ -709,6 +715,8 @@ this.socketService.on('checkIngredientOnList', (number) => {
   private initSoundEffects() {
     this.goodBling = this.sound.add('Good');
     this.badBling = this.sound.add('Bad');
+    this.startBling = this.sound.add('Start');
+    this.endBling = this.sound.add('End');
   }
 
   private playBadSound() {
@@ -717,6 +725,14 @@ this.socketService.on('checkIngredientOnList', (number) => {
 
   private playGoodSound() {
     this.goodBling.play();
+  }
+
+  private playCountdownSound() {
+    this.startBling.play();
+  }
+
+  private playGameOverSound() {
+    this.endBling.play();
   }
 
 }
