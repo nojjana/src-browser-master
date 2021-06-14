@@ -352,6 +352,17 @@ export default class CatcherScene extends Phaser.Scene {
     this.socketService.on('updateIngredientCenter', (pos) => {
       this.ingredientCenter.setPosition(pos[0], pos[1]);
     });
+    this.socketService.on('changeImageIngredientLeft', (nr) => {
+      if (this.ingredientLeft != null) {
+       this.ingredientLeft.destroy();
+       this.ingredientLeft = this.add.image(
+         this.screenCenterX,
+         -100,
+         this.loadIngredientImage(nr)
+       );
+       this.ingredientLeft.setDepth(80);
+      }
+   });
 
 
     // this.socketService.on('newIngredient', (ingr) => {
