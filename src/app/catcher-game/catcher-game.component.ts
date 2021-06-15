@@ -24,7 +24,7 @@ export class CatcherGameComponent implements OnInit, OnDestroy {
   public tutorial = true;
   public dots = 0;
   private dotInterval;
-  public countdown: number = 3;
+  public countdown: number = 5;
   public gameOverCountdown: number = 0;
   public gameOver = false;
 
