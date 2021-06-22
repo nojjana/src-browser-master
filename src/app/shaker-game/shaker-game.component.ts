@@ -198,6 +198,8 @@ export default class ShakerScene extends Phaser.Scene {
   private adjustedPointsText: Phaser.GameObjects.BitmapText;
   goodBling: Phaser.Sound.BaseSound;
   badBling: Phaser.Sound.BaseSound;
+  endBling: Phaser.Sound.BaseSound;
+
   shakeCounter = 0;
   shakePointsNeededForFalling = 5;
   bar: any;
@@ -250,6 +252,7 @@ export default class ShakerScene extends Phaser.Scene {
     this.load.audio('Bad', '../../assets/shaker/mixkit-loosing.wav');
     this.load.audio('Bad2', '../../assets/shaker/mixkit-mechanical-bling.wav');
     this.load.audio('Bad3', '../../assets/shaker/mixkit-small-hit.wav');
+    this.load.audio('End', '../../assets/catcher/mixkit-bling-achievement.wav');
   }
 
   create(data) {
@@ -402,7 +405,7 @@ export default class ShakerScene extends Phaser.Scene {
 
 /*      this.input.on('pointerdown', function () {
       this.cameras.main.shake(500);
-  }, this); */ 
+  }, this); */
 
     // TODO shaking makes fruit fall ?
     // FROM SERVER SHAKERPROGRAM:
@@ -483,6 +486,7 @@ export default class ShakerScene extends Phaser.Scene {
     this.socketService.on('gameOver', finished => {
       if (finished === true) {
         this.showGameOver();
+        this.playGameOverSound();
       }
     });
 
@@ -492,6 +496,7 @@ export default class ShakerScene extends Phaser.Scene {
   initSoundEffects() {
     this.goodBling = this.sound.add('Good');
     this.badBling = this.sound.add('Bad3');
+    this.endBling = this.sound.add('End');
   }
 
   setValueOfBar(percentage: number) {
@@ -538,6 +543,10 @@ export default class ShakerScene extends Phaser.Scene {
 
   playGoodSound() {
     this.goodBling.play();
+  }
+
+  private playGameOverSound() {
+    this.endBling.play();
   }
 
   private showLostPointsByIngredient(scoreDec: number, ingredientNr: number) {
@@ -602,7 +611,7 @@ export default class ShakerScene extends Phaser.Scene {
   }
 
   private stopShakeLoop(): void{
-    this.shakeObject.destroy();                 
+    this.shakeObject.destroy();
     this.shakeObject = this.add.image(
       this.shakeObjectX = this.initShakeObjectX,
       this.shakeObjectY = this.initShakeObjectY,
