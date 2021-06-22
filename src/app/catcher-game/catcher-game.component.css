@@ -11,6 +11,7 @@
 
 main {
   background: linear-gradient(180deg, #94ACCF 0%, #E9F0F5 16.98%, #EFF8FF 23.23%, #CBDC8D 65.94%);
+  /* background: black; */
   height: 100%;
   width: 100%;
 }
@@ -25,7 +26,7 @@ main {
   10%, 90% {
     transform: translate3d(-1px, 0, 0);
   }
-  
+
   20%, 80% {
     transform: translate3d(2px, 0, 0);
   }

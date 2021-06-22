@@ -51,7 +51,7 @@ export class CatcherGameComponent implements OnInit, OnDestroy {
       physics: {
         default: 'arcade',
         arcade: {
-            debug: true,
+            debug: false,
             gravity: { y: 150 }
         }
       },
@@ -238,6 +238,7 @@ export default class CatcherScene extends Phaser.Scene {
       this.screenHeight-39,
       'Ground'
     );
+    this.ground.setVisible(false);
 
     // catcher net 1 - Bottom
     this.catcherNet1 = this.add.image(
