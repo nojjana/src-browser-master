@@ -134,8 +134,10 @@ export default class SeesawScene extends Phaser.Scene {
   private ingredientCenter: Phaser.GameObjects.Image;
   private ingredientRight: Phaser.GameObjects.Image;
   /// seesaw
-  private seesaw: Phaser.GameObjects.Image;
-  private seesawBeam: Phaser.GameObjects.Image;
+  private seesaw1: Phaser.GameObjects.Image;
+  private seesawBeam1: Phaser.GameObjects.Image;
+  private seesaw2: Phaser.GameObjects.Image;
+  private seesawBeam2: Phaser.GameObjects.Image;
 
   /// catchers
   private catcherNet1: Phaser.GameObjects.Image;
@@ -181,9 +183,9 @@ export default class SeesawScene extends Phaser.Scene {
   preload() {
     // säftlimacher visible objects
     this.load.image('Ground', '../../assets/catcher/Ground.png')
-    this.load.image('CatcherNet1', '../../assets/catcher/NetOrange.png');
-    this.load.image('CatcherNet2', '../../assets/catcher/NetLightGreen.png');
-    this.load.image('CatcherNet3', '../../assets/catcher/NetBlue.png');
+    ////this.load.image('CatcherNet1', '../../assets/catcher/NetOrange.png');
+    ////this.load.image('CatcherNet2', '../../assets/catcher/NetLightGreen.png');
+    ////this.load.image('CatcherNet3', '../../assets/catcher/NetBlue.png');
     this.load.image('ShakerContainer', '../../assets/shaker/ShakerContainer.png');
     this.load.image('IngredientList', '../../assets/shaker/IngredientList.png');
     this.load.image('Seesaw', '../../assets/seesaw/seesaw.png');
@@ -216,17 +218,14 @@ export default class SeesawScene extends Phaser.Scene {
     // get level info from CatcherProgram (server)
     const levelData = data.levelData;
     this.allIngredientNumbersOnList = levelData[0];
-    //TODO: link to levelData
-    ////let initCatcherNetBottomX = levelData[1];
-    ////let initCatcherNetBottomY = levelData[2];
-    //TODO: link to levelData
-    ////let initCatcherNetMiddleX = levelData[3];
-    ////let initCatcherNetMiddleY = levelData[4];
-    
+
     let initSeesaw1X = levelData[1];
     let initSeesaw1Y = levelData[2];
-    let initSeesawBeam1X = levelData[3];
-    let initSeesawBeam1Y = levelData[4];
+
+    let initSeesaw2X = levelData[3];
+    let initSeesaw2Y = levelData[4];    
+
+
 
     // screen dimensions
     // 2560 1440
@@ -247,37 +246,37 @@ export default class SeesawScene extends Phaser.Scene {
     this.ground.setVisible(false);
 
      // seesaw
-     this.seesaw = this.add.image(
+     this.seesaw1 = this.add.image(
       initSeesaw1X,
       initSeesaw1Y,
       'Seesaw'
     )
-    this.seesaw.setDepth(80);
+    this.seesaw1.setDepth(80);
 
     // seesaw beam (balken)
-    this.seesawBeam = this.add.image(
+    this.seesawBeam1 = this.add.image(
       initSeesaw1X,
       initSeesaw1Y+20,
       'SeesawBeam'
     )
-    this.seesaw.setDepth(80);
+    this.seesawBeam1.setDepth(80);
 
-    // catcher net 1 - Bottom
-    /* this.catcherNet1 = this.add.image(
-      initCatcherNetBottomX,
-      initCatcherNetBottomY,
-      'CatcherNet1'
+    // seesaw
+    this.seesaw2 = this.add.image(
+      initSeesaw2X,
+      initSeesaw2Y,
+      'Seesaw'
     )
-    this.catcherNet1.setDepth(80);
+    this.seesaw2.setDepth(80);
 
-     // catcher net 2 - Middle
-    this.catcherNet2 = this.add.image(
-      initCatcherNetMiddleX,
-      initCatcherNetMiddleY,
-      'CatcherNet2'
+    // seesaw beam (balken)
+    this.seesawBeam2 = this.add.image(
+      initSeesaw2X,
+      initSeesaw2Y+20,
+      'SeesawBeam'
     )
-    this.catcherNet2.setDepth(80);
- */
+    this.seesawBeam2.setDepth(80);
+
     /// ingredient left
     this.ingredientLeft = this.add.image(
       this.screenCenterX,
@@ -349,13 +348,13 @@ export default class SeesawScene extends Phaser.Scene {
 
     // listeners on updates from server
     /// current shaker position
-    this.socketService.on('catcherNet1Position', (pos) => {
+    this.socketService.on('seesaw1Position', (pos) => {
     //  this.shakerContainer.setPosition(pos[0], pos[1]);
-      this.catcherNet1.setPosition(pos[0], pos[1]);
+      this.seesaw1.setPosition(pos[0], pos[1]);
     });
-    this.socketService.on('catcherNet2Position', (pos) => {
+    this.socketService.on('seesaw2Position', (pos) => {
     //  this.shakerContainer.setPosition(pos[0], pos[1]);
-      this.catcherNet2.setPosition(pos[0], pos[1]);
+      this.seesaw2.setPosition(pos[0], pos[1]);
     });
     // /// current ingredient position
     // this.socketService.on('updateIngredientPosition', (pos) => {
@@ -694,8 +693,10 @@ this.socketService.on('checkIngredientOnList', (number) => {
     this.ingredientLeft?.destroy();
     this.ingredientCenter?.destroy();
     this.ingredientRight?.destroy();
-    this.catcherNet1?.destroy();
-    this.catcherNet2?.destroy();
+    this.seesaw1?.destroy();
+    this.seesawBeam1?.destroy();
+    this.seesaw2?.destroy();
+    this.seesawBeam2?.destroy();
 
     this.ingredientList?.destroy();
     this.catchedIngredientCounterText1?.destroy();
