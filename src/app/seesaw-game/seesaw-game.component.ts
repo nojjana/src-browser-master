@@ -107,13 +107,13 @@ export class SeesawGameComponent implements OnInit, OnDestroy {
     this.building = true;
     setTimeout(() => {
       this.phaserGame = new Phaser.Game(this.config);
-      this.phaserGame.scene.add('seesawScene', CatcherScene);
+      this.phaserGame.scene.add('seesawScene', SeesawScene);
       this.phaserGame.scene.start('seesawScene', { socketService: this.socketService, levelData: levelData });
     }, 100);
   }
 }
 
-export default class CatcherScene extends Phaser.Scene {
+export default class SeesawScene extends Phaser.Scene {
   private socketService: any;
 
   // basic game variables
@@ -133,6 +133,10 @@ export default class CatcherScene extends Phaser.Scene {
   private ingredientLeft: Phaser.GameObjects.Image;
   private ingredientCenter: Phaser.GameObjects.Image;
   private ingredientRight: Phaser.GameObjects.Image;
+  /// seesaw
+  private seesaw: Phaser.GameObjects.Image;
+  private seesawBeam: Phaser.GameObjects.Image;
+
   /// catchers
   private catcherNet1: Phaser.GameObjects.Image;
   private catcherNet2: Phaser.GameObjects.Image;
@@ -182,6 +186,9 @@ export default class CatcherScene extends Phaser.Scene {
     this.load.image('CatcherNet3', '../../assets/catcher/NetBlue.png');
     this.load.image('ShakerContainer', '../../assets/shaker/ShakerContainer.png');
     this.load.image('IngredientList', '../../assets/shaker/IngredientList.png');
+    this.load.image('Seesaw', '../../assets/seesaw/seesaw.png');
+    this.load.image('SeesawBeam', '../../assets/seesaw/seesawBeam.png');
+
 
     /// ingredients falling
     this.load.image('Apple', '../../assets/shaker/Apple.png');
@@ -210,17 +217,16 @@ export default class CatcherScene extends Phaser.Scene {
     const levelData = data.levelData;
     this.allIngredientNumbersOnList = levelData[0];
     //TODO: link to levelData
-    let initCatcherNetBottomX = levelData[1];
-    let initCatcherNetBottomY = levelData[2];
+    ////let initCatcherNetBottomX = levelData[1];
+    ////let initCatcherNetBottomY = levelData[2];
     //TODO: link to levelData
-    let initCatcherNetMiddleX = levelData[3];
-    let initCatcherNetMiddleY = levelData[4];
-    //TODO: link to levelData
-    // let initCatcherNetTopX = levelData[1];
-    // let initCatcherNetTopY = levelData[2];
-
-    // let initShakerPositionX = levelData[1];
-    // let initShakerPositionY = levelData[2];
+    ////let initCatcherNetMiddleX = levelData[3];
+    ////let initCatcherNetMiddleY = levelData[4];
+    
+    let initSeesaw1X = levelData[1];
+    let initSeesaw1Y = levelData[2];
+    let initSeesawBeam1X = levelData[3];
+    let initSeesawBeam1Y = levelData[4];
 
     // screen dimensions
     // 2560 1440
@@ -240,8 +246,24 @@ export default class CatcherScene extends Phaser.Scene {
     );
     this.ground.setVisible(false);
 
+     // seesaw
+     this.seesaw = this.add.image(
+      initSeesaw1X,
+      initSeesaw1Y,
+      'Seesaw'
+    )
+    this.seesaw.setDepth(80);
+
+    // seesaw beam (balken)
+    this.seesawBeam = this.add.image(
+      initSeesaw1X,
+      initSeesaw1Y+20,
+      'SeesawBeam'
+    )
+    this.seesaw.setDepth(80);
+
     // catcher net 1 - Bottom
-    this.catcherNet1 = this.add.image(
+    /* this.catcherNet1 = this.add.image(
       initCatcherNetBottomX,
       initCatcherNetBottomY,
       'CatcherNet1'
@@ -255,25 +277,7 @@ export default class CatcherScene extends Phaser.Scene {
       'CatcherNet2'
     )
     this.catcherNet2.setDepth(80);
-
-    // // catcher net 3 - Top
-    // this.catcherNet3 = this.add.image(
-    //   initCatcherNetTopX,
-    //   initCatcherNetTopY,
-    //   //TODO: load color of controller
-    //   'CatcherNet3'
-    // )
-    // this.catcherNet3.setDepth(100);
-
-    // /// shaker/mixer
-    // this.shakerContainer = this.add.image(
-    //   initShakerPositionX,
-    //   initShakerPositionY,
-    //   'ShakerContainer'
-    // );
-    // this.shakerContainer.setDepth(100);
-
-
+ */
     /// ingredient left
     this.ingredientLeft = this.add.image(
       this.screenCenterX,
@@ -297,6 +301,7 @@ export default class CatcherScene extends Phaser.Scene {
       'Berry'
     );
     this.ingredientCenter.setDepth(80);
+
 
     /// score text
     this.scoreText = this.add.bitmapText(
