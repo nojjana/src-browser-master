@@ -43,14 +43,13 @@ export class SeesawGameComponent implements OnInit, OnDestroy {
         autoCenter: Phaser.Scale.CENTER_BOTH,
         height: 1440,
         width: 2560,
-
       },
       transparent: true,
       parent: 'gameContainer',
       audio: { disableWebAudio: true },
       physics: {
-        default: 'arcade',
-        arcade: {
+        default: 'matter',
+        matter: {
             debug: false,
             gravity: { y: 150 }
         }
@@ -134,16 +133,19 @@ export default class SeesawScene extends Phaser.Scene {
   private ingredientCenter: Phaser.GameObjects.Image;
   private ingredientRight: Phaser.GameObjects.Image;
   /// seesaw
-  private seesaw1: Phaser.GameObjects.Image;
+////  private seesaw1: Phaser.GameObjects.Image;
+  private rectangle1: Phaser.GameObjects.Rectangle;
+  private rectangleBeam1: Phaser.GameObjects.Rectangle;
+  private rectangle2: Phaser.GameObjects.Rectangle;
+  private rectangleBeam2: Phaser.GameObjects.Rectangle;
   private seesawBeam1: Phaser.GameObjects.Image;
-  private seesaw2: Phaser.GameObjects.Image;
-  private seesawBeam2: Phaser.GameObjects.Image;
-
+////  private seesaw2: Phaser.GameObjects.Image;
+  private seesawBeam2: Phaser.GameObjects.Image; 
   /// catchers
-  private catcherNet1: Phaser.GameObjects.Image;
+  /* private catcherNet1: Phaser.GameObjects.Image;
   private catcherNet2: Phaser.GameObjects.Image;
   private catcherNet3: Phaser.GameObjects.Image;
-  private shakerContainer: Phaser.GameObjects.Image;
+  private shakerContainer: Phaser.GameObjects.Image; */
   /// ingredient list and counters
   private ingredientList: Phaser.GameObjects.Image;
   private ingredientOnList: Phaser.GameObjects.Image;
@@ -219,12 +221,11 @@ export default class SeesawScene extends Phaser.Scene {
     const levelData = data.levelData;
     this.allIngredientNumbersOnList = levelData[0];
 
-    let initSeesaw1X = levelData[1];
-    let initSeesaw1Y = levelData[2];
+  ////  let initSeesaw1X = levelData[1];
+  ////  let initSeesaw1Y = levelData[2];
 
-    let initSeesaw2X = levelData[3];
-    let initSeesaw2Y = levelData[4];    
-
+  ////  let initSeesaw2X = levelData[3];
+  ////  let initSeesaw2Y = levelData[4];    
 
 
     // screen dimensions
@@ -238,15 +239,23 @@ export default class SeesawScene extends Phaser.Scene {
 
     // add säftlimacher visible game objects to scene
     // ground
-    this.ground = this.physics.add.staticImage(
+    this.ground = this.add.image(
       this.screenCenterX,
       this.screenHeight-39,
       'Ground'
     );
-    this.ground.setVisible(false);
+    this.ground.setVisible(true);
+
+    //TEST RECTANGLE
+    this.rectangle1 = this.add.rectangle(0, 0, 0, 0, 0x6666ff);
+    this.rectangleBeam1 = this.add.rectangle(0,0,0,0, 0x6666ff)
+    this.rectangle2 = this.add.rectangle(0,0,0,0, 0x66666f)
+    this.rectangleBeam2 = this.add.rectangle(0,0,0,0, 0x66666f)
+
+
 
      // seesaw
-     this.seesaw1 = this.add.image(
+    /*  this.seesaw1 = this.add.image(
       initSeesaw1X,
       initSeesaw1Y,
       'Seesaw'
@@ -275,7 +284,7 @@ export default class SeesawScene extends Phaser.Scene {
       initSeesaw2Y+20,
       'SeesawBeam'
     )
-    this.seesawBeam2.setDepth(80);
+    this.seesawBeam2.setDepth(80); */
 
     /// ingredient left
     this.ingredientLeft = this.add.image(
@@ -350,12 +359,39 @@ export default class SeesawScene extends Phaser.Scene {
     /// current shaker position
     this.socketService.on('seesaw1Position', (pos) => {
     //  this.shakerContainer.setPosition(pos[0], pos[1]);
-      this.seesaw1.setPosition(pos[0], pos[1]);
+    ////  this.seesaw1.setPosition(pos[0], pos[1]);
+      console.log("seesaw1 pos0: "+pos[0]+" seesaw1 pos1: "+pos[1])
+      this.rectangle1.setPosition(pos[0], pos[1]);
+      console.log("seesaw1 pos2: "+pos[2]+" seesaw1 pos3: "+pos[3])
+      this.rectangle1.setSize(pos[2], pos[3]);
     });
+
+    this.socketService.on('seesawBeam1Position', (pos) => {
+      //  this.shakerContainer.setPosition(pos[0], pos[1]);
+      ////  this.seesaw1.setPosition(pos[0], pos[1]);
+        console.log("seesaw1 pos0: "+pos[0]+" seesaw1 pos1: "+pos[1])
+        this.rectangleBeam1.setPosition(pos[0], pos[1]);
+        console.log("seesaw1 pos2: "+pos[2]+" seesaw1 pos3: "+pos[3])
+        this.rectangleBeam1.setSize(pos[2], pos[3]);
+      });
+
     this.socketService.on('seesaw2Position', (pos) => {
     //  this.shakerContainer.setPosition(pos[0], pos[1]);
-      this.seesaw2.setPosition(pos[0], pos[1]);
+    //  this.seesaw2.setPosition(pos[0], pos[1]);
+      this.rectangle2.setPosition(pos[0], pos[1]);
+      console.log("seesaw2 pos0: "+pos[0]+" seesaw2 pos1: "+pos[1])
+      this.rectangle2.setSize(pos[2], pos[3]);
+      console.log("seesaw2 pos2: "+pos[2]+" seesaw2 pos3: "+pos[3])
     });
+
+    this.socketService.on('seesawBeam2Position', (pos) => {
+      //  this.shakerContainer.setPosition(pos[0], pos[1]);
+      ////  this.seesaw1.setPosition(pos[0], pos[1]);
+        console.log("seesaw2 pos0: "+pos[0]+" seesaw1 pos1: "+pos[1])
+        this.rectangleBeam2.setPosition(pos[0], pos[1]);
+        console.log("seesaw2 pos2: "+pos[2]+" seesaw1 pos3: "+pos[3])
+        this.rectangleBeam2.setSize(pos[2], pos[3]);
+      });
     // /// current ingredient position
     // this.socketService.on('updateIngredientPosition', (pos) => {
     //   this.ingredientTest.setPosition(pos[0], pos[1]);
@@ -693,9 +729,9 @@ this.socketService.on('checkIngredientOnList', (number) => {
     this.ingredientLeft?.destroy();
     this.ingredientCenter?.destroy();
     this.ingredientRight?.destroy();
-    this.seesaw1?.destroy();
+  ////  this.seesaw1?.destroy();
     this.seesawBeam1?.destroy();
-    this.seesaw2?.destroy();
+  ////  this.seesaw2?.destroy();
     this.seesawBeam2?.destroy();
 
     this.ingredientList?.destroy();
