@@ -138,6 +138,12 @@ export default class SeesawScene extends Phaser.Scene {
   private rectangleBeam1: Phaser.GameObjects.Rectangle;
   private rectangle2: Phaser.GameObjects.Rectangle;
   private rectangleBeam2: Phaser.GameObjects.Rectangle;
+////only for testing reasons - circle for Ingredients 1-3
+  private circleIng1: Phaser.GameObjects.Ellipse;
+  private circleIng2: Phaser.GameObjects.Ellipse;
+  private circleIng3: Phaser.GameObjects.Ellipse;
+  
+
   private seesawBeam1: Phaser.GameObjects.Image;
 ////  private seesaw2: Phaser.GameObjects.Image;
   private seesawBeam2: Phaser.GameObjects.Image; 
@@ -250,8 +256,10 @@ export default class SeesawScene extends Phaser.Scene {
     this.rectangle1 = this.add.rectangle(0, 0, 0, 0, 0x6666ff);
     this.rectangleBeam1 = this.add.rectangle(0,0,0,0, 0x6666ff)
     this.rectangle2 = this.add.rectangle(0,0,0,0, 0x66666f)
-    this.rectangleBeam2 = this.add.rectangle(0,0,0,0, 0x66666f)
-
+    this.rectangleBeam2 = this.add.rectangle(0,0,0,0, 0x66666f);
+    this.circleIng1 = this.add.ellipse(0,0,100,100, 0x6666ff)
+    this.circleIng2 = this.add.ellipse(0,0,100,100, 0x6668ff)
+    this.circleIng3 = this.add.ellipse(0,0,100,100, 0x6662ff)
 
 
      // seesaw
@@ -369,9 +377,9 @@ export default class SeesawScene extends Phaser.Scene {
     this.socketService.on('seesawBeam1Position', (pos) => {
       //  this.shakerContainer.setPosition(pos[0], pos[1]);
       ////  this.seesaw1.setPosition(pos[0], pos[1]);
-        console.log("seesaw1 pos0: "+pos[0]+" seesaw1 pos1: "+pos[1])
+        console.log("seesawBeam1 pos0: "+pos[0]+" seesawBeam1 pos1: "+pos[1])
         this.rectangleBeam1.setPosition(pos[0], pos[1]);
-        console.log("seesaw1 pos2: "+pos[2]+" seesaw1 pos3: "+pos[3])
+        console.log("seesawBeam1 pos2: "+pos[2]+" seesawBeam1 pos3: "+pos[3])
         this.rectangleBeam1.setSize(pos[2], pos[3]);
       });
 
@@ -387,11 +395,27 @@ export default class SeesawScene extends Phaser.Scene {
     this.socketService.on('seesawBeam2Position', (pos) => {
       //  this.shakerContainer.setPosition(pos[0], pos[1]);
       ////  this.seesaw1.setPosition(pos[0], pos[1]);
-        console.log("seesaw2 pos0: "+pos[0]+" seesaw1 pos1: "+pos[1])
+        console.log("seesawBeam2 pos0: "+pos[0]+" seesawBeam1 pos1: "+pos[1])
         this.rectangleBeam2.setPosition(pos[0], pos[1]);
-        console.log("seesaw2 pos2: "+pos[2]+" seesaw1 pos3: "+pos[3])
+        console.log("seesaBeamw2 pos2: "+pos[2]+" seesawBeam1 pos3: "+pos[3])
         this.rectangleBeam2.setSize(pos[2], pos[3]);
-      });
+    });
+
+    this.socketService.on('ingredient1CirclePosition', (pos) => {
+        console.log("ingredient1CirclePosition pos0: "+pos[0]+" ingredient1CirclePosition pos1: "+pos[1])
+        this.circleIng1.setPosition(pos[0], pos[1]);
+    });
+
+    this.socketService.on('ingredient2CirclePosition', (pos) => {
+        console.log("ingredien2CirclePosition pos0: "+pos[0]+" ingredien2CirclePosition pos1: "+pos[1])
+        this.circleIng2.setPosition(pos[0], pos[1]);
+    });
+
+    this.socketService.on('ingredient3CirclePosition', (pos) => {
+        console.log("ingredient3CirclePosition pos0: "+pos[0]+" ingredient3CirclePosition pos1: "+pos[1])
+        this.circleIng3.setPosition(pos[0], pos[1]);
+    });
+
     // /// current ingredient position
     // this.socketService.on('updateIngredientPosition', (pos) => {
     //   this.ingredientTest.setPosition(pos[0], pos[1]);
