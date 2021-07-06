@@ -47,13 +47,13 @@ export class SeesawGameComponent implements OnInit, OnDestroy {
       transparent: true,
       parent: 'gameContainer',
       audio: { disableWebAudio: true },
-      physics: {
+      /* physics: {
         default: 'matter',
         matter: {
             debug: false,
             gravity: { y: 150 }
         }
-      },
+      }, */
     };
   }
 
@@ -144,9 +144,9 @@ export default class SeesawScene extends Phaser.Scene {
   private circleIng3: Phaser.GameObjects.Ellipse;
   
 
-  private seesawBeam1: Phaser.GameObjects.Image;
+  //private seesawBeam1: Phaser.GameObjects.Image;
 ////  private seesaw2: Phaser.GameObjects.Image;
-  private seesawBeam2: Phaser.GameObjects.Image; 
+  //private seesawBeam2: Phaser.GameObjects.Image; 
   /// catchers
   /* private catcherNet1: Phaser.GameObjects.Image;
   private catcherNet2: Phaser.GameObjects.Image;
@@ -368,9 +368,10 @@ export default class SeesawScene extends Phaser.Scene {
     this.socketService.on('seesaw1Position', (pos) => {
     //  this.shakerContainer.setPosition(pos[0], pos[1]);
     ////  this.seesaw1.setPosition(pos[0], pos[1]);
-      console.log("seesaw1 pos0: "+pos[0]+" seesaw1 pos1: "+pos[1])
-      this.rectangle1.setPosition(pos[0], pos[1]);
-      console.log("seesaw1 pos2: "+pos[2]+" seesaw1 pos3: "+pos[3])
+      console.log("seesaw1 X: "+pos[0]+" seesaw1 Y: "+pos[1])
+      this.rectangle1.setPosition(pos[0]-200, pos[1]);
+      console.log("seesaw1 length: "+pos[2]+" seesaw1 height: "+pos[3])
+      //this.rectangle1.setSize(800, 50);
       this.rectangle1.setSize(pos[2], pos[3]);
     });
 
@@ -386,10 +387,10 @@ export default class SeesawScene extends Phaser.Scene {
     this.socketService.on('seesaw2Position', (pos) => {
     //  this.shakerContainer.setPosition(pos[0], pos[1]);
     //  this.seesaw2.setPosition(pos[0], pos[1]);
-      this.rectangle2.setPosition(pos[0], pos[1]);
-      console.log("seesaw2 pos0: "+pos[0]+" seesaw2 pos1: "+pos[1])
+      this.rectangle2.setPosition(pos[0]-200, pos[1]);
+      console.log("seesaw2 X: "+pos[0]+" seesaw2 Y: "+pos[1])
       this.rectangle2.setSize(pos[2], pos[3]);
-      console.log("seesaw2 pos2: "+pos[2]+" seesaw2 pos3: "+pos[3])
+      console.log("seesaw2 length: "+pos[2]+" seesaw2 height: "+pos[3])
     });
 
     this.socketService.on('seesawBeam2Position', (pos) => {
@@ -408,22 +409,24 @@ export default class SeesawScene extends Phaser.Scene {
      /// current ingredient position left
      this.socketService.on('updateIngredientLeft', (pos) => {
       this.ingredientLeft.setPosition(pos[0], pos[1]);
-      console.log("ingredient1CirclePosition pos0: "+pos[0]+" ingredient1CirclePosition pos1: "+pos[1])
+      console.log("ingredient1Left X: "+pos[0]+" ingredient1Left Y: "+pos[1])
       this.circleIng1.setPosition(pos[0], pos[1]);
     });
+     /// current ingredient position center
+     this.socketService.on('updateIngredientCenter', (pos) => {
+      this.ingredientCenter.setPosition(pos[0], pos[1]);
+      console.log("ingredientCenter X: "+pos[0]+" ingredient2Center Y: "+pos[1])
+      this.circleIng2.setPosition(pos[0], pos[1]);
+    });
+
     /// current ingredient position right
     this.socketService.on('updateIngredientRight', (pos) => {
       // console.log("ingredientRight Nr:", pos[2]);
       this.ingredientRight.setPosition(pos[0], pos[1]);
-      console.log("ingredien2CirclePosition pos0: "+pos[0]+" ingredien2CirclePosition pos1: "+pos[1])
-      this.circleIng2.setPosition(pos[0], pos[1]);
-    });
-    /// current ingredient position center
-    this.socketService.on('updateIngredientCenter', (pos) => {
-      this.ingredientCenter.setPosition(pos[0], pos[1]);
-      console.log("ingredient3CirclePosition pos0: "+pos[0]+" ingredient3CirclePosition pos1: "+pos[1])
+      console.log("ingredienRight X: "+pos[0]+" ingredienRight Y: "+pos[1])
       this.circleIng3.setPosition(pos[0], pos[1]);
     });
+   
     this.socketService.on('changeImageIngredientLeft', (nr) => {
       if (this.ingredientLeft != null) {
        this.ingredientLeft.destroy();
@@ -744,10 +747,18 @@ this.socketService.on('checkIngredientOnList', (number) => {
     this.ingredientLeft?.destroy();
     this.ingredientCenter?.destroy();
     this.ingredientRight?.destroy();
+
+    this.rectangle1.destroy();
+    this.rectangle2.destroy();
+    this.rectangleBeam1.destroy();
+    this.rectangleBeam2.destroy();
+    this.circleIng1.destroy();
+    this.circleIng2.destroy();
+    this.circleIng3.destroy();
   ////  this.seesaw1?.destroy();
-    this.seesawBeam1?.destroy();
+   // this.seesawBeam1?.destroy();
   ////  this.seesaw2?.destroy();
-    this.seesawBeam2?.destroy();
+   // this.seesawBeam2?.destroy();
 
     this.ingredientList?.destroy();
     this.catchedIngredientCounterText1?.destroy();
