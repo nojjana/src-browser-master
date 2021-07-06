@@ -401,21 +401,6 @@ export default class SeesawScene extends Phaser.Scene {
         this.rectangleBeam2.setSize(pos[2], pos[3]);
     });
 
-    this.socketService.on('ingredient1CirclePosition', (pos) => {
-        console.log("ingredient1CirclePosition pos0: "+pos[0]+" ingredient1CirclePosition pos1: "+pos[1])
-        this.circleIng1.setPosition(pos[0], pos[1]);
-    });
-
-    this.socketService.on('ingredient2CirclePosition', (pos) => {
-        console.log("ingredien2CirclePosition pos0: "+pos[0]+" ingredien2CirclePosition pos1: "+pos[1])
-        this.circleIng2.setPosition(pos[0], pos[1]);
-    });
-
-    this.socketService.on('ingredient3CirclePosition', (pos) => {
-        console.log("ingredient3CirclePosition pos0: "+pos[0]+" ingredient3CirclePosition pos1: "+pos[1])
-        this.circleIng3.setPosition(pos[0], pos[1]);
-    });
-
     // /// current ingredient position
     // this.socketService.on('updateIngredientPosition', (pos) => {
     //   this.ingredientTest.setPosition(pos[0], pos[1]);
@@ -423,15 +408,21 @@ export default class SeesawScene extends Phaser.Scene {
      /// current ingredient position left
      this.socketService.on('updateIngredientLeft', (pos) => {
       this.ingredientLeft.setPosition(pos[0], pos[1]);
+      console.log("ingredient1CirclePosition pos0: "+pos[0]+" ingredient1CirclePosition pos1: "+pos[1])
+      this.circleIng1.setPosition(pos[0], pos[1]);
     });
     /// current ingredient position right
     this.socketService.on('updateIngredientRight', (pos) => {
       // console.log("ingredientRight Nr:", pos[2]);
       this.ingredientRight.setPosition(pos[0], pos[1]);
+      console.log("ingredien2CirclePosition pos0: "+pos[0]+" ingredien2CirclePosition pos1: "+pos[1])
+      this.circleIng2.setPosition(pos[0], pos[1]);
     });
     /// current ingredient position center
     this.socketService.on('updateIngredientCenter', (pos) => {
       this.ingredientCenter.setPosition(pos[0], pos[1]);
+      console.log("ingredient3CirclePosition pos0: "+pos[0]+" ingredient3CirclePosition pos1: "+pos[1])
+      this.circleIng3.setPosition(pos[0], pos[1]);
     });
     this.socketService.on('changeImageIngredientLeft', (nr) => {
       if (this.ingredientLeft != null) {
