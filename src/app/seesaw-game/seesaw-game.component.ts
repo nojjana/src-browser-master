@@ -369,7 +369,7 @@ export default class SeesawScene extends Phaser.Scene {
     //  this.shakerContainer.setPosition(pos[0], pos[1]);
     ////  this.seesaw1.setPosition(pos[0], pos[1]);
       console.log("seesaw1 X: "+pos[0]+" seesaw1 Y: "+pos[1])
-      this.rectangle1.setPosition(pos[0]-210, pos[1]);
+      this.rectangle1.setPosition(pos[0]-240, pos[1]);
       console.log("seesaw1 length: "+pos[2]+" seesaw1 height: "+pos[3])
       //this.rectangle1.setSize(800, 50);
       this.rectangle1.setSize(pos[2], pos[3]);
@@ -379,7 +379,7 @@ export default class SeesawScene extends Phaser.Scene {
       //  this.shakerContainer.setPosition(pos[0], pos[1]);
       ////  this.seesaw1.setPosition(pos[0], pos[1]);
         console.log("seesawBeam1 pos0: "+pos[0]+" seesawBeam1 pos1: "+pos[1])
-        this.rectangleBeam1.setPosition(pos[0], pos[1]);
+        this.rectangleBeam1.setPosition(pos[0]-240, pos[1]);
         console.log("seesawBeam1 pos2: "+pos[2]+" seesawBeam1 pos3: "+pos[3])
         this.rectangleBeam1.setSize(pos[2], pos[3]);
       });
@@ -387,7 +387,7 @@ export default class SeesawScene extends Phaser.Scene {
     this.socketService.on('seesaw2Position', (pos) => {
     //  this.shakerContainer.setPosition(pos[0], pos[1]);
     //  this.seesaw2.setPosition(pos[0], pos[1]);
-      this.rectangle2.setPosition(pos[0]-200, pos[1]);
+      this.rectangle2.setPosition(pos[0]-240, pos[1]);
       console.log("seesaw2 X: "+pos[0]+" seesaw2 Y: "+pos[1])
       this.rectangle2.setSize(pos[2], pos[3]);
       console.log("seesaw2 length: "+pos[2]+" seesaw2 height: "+pos[3])
@@ -397,7 +397,7 @@ export default class SeesawScene extends Phaser.Scene {
       //  this.shakerContainer.setPosition(pos[0], pos[1]);
       ////  this.seesaw1.setPosition(pos[0], pos[1]);
         console.log("seesawBeam2 pos0: "+pos[0]+" seesawBeam1 pos1: "+pos[1])
-        this.rectangleBeam2.setPosition(pos[0], pos[1]);
+        this.rectangleBeam2.setPosition(pos[0]-240, pos[1]);
         console.log("seesaBeamw2 pos2: "+pos[2]+" seesawBeam1 pos3: "+pos[3])
         this.rectangleBeam2.setSize(pos[2], pos[3]);
     });
