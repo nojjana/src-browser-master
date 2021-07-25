@@ -366,10 +366,7 @@ export default class SeesawScene extends Phaser.Scene {
     // listeners on updates from server
     /// current shaker position
     this.socketService.on('seesaw1Position', (pos) => {
-    //  this.shakerContainer.setPosition(pos[0], pos[1]);
-    ////  this.seesaw1.setPosition(pos[0], pos[1]);
       console.log("seesaw1 X: "+pos[0]+" seesaw1 Y: "+pos[1]+" seesaw Angle: "+pos[4])
-    //  console.log("seesaw1 length: "+pos[2]+" seesaw1 height: "+pos[3])
 
       this.rectangle1.setPosition(pos[0], pos[1]);
       this.rectangle1.setSize(pos[2], pos[3]);
@@ -380,7 +377,7 @@ export default class SeesawScene extends Phaser.Scene {
     this.socketService.on('seesawBeam1Position', (pos) => {
       //  this.shakerContainer.setPosition(pos[0], pos[1]);
       ////  this.seesaw1.setPosition(pos[0], pos[1]);
-        console.log("seesawBeam1 pos0: "+pos[0]+" seesawBeam1 pos1: "+pos[1])
+    //    console.log("seesawBeam1 pos0: "+pos[0]+" seesawBeam1 pos1: "+pos[1])
     //    console.log("seesawBeam1 length: "+pos[2]+" seesawBeam1 height: "+pos[3])
 
         this.rectangleBeam1.setPosition(pos[0], pos[1]);
@@ -390,7 +387,7 @@ export default class SeesawScene extends Phaser.Scene {
     this.socketService.on('seesaw2Position', (pos) => {
     //  this.shakerContainer.setPosition(pos[0], pos[1]);
     //  this.seesaw2.setPosition(pos[0], pos[1]);
-      console.log("seesaw2 X: "+pos[0]+" seesaw2 Y: "+pos[1] +" seesaw Rotation: "+pos[4])
+      console.log("seesaw2 X: "+pos[0]+" seesaw2 Y: "+pos[1] +" seesaw2 Angle: "+pos[4])
     //  console.log("seesaw2 length: "+pos[2]+" seesaw2 height: "+pos[3])
 
       this.rectangle2.setPosition(pos[0], pos[1]);
@@ -402,7 +399,7 @@ export default class SeesawScene extends Phaser.Scene {
     this.socketService.on('seesawBeam2Position', (pos) => {
       //  this.shakerContainers.setPosition(pos[0], pos[1]);
       ////  this.seesaw1.setPosition(pos[0], pos[1]);
-        console.log("seesawBeam1 pos0: "+pos[0]+" seesawBeam1 pos1: "+pos[1])
+    //    console.log("seesawBeam1 pos0: "+pos[0]+" seesawBeam1 pos1: "+pos[1])
     //    console.log("seesawBeam2 length: "+pos[2]+" seesawBeam2 height: "+pos[3])
 
         this.rectangleBeam2.setPosition(pos[0], pos[1]);
@@ -416,13 +413,13 @@ export default class SeesawScene extends Phaser.Scene {
      /// current ingredient position left
      this.socketService.on('updateIngredientLeft', (pos) => {
       this.ingredientLeft.setPosition(pos[0], pos[1]);
-      console.log("ingredient1Left X: "+pos[0]+" ingredient1Left Y: "+pos[1])
+    //  console.log("ingredient1Left X: "+pos[0]+" ingredient1Left Y: "+pos[1])
       this.circleIng1.setPosition(pos[0], pos[1]);
     });
      /// current ingredient position center
      this.socketService.on('updateIngredientCenter', (pos) => {
       this.ingredientCenter.setPosition(pos[0], pos[1]);
-      console.log("ingredientCenter X: "+pos[0]+" ingredient2Center Y: "+pos[1])
+    //  console.log("ingredientCenter X: "+pos[0]+" ingredient2Center Y: "+pos[1])
       this.circleIng2.setPosition(pos[0], pos[1]);
     });
 
