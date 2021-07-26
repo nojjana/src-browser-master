@@ -303,8 +303,8 @@ export default class CatcherScene extends Phaser.Scene {
       this.screenWidth * 0.8,
       this.screenHeight * 0.9,
       'pressStartBlack',
-      'Punkte: 0',
-      28)
+      '0',
+      32)
       .setOrigin(0.5)
       .setDepth(100);
 
@@ -314,7 +314,7 @@ export default class CatcherScene extends Phaser.Scene {
       this.screenHeight * 0.7,
       'pressStartBlack',
       '',
-      28)
+      40)
       .setOrigin(0.5)
       .setDepth(100);
     this.adjustedPointsText.setVisible(false);
@@ -425,7 +425,7 @@ this.socketService.on('checkIngredientOnList', (number) => {
     /// current score
     this.socketService.on('updateScore', (score) => {
       this.score = score;
-      this.scoreText.setText('Punkte: ' + score);
+      this.scoreText.setText(score);
     });
 
     /// on +/- score points
@@ -659,7 +659,9 @@ this.socketService.on('checkIngredientOnList', (number) => {
   private showLostPointsByIngredient(scoreDec: number, ingredientNr: number, x: number, y: number) {
     this.adjustedPointsText.setX(x);
     this.adjustedPointsText.setY(y);
-    this.adjustedPointsText.setText(scoreDec + ' Punkte');
+    this.adjustedPointsText.setText('' + scoreDec);
+    // red
+    this.adjustedPointsText.setTintFill(0xE50D0D);
     this.adjustedPointsText.setVisible(true);
     this.adjustedPointsTextVisibleCounter = 0;
     // return this.adjustedPointsText;
@@ -668,7 +670,9 @@ this.socketService.on('checkIngredientOnList', (number) => {
   private showCollectedPointsByIngredient(scoreInc: number, ingredientNr: number, x: number, y: number) {
     this.adjustedPointsText.setX(x);
     this.adjustedPointsText.setY(y);
-    this.adjustedPointsText.setText('+' + scoreInc + ' Punkte');
+    this.adjustedPointsText.setText('+' + scoreInc);
+    // green
+    this.adjustedPointsText.setTintFill(0x37B400);
     this.adjustedPointsText.setVisible(true);
     this.adjustedPointsTextVisibleCounter = 0;
     // return this.adjustedPointsText;
