@@ -182,6 +182,7 @@ export default class CatcherScene extends Phaser.Scene {
     this.load.image('CatcherNet3', '../../assets/catcher/NetBlue.png');
     this.load.image('ShakerContainer', '../../assets/shaker/ShakerContainer.png');
     this.load.image('IngredientList', '../../assets/shaker/IngredientList.png');
+    this.load.image('ShakerMixing', '../../assets/shaker/ShakerMixing.png');
 
     /// ingredients falling
     this.load.image('Apple', '../../assets/shaker/Apple.png');
@@ -711,18 +712,24 @@ this.socketService.on('checkIngredientOnList', (number) => {
   }
 
   private showReachedScore() {
-    const text = ['Der Saft ist fertig!\n\n\n\n\n\nGesammelte Punkte: '
+    const text = ['Der Saft ist fertig!\n\n\n\nGesammelte Punkte: '
       + this.score + '\n\nDas macht ' + this.getNumberOfGlasses(this.score)
-      + ' Becher. Toll!'];
+      + ' Becher!'];
 
     this.add.bitmapText(
       this.screenCenterX,
-      this.screenCenterY,
+      this.screenCenterY*1.5,
       'pressStartBlack',
       text,
-      45)
+      40)
       .setOrigin(0.5, 0.5)
       .setCenterAlign();
+
+      this.add.image(
+        this.screenCenterX,
+        this.screenCenterY*0.8,
+        'ShakerMixing'
+      );
   }
 
   private initSoundEffects() {
