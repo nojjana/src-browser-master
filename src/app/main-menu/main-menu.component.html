@@ -1,11 +1,12 @@
 <div *ngIf="mainMenuState != null" STYLE="color: white">
 
-  <div style="color: white; text-align: center; padding-top: 50px;">
-    <p style="margin: 10px; font-size: 40px;">Game Code:</p>
-    <p style="margin: 60px; font-size: 80px;">{{mainMenuState.lobbyCode}}</p>
-  </div>
-
   <div *ngIf="mainMenuState.controllers < 2" style="position: absolute; margin-top: 10px; width: 100%;">
+
+    <div style="color: white; text-align: center; padding-top: 50px;">
+      <p style="margin: 10px; font-size: 40px;">Game Code:</p>
+      <p style="margin: 60px; font-size: 80px;">{{mainMenuState.lobbyCode}}</p>
+    </div>
+
     <div id="tutorial-box">
       <!-- <p style="text-decoration: underline; margin-top: 10px">Tutorial</p> -->
       <p style="font-size: 40px">Gib diesen Game Code auf deinem Handy ein.</p>
@@ -23,12 +24,27 @@
           <p style="font-size: 25px; text-align: center; color: white;">App herunterladen</p>
         </div>
       </div>
+
+      <!-- <div style="width: 200px; text-align: center; margin: 250px auto auto; padding-top: 100px">
+        <input class="game-code-input" placeholder="Game Code" [(ngModel)]="joinLobbyCode" autofocus>
+      </div>
+      <div style="text-align: center; width: 100%; margin-top: 20px;">
+        <div class="myButton2" (click)="joinLobby()">
+          <p style="font-size: 30px; margin-bottom: 0px">Bestätigen</p>
+        </div>
+      </div> -->
+
   </div>
 
 
   <!-- Displays all available games, the selected game is presented green -->
-  <div style="position: absolute; margin-top: 0px; width: 100%" *ngIf="mainMenuState.controllers == 2">
-    <div style="position: relative; text-align: center; width: 100%; margin-top: 20px" *ngFor="let game of mainMenuState.games; let i = index" >
+  <div style="position: absolute; margin-top: 80px; width: 100%" *ngIf="mainMenuState.controllers == 2">
+
+    <div style="color: white; text-align: center; padding: 80px">
+      <p style="font-size: 60px;">Säftlimacher Spiele</p>
+    </div>
+
+    <div style="position: relative; text-align: center; width: 100%; margin-top: 30px" *ngFor="let game of mainMenuState.games; let i = index" >
       <!--<button mat-raised-button style="width: 200px;" [color]="getButtonColor(i)" (click)="showConnectControllerError()">
         {{game}}
       </button>-->

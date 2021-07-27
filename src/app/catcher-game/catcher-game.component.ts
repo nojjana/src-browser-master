@@ -182,11 +182,13 @@ export default class CatcherScene extends Phaser.Scene {
     this.load.image('CatcherNet3', '../../assets/catcher/NetBlue.png');
     this.load.image('ShakerContainer', '../../assets/shaker/ShakerContainer.png');
     this.load.image('IngredientList', '../../assets/shaker/IngredientList.png');
+    this.load.image('ShakerMixing', '../../assets/shaker/ShakerMixing.png');
 
     /// ingredients falling
     this.load.image('Apple', '../../assets/shaker/Apple.png');
     this.load.image('Banana', '../../assets/shaker/Banana.png');
     this.load.image('Berry', '../../assets/shaker/Berry.png');
+    this.load.image('Beatle', '../../assets/shaker/Beatle.png');
     /// ingredients on list (TODO: handle with scaling?)
     this.load.image('AppleTall', '../../assets/shaker/AppleTall.png');
     this.load.image('BananaTall', '../../assets/shaker/BananaTall.png');
@@ -493,6 +495,8 @@ this.socketService.on('checkIngredientOnList', (number) => {
       return 'Banana'
     } else if (randomIngredientNumber == 2) {
       return 'Berry'
+    } else if (randomIngredientNumber == 3) {
+      return 'Beatle'
     }
   }
 
@@ -708,18 +712,24 @@ this.socketService.on('checkIngredientOnList', (number) => {
   }
 
   private showReachedScore() {
-    const text = ['Der Saft ist fertig!\n\n\n\n\n\nGesammelte Punkte: '
+    const text = ['Der Saft ist fertig!\n\n\n\nGesammelte Punkte: '
       + this.score + '\n\nDas macht ' + this.getNumberOfGlasses(this.score)
-      + ' Becher. Toll!'];
+      + ' Becher!'];
 
     this.add.bitmapText(
       this.screenCenterX,
-      this.screenCenterY,
+      this.screenCenterY*1.5,
       'pressStartBlack',
       text,
-      45)
+      40)
       .setOrigin(0.5, 0.5)
       .setCenterAlign();
+
+      this.add.image(
+        this.screenCenterX,
+        this.screenCenterY*0.8,
+        'ShakerMixing'
+      );
   }
 
   private initSoundEffects() {
@@ -754,6 +764,7 @@ enum IngredientType {
   APPLE,
   BANANA,
   BERRY,
+  BEATLE
   // HONEY,
   // BEE
 }

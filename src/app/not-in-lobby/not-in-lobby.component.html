@@ -10,20 +10,18 @@
   </div>
 </div>
 <div *ngIf="socketService.isConnected()" style="width: 100%;">
-  <div style="text-align: center; width: 100%; padding-top: 100px">
-    <div class="myButton" (click)="createLobby()">
+  <div style="text-align: center; width: 100%;  margin-top: 200px; padding-top: 100px">
+    <div class="myButtonBig" (click)="createLobby()">
       <!-- <p style="margin-bottom: 0px">New Lobby</p> -->
       <p style="font-size: 60px;">Spielen</p>
-
     </div>
   </div>
-  <!-- <div style="width: 200px; text-align: center; margin: 100px auto auto;">
+  <div style="width: 200px; text-align: center; margin: 100px auto auto; padding-top: 100px">
     <input class="game-code-input" placeholder="Game Code" [(ngModel)]="joinLobbyCode" autofocus>
   </div>
-
-  <div style="text-align: center; width: 100%; margin-top: 20px">
+  <div style="text-align: center; width: 100%; margin-top: 20px;">
     <div class="myButton" (click)="joinLobby()">
-      <p style="margin-bottom: 0px">Join</p>
+      <p style="font-size: 30px; margin-bottom: 0px">Bestätigen</p>
     </div>
   </div>
-</div> -->
+</div>
