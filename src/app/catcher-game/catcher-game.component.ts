@@ -187,6 +187,7 @@ export default class CatcherScene extends Phaser.Scene {
     this.load.image('Apple', '../../assets/shaker/Apple.png');
     this.load.image('Banana', '../../assets/shaker/Banana.png');
     this.load.image('Berry', '../../assets/shaker/Berry.png');
+    this.load.image('Beatle', '../../assets/shaker/Beatle.png');
     /// ingredients on list (TODO: handle with scaling?)
     this.load.image('AppleTall', '../../assets/shaker/AppleTall.png');
     this.load.image('BananaTall', '../../assets/shaker/BananaTall.png');
@@ -493,6 +494,8 @@ this.socketService.on('checkIngredientOnList', (number) => {
       return 'Banana'
     } else if (randomIngredientNumber == 2) {
       return 'Berry'
+    } else if (randomIngredientNumber == 3) {
+      return 'Beatle'
     }
   }
 
@@ -754,6 +757,7 @@ enum IngredientType {
   APPLE,
   BANANA,
   BERRY,
+  BEATLE
   // HONEY,
   // BEE
 }
