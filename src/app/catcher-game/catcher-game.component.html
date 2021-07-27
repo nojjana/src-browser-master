@@ -2,7 +2,7 @@
 <div style="width: 100%; height: 100%; background-color: black">
   <div style="position: absolute; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); color: white; text-align: center;" *ngIf="countdown != 0 && !tutorial">
     <p style="font-size: 120px; margin-top: 150px;">{{countdown}}</p>
-    <p style="font-size: 60px; margin-top: 200px;">
+    <p style="font-size: 70px; margin-top: 200px;">
       <span>Halte dein Handy mittig zum TV!</span>
   </p>
   <img src="assets/catcher/pointing-center-transparent.png" alt="Handy zur Mitte" style="height: 600px">
@@ -11,8 +11,9 @@
     <p style="font-size: 100px; margin-top: 150px; margin-right: 150px;">{{gameOverCountdown}}</p>
   </div>
   <main *ngIf="building"><div id="gameContainer"></div></main>
+
   <div id="tutorial-box" *ngIf="tutorial">
-    <div style="margin-top: 50px">
+    <div style="font-size: 100px; margin-top: 50px">
       <span>Bitte lest die Spielanleitung auf eurem Handy</span>
       <span *ngIf="dots == 3">...</span>
       <span *ngIf="dots == 2">..&nbsp;</span>
@@ -21,6 +22,9 @@
     </div>
     <div style="margin-top: 30px">
       {{amountOfReadyPlayers}}/2
+    </div>
+    <div style="width: 100%; margin-top: 70px; text-align: center;">
+      <img src="assets/catcher/screen-example.jpg" alt="Spielanzeige Beispiel" style="height: 600px">
     </div>
   </div>
 </div>
