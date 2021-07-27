@@ -31,3 +31,36 @@
   border: 3px solid #69f0ae;
   cursor: pointer;
 }
+
+.myButton2:hover {
+  color: #69f0ae;
+  border: 3px solid #69f0ae;
+  cursor: pointer;
+}
+
+.myButton2 {
+  color: white;
+  width: 200px;
+  height: 60px;
+  border: 3px solid white;
+  line-height: 0px;
+  margin: auto
+}
+
+.game-code-input{
+  padding:8px;
+  display:block;
+  border:none;
+  border-bottom:2px solid white;
+  width:184px;
+  background: transparent;
+  color: white;
+}
+
+input:focus{
+  outline: none;
+}
+
+.game-code-input:hover {
+  border-bottom:2px solid #69f0ae;
+}
