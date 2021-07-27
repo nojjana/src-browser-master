@@ -19,7 +19,7 @@ export class ShakerGameComponent implements OnInit, OnDestroy {
   public amountOfReadyPlayers = 0;
   public dots = 0;
   private dotInterval;
-  public countdown: number = 3;
+  public countdown: number = 5;
 
   public gameOverCountdown: number = 0;
   public gameOver = false;
@@ -53,7 +53,7 @@ export class ShakerGameComponent implements OnInit, OnDestroy {
       this.phaserGame.destroy(true);
     }
 
-    this.socketService.removeListener('shakerData');
+    this.socketService.removeListener('levelData');
     this.socketService.removeListener('updateHammer');
     this.socketService.removeListener('updateShaking');
 
@@ -73,7 +73,7 @@ export class ShakerGameComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.socketService.on('controllerEndedTutorial', () => { this.controllerReady(); });
-    this.socketService.once('shakerData', (shakerData) => { this.initShaker(shakerData); });
+    this.socketService.once('levelData', (levelData) => { this.buildGameView(levelData); });
     this.socketService.on('countdown', (number) => this.countdown = number);
     this.socketService.on('gameOverCountdown', (number) => {
       this.gameOverCountdown = number;
@@ -92,13 +92,13 @@ export class ShakerGameComponent implements OnInit, OnDestroy {
     }
   }
 
-  private initShaker(shakerData): void {
-    console.log('Now init Shaker');
+  private buildGameView(levelData): void {
+    console.log('Now building game view (scene).');
     this.building = true;
     setTimeout(() => {
       this.phaserGame = new Phaser.Game(this.config);
       this.phaserGame.scene.add('shakerScene', ShakerScene);
-      this.phaserGame.scene.start('shakerScene', { socketService: this.socketService, shakerData: shakerData });
+      this.phaserGame.scene.start('shakerScene', { socketService: this.socketService, levelData: levelData });
     }, 100);
   }
 }
@@ -257,9 +257,9 @@ export default class ShakerScene extends Phaser.Scene {
 
   create(data) {
     this.socketService = data.socketService;
-    const shakerData = data.shakerData;
-    this.allIngredientNumbersOnList = shakerData[6];
-    this.shakePointsNeededForFalling = shakerData[7];
+    const levelData = data.levelData;
+    this.allIngredientNumbersOnList = levelData[6];
+    this.shakePointsNeededForFalling = levelData[7];
 
     this.screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
     this.screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
@@ -296,7 +296,7 @@ export default class ShakerScene extends Phaser.Scene {
     this.adjustedPointsTextVisibleCounter = 0;
 
     // TODO create own background
-    this.createBackground(shakerData[1], shakerData[0]);
+    this.createBackground(levelData[1], levelData[0]);
     this.background.setVisible(false);
     this.holes.setVisible(false);
 
@@ -490,7 +490,7 @@ export default class ShakerScene extends Phaser.Scene {
       }
     });
 
-    this.socketService.emit('shakerBuild');
+    this.socketService.emit('gameViewBuild');
   }
 
   initSoundEffects() {
