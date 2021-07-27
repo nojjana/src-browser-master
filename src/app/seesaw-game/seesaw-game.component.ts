@@ -142,6 +142,7 @@ export default class SeesawScene extends Phaser.Scene {
   private circleIng1: Phaser.GameObjects.Ellipse;
   private circleIng2: Phaser.GameObjects.Ellipse;
   private circleIng3: Phaser.GameObjects.Ellipse;
+  private groundForSeesaw: Phaser.GameObjects.Rectangle;
   
 
   //private seesawBeam1: Phaser.GameObjects.Image;
@@ -253,13 +254,14 @@ export default class SeesawScene extends Phaser.Scene {
     this.ground.setVisible(true);
 
     //TEST RECTANGLE
-    this.rectangle1 = this.add.rectangle(0, 0, 0, 0, 0x6666ff);
+    this.rectangle1 = this.add.rectangle(0, 0, 0, 0, 0x6666ff)
     this.rectangleBeam1 = this.add.rectangle(0,0,0,0, 0x6666ff)
     this.rectangle2 = this.add.rectangle(0,0,0,0, 0x66666f)
-    this.rectangleBeam2 = this.add.rectangle(0,0,0,0, 0x66666f);
+    this.rectangleBeam2 = this.add.rectangle(0,0,0,0, 0x66666f)
     this.circleIng1 = this.add.ellipse(0,0,100,100, 0x6666ff)
     this.circleIng2 = this.add.ellipse(0,0,100,100, 0x6668ff)
     this.circleIng3 = this.add.ellipse(0,0,100,100, 0x6662ff)
+    this.groundForSeesaw = this.add.rectangle(0, 0, 0, 0, 0x6666ff)
 
 
      // seesaw
@@ -404,6 +406,14 @@ export default class SeesawScene extends Phaser.Scene {
 
         this.rectangleBeam2.setPosition(pos[0], pos[1]);
         this.rectangleBeam2.setSize(pos[2], pos[3]);
+    });
+
+    this.socketService.on('seesaw2Ground', (pos) => {
+      console.log("seesaw2 ground X: "+pos[0]+" seesaw2 ground Y: "+pos[1])
+
+      this.groundForSeesaw.setPosition(pos[0], pos[1]);
+      this.groundForSeesaw.setSize(pos[2], pos[3]);
+      this.groundForSeesaw.setOrigin(0.5);   
     });
 
     // /// current ingredient position
