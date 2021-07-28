@@ -142,6 +142,9 @@ export default class SeesawScene extends Phaser.Scene {
   private circleIng1: Phaser.GameObjects.Ellipse;
   private circleIng2: Phaser.GameObjects.Ellipse;
   private circleIng3: Phaser.GameObjects.Ellipse;
+
+  //test
+  private seesawTriggerSpace: Phaser.GameObjects.Rectangle;
   
 
   //private seesawBeam1: Phaser.GameObjects.Image;
@@ -260,6 +263,7 @@ export default class SeesawScene extends Phaser.Scene {
     this.circleIng1 = this.add.ellipse(0,0,100,100, 0x6666ff)
     this.circleIng2 = this.add.ellipse(0,0,100,100, 0x6668ff)
     this.circleIng3 = this.add.ellipse(0,0,100,100, 0x6662ff)
+    this.seesawTriggerSpace = this.add.rectangle(0,0,0,0, 0x6666ff)
 
 
      // seesaw
@@ -406,6 +410,16 @@ export default class SeesawScene extends Phaser.Scene {
         this.rectangleBeam2.setSize(pos[2], pos[3]);
     });
 
+    this.socketService.on('seesawTriggerSpace', (pos) => {
+      //  this.shakerContainers.setPosition(pos[0], pos[1]);
+      ////  this.seesaw1.setPosition(pos[0], pos[1]);
+    //    console.log("seesawBeam1 pos0: "+pos[0]+" seesawBeam1 pos1: "+pos[1])
+    //    console.log("seesawBeam2 length: "+pos[2]+" seesawBeam2 height: "+pos[3])
+
+        this.seesawTriggerSpace.setPosition(pos[0], pos[1]);
+        this.seesawTriggerSpace.setSize(pos[2], pos[3]);
+    });
+
     // /// current ingredient position
     // this.socketService.on('updateIngredientPosition', (pos) => {
     //   this.ingredientTest.setPosition(pos[0], pos[1]);
@@ -413,6 +427,7 @@ export default class SeesawScene extends Phaser.Scene {
      /// current ingredient position left
      this.socketService.on('updateIngredientLeft', (pos) => {
       this.ingredientLeft.setPosition(pos[0], pos[1]);
+      this.ingredientLeft.setAngle(pos[3]);
     //  console.log("ingredient1Left X: "+pos[0]+" ingredient1Left Y: "+pos[1])
       this.circleIng1.setPosition(pos[0], pos[1]);
     });
