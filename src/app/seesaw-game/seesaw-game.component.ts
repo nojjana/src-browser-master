@@ -144,8 +144,11 @@ export default class SeesawScene extends Phaser.Scene {
   private circleIng3: Phaser.GameObjects.Ellipse;
 
   //test
-  private seesawTriggerSpace: Phaser.GameObjects.Rectangle;
-  
+/*   private seesaw1TriggerSpaceLeft: Phaser.GameObjects.Rectangle;
+  private seesaw1TriggerSpaceRight: Phaser.GameObjects.Rectangle;
+  private seesaw2TriggerSpaceLeft: Phaser.GameObjects.Rectangle;
+  private seesaw2TriggerSpaceRight: Phaser.GameObjects.Rectangle; */
+
 
   //private seesawBeam1: Phaser.GameObjects.Image;
 ////  private seesaw2: Phaser.GameObjects.Image;
@@ -263,7 +266,11 @@ export default class SeesawScene extends Phaser.Scene {
     this.circleIng1 = this.add.ellipse(0,0,100,100, 0x6666ff)
     this.circleIng2 = this.add.ellipse(0,0,100,100, 0x6668ff)
     this.circleIng3 = this.add.ellipse(0,0,100,100, 0x6662ff)
-    this.seesawTriggerSpace = this.add.rectangle(0,0,0,0, 0x6666ff)
+/*     this.seesaw1TriggerSpaceLeft = this.add.rectangle(0,0,0,0, 0x6666ff)
+    this.seesaw1TriggerSpaceRight = this.add.rectangle(0,0,0,0, 0x6666ff)
+    this.seesaw2TriggerSpaceLeft = this.add.rectangle(0,0,0,0, 0x6666ff)
+    this.seesaw2TriggerSpaceRight = this.add.rectangle(0,0,0,0, 0x6666ff) */
+
 
 
      // seesaw
@@ -410,40 +417,49 @@ export default class SeesawScene extends Phaser.Scene {
         this.rectangleBeam2.setSize(pos[2], pos[3]);
     });
 
-    this.socketService.on('seesawTriggerSpace', (pos) => {
-      //  this.shakerContainers.setPosition(pos[0], pos[1]);
-      ////  this.seesaw1.setPosition(pos[0], pos[1]);
-    //    console.log("seesawBeam1 pos0: "+pos[0]+" seesawBeam1 pos1: "+pos[1])
-    //    console.log("seesawBeam2 length: "+pos[2]+" seesawBeam2 height: "+pos[3])
-
-        this.seesawTriggerSpace.setPosition(pos[0], pos[1]);
-        this.seesawTriggerSpace.setSize(pos[2], pos[3]);
+/*     this.socketService.on('seesaw1TriggerSpaceLeft', (pos) => {
+        this.seesaw1TriggerSpaceLeft.setPosition(pos[0], pos[1]);
+        this.seesaw1TriggerSpaceLeft.setSize(pos[2], pos[3]);
     });
 
+      this.socketService.on('seesaw1TriggerSpaceRight', (pos) => {
+        this.seesaw1TriggerSpaceRight.setPosition(pos[0], pos[1]);
+        this.seesaw1TriggerSpaceRight.setSize(pos[2], pos[3]);
+    });
+
+    this.socketService.on('seesaw2TriggerSpaceLeft', (pos) => {
+      this.seesaw2TriggerSpaceLeft.setPosition(pos[0], pos[1]);
+      this.seesaw2TriggerSpaceLeft.setSize(pos[2], pos[3]);
+    });
+
+    this.socketService.on('seesaw2TriggerSpaceRight', (pos) => {
+      this.seesaw2TriggerSpaceRight.setPosition(pos[0], pos[1]);
+      this.seesaw2TriggerSpaceRight.setSize(pos[2], pos[3]);
+    }); */
+
     // /// current ingredient position
-    // this.socketService.on('updateIngredientPosition', (pos) => {
-    //   this.ingredientTest.setPosition(pos[0], pos[1]);
-    // });
+
      /// current ingredient position left
      this.socketService.on('updateIngredientLeft', (pos) => {
       this.ingredientLeft.setPosition(pos[0], pos[1]);
       this.ingredientLeft.setAngle(pos[3]);
-    //  console.log("ingredient1Left X: "+pos[0]+" ingredient1Left Y: "+pos[1])
       this.circleIng1.setPosition(pos[0], pos[1]);
+      this.circleIng1.setAngle(pos[3]);
     });
      /// current ingredient position center
      this.socketService.on('updateIngredientCenter', (pos) => {
       this.ingredientCenter.setPosition(pos[0], pos[1]);
-    //  console.log("ingredientCenter X: "+pos[0]+" ingredient2Center Y: "+pos[1])
+      this.ingredientCenter.setAngle(pos[3]);
       this.circleIng2.setPosition(pos[0], pos[1]);
+      this.circleIng2.setAngle(pos[3])
     });
 
     /// current ingredient position right
     this.socketService.on('updateIngredientRight', (pos) => {
-      // console.log("ingredientRight Nr:", pos[2]);
       this.ingredientRight.setPosition(pos[0], pos[1]);
-    //  console.log("ingredienRight X: "+pos[0]+" ingredienRight Y: "+pos[1])
+      this.ingredientCenter.setAngle(pos[3]);
       this.circleIng3.setPosition(pos[0], pos[1]);
+      this.circleIng3.setPosition(pos[3]);
     });
    
     this.socketService.on('changeImageIngredientLeft', (nr) => {
