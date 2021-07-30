@@ -138,6 +138,20 @@ export default class SeesawScene extends Phaser.Scene {
   private rectangleBeam1: Phaser.GameObjects.Rectangle;
   private rectangle2: Phaser.GameObjects.Rectangle;
   private rectangleBeam2: Phaser.GameObjects.Rectangle;
+
+  //shakerContainers
+  private shakerContainer: Phaser.GameObjects.Image;
+  private garbageContainerLeft: Phaser.GameObjects.Image;
+  private shakerContainerRight: Phaser.GameObjects.Image;
+  private garbageContainerRight: Phaser.GameObjects.Image;
+
+  //placement of containers
+  private garbageContainerLeftX = 550;
+  private shakerContainerX = 1350; //800
+  private garbageContainerRightX = 2250; //2400
+  private shakerContainerY = 900;
+  private garbageContainerY = 1000;
+
 ////only for testing reasons - circle for Ingredients 1-3
   private circleIng1: Phaser.GameObjects.Ellipse;
   private circleIng2: Phaser.GameObjects.Ellipse;
@@ -183,12 +197,12 @@ export default class SeesawScene extends Phaser.Scene {
   private endBling: Phaser.Sound.BaseSound;
 
     // not needed anymore? TODO delete
-    private ingredientFallingX: number;
-    private ingredientFallingY: number;
-    public ingredientTouchedCollider: boolean = false;
-    private ground: Phaser.GameObjects.Image;
-    private ingredientFalling: Phaser.GameObjects.Image;
-    private ingredientTest: Phaser.GameObjects.Image;
+  private ingredientFallingX: number;
+  private ingredientFallingY: number;
+  public ingredientTouchedCollider: boolean = false;
+  private ground: Phaser.GameObjects.Image;
+  private ingredientFalling: Phaser.GameObjects.Image;
+  private ingredientTest: Phaser.GameObjects.Image;
 
   constructor() {
     super({ key: 'seesawScene' });
@@ -201,10 +215,10 @@ export default class SeesawScene extends Phaser.Scene {
     ////this.load.image('CatcherNet2', '../../assets/catcher/NetLightGreen.png');
     ////this.load.image('CatcherNet3', '../../assets/catcher/NetBlue.png');
     this.load.image('ShakerContainer', '../../assets/shaker/ShakerContainer.png');
+    this.load.image('GarbageContainer', '../../assets/seesaw/Garbage.png');
     this.load.image('IngredientList', '../../assets/shaker/IngredientList.png');
     this.load.image('Seesaw', '../../assets/seesaw/seesaw.png');
     this.load.image('SeesawBeam', '../../assets/seesaw/seesawBeam.png');
-
 
     /// ingredients falling
     this.load.image('Apple', '../../assets/shaker/Apple.png');
@@ -271,8 +285,6 @@ export default class SeesawScene extends Phaser.Scene {
     this.seesaw2TriggerSpaceLeft = this.add.rectangle(0,0,0,0, 0x6666ff)
     this.seesaw2TriggerSpaceRight = this.add.rectangle(0,0,0,0, 0x6666ff) */
 
-
-
      // seesaw
     /*  this.seesaw1 = this.add.image(
       initSeesaw1X,
@@ -304,6 +316,28 @@ export default class SeesawScene extends Phaser.Scene {
       'SeesawBeam'
     )
     this.seesawBeam2.setDepth(80); */
+
+    this.shakerContainer = this.add.image(
+      this.shakerContainerX,
+      this.shakerContainerY,
+      'ShakerContainer'
+    );
+    this.shakerContainer.setDepth(80);
+
+    this.garbageContainerLeft = this.add.image(
+      this.garbageContainerLeftX,
+      this.garbageContainerY,
+      'GarbageContainer'
+    );
+    this.garbageContainerLeft.setDepth(80);
+
+    this.garbageContainerRight = this.add.image(
+      this.garbageContainerRightX,
+      this.garbageContainerY,
+      'GarbageContainer'
+    );
+    this.garbageContainerRight.setDepth(80);
+
 
     /// ingredient left
     this.ingredientLeft = this.add.image(
@@ -395,11 +429,10 @@ export default class SeesawScene extends Phaser.Scene {
         this.rectangleBeam1.setSize(pos[2], pos[3]);
       });
 
+      
+
     this.socketService.on('seesaw2Position', (pos) => {
-    //  this.shakerContainer.setPosition(pos[0], pos[1]);
-    //  this.seesaw2.setPosition(pos[0], pos[1]);
       console.log("seesaw2 X: "+pos[0]+" seesaw2 Y: "+pos[1] +" seesaw2 Angle: "+pos[4])
-    //  console.log("seesaw2 length: "+pos[2]+" seesaw2 height: "+pos[3])
 
       this.rectangle2.setPosition(pos[0], pos[1]);
       this.rectangle2.setSize(pos[2], pos[3]);
@@ -441,25 +474,31 @@ export default class SeesawScene extends Phaser.Scene {
 
      /// current ingredient position left
      this.socketService.on('updateIngredientLeft', (pos) => {
-      this.ingredientLeft.setPosition(pos[0], pos[1]);
-      this.ingredientLeft.setAngle(pos[3]);
-      this.circleIng1.setPosition(pos[0], pos[1]);
-      this.circleIng1.setAngle(pos[3]);
+      if (this.ingredientLeft != null) {
+        this.ingredientLeft.setPosition(pos[0], pos[1]);
+        this.ingredientLeft.setAngle(pos[3]);
+        this.circleIng1.setPosition(pos[0], pos[1]);
+        this.circleIng1.setAngle(pos[3]);
+      }
     });
      /// current ingredient position center
      this.socketService.on('updateIngredientCenter', (pos) => {
-      this.ingredientCenter.setPosition(pos[0], pos[1]);
-      this.ingredientCenter.setAngle(pos[3]);
-      this.circleIng2.setPosition(pos[0], pos[1]);
-      this.circleIng2.setAngle(pos[3])
+      if (this.ingredientCenter != null) {
+        this.ingredientCenter.setPosition(pos[0], pos[1]);
+        this.ingredientCenter.setAngle(pos[3]);
+        this.circleIng2.setPosition(pos[0], pos[1]);
+        this.circleIng2.setAngle(pos[3])
+      }
     });
 
     /// current ingredient position right
     this.socketService.on('updateIngredientRight', (pos) => {
-      this.ingredientRight.setPosition(pos[0], pos[1]);
-      this.ingredientCenter.setAngle(pos[3]);
-      this.circleIng3.setPosition(pos[0], pos[1]);
-      this.circleIng3.setPosition(pos[3]);
+      if (this.ingredientRight != null) {
+        this.ingredientRight.setPosition(pos[0], pos[1]);
+        this.ingredientRight.setAngle(pos[3]);
+        this.circleIng3.setPosition(pos[0], pos[1]);
+        this.circleIng3.setAngle(pos[3]);
+      }
     });
    
     this.socketService.on('changeImageIngredientLeft', (nr) => {
@@ -554,7 +593,6 @@ this.socketService.on('checkIngredientOnList', (number) => {
 
 
   update() {
-
     if (this.playing != undefined && this.playing) {
       // this.keepFalling();
       // console.log("boolean for while: "+this.ingredientTouchedCollider);
@@ -794,6 +832,10 @@ this.socketService.on('checkIngredientOnList', (number) => {
    // this.seesawBeam1?.destroy();
   ////  this.seesaw2?.destroy();
    // this.seesawBeam2?.destroy();
+
+    this.shakerContainer.destroy();
+    this.garbageContainerLeft.destroy();
+    this.garbageContainerRight.destroy();
 
     this.ingredientList?.destroy();
     this.catchedIngredientCounterText1?.destroy();
