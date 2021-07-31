@@ -1,6 +1,7 @@
 import { verifyHostBindings } from '@angular/compiler';
 import { Component, destroyPlatform, OnDestroy, OnInit } from '@angular/core';
 import Phaser from 'phaser';
+import { SaftlimacherBaseGameComponent } from '../saftlimacher-base-game/saftlimacher-base-game-component';
 //import { clearInterval } from 'timers';
 import { SocketService } from '../socket-service/socket.service';
 import Group = Phaser.GameObjects.Group;
@@ -11,95 +12,24 @@ import Group = Phaser.GameObjects.Group;
   templateUrl: './shaker-game.component.html',
   styleUrls: ['./shaker-game.component.css']
 })
-export class ShakerGameComponent implements OnInit, OnDestroy {
-  phaserGame: Phaser.Game;
-  config: Phaser.Types.Core.GameConfig;
-  public tutorial = true;
-  public building = false;
-  public amountOfReadyPlayers = 0;
-  public dots = 0;
-  private dotInterval;
-  public countdown: number = 5;
+export class ShakerGameComponent extends SaftlimacherBaseGameComponent implements OnInit, OnDestroy {
 
-  public gameOverCountdown: number = 0;
-  public gameOver = false;
-
-  constructor(private socketService: SocketService) {
-    this.dotInterval = setInterval(() => {
-      this.dots++;
-      if (this.dots === 4) {
-        this.dots = 0;
-      }
-    }, 500);
-
-    this.config = {
-      type: Phaser.AUTO,
-      scale: {
-        mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH,
-        height: 1440,
-        width: 2560,
-
-      },
-      transparent: true,
-      parent: 'gameContainer',
-      audio: { disableWebAudio: true }
-    };
+  constructor(protected socketService: SocketService) {
+    super(socketService);
   }
 
+  startGameScene(levelData: any): void {
+    this.phaserGame = new Phaser.Game(this.config);
+    this.phaserGame.scene.add('shakerScene', ShakerScene);
+    this.phaserGame.scene.start('shakerScene', { socketService: this.socketService, levelData: levelData });
+  }
 
-  ngOnDestroy() {
-    if (this.phaserGame != null) {
-      this.phaserGame.destroy(true);
-    }
-
-    this.socketService.removeListener('levelData');
+  removeGameSpecificListeners(): void {
     this.socketService.removeListener('updateHammer');
     this.socketService.removeListener('updateShaking');
-
+    this.socketService.removeListener('updateShakeCounter');
     this.socketService.removeListener('changeShakeObject');
     this.socketService.removeListener('updateFall');
-    this.socketService.removeListener('checkIngredientOnList');
-    this.socketService.removeListener('updateScore');
-
-    this.socketService.removeListener('controllerEndedTutorial');
-    this.socketService.removeListener('gameOver');
-
-    this.socketService.removeListener('countdown');
-    this.socketService.removeListener('gameOverCountdown');
-
-    clearInterval(this.dotInterval);
-  }
-
-  ngOnInit(): void {
-    this.socketService.on('controllerEndedTutorial', () => { this.controllerReady(); });
-    this.socketService.once('levelData', (levelData) => { this.buildGameView(levelData); });
-    this.socketService.on('countdown', (number) => this.countdown = number);
-    this.socketService.on('gameOverCountdown', (number) => {
-      this.gameOverCountdown = number;
-      console.log("Noch " + this.gameOverCountdown);
-    });
-    this.socketService.on('gameOver', (over) => this.gameOver = over);
-    this.socketService.emit('displayReady');
-  }
-
-  private controllerReady(): void {
-    this.amountOfReadyPlayers++;
-
-    if (this.amountOfReadyPlayers === 2) {
-      this.tutorial = false;
-      console.log('Finished tutorial');
-    }
-  }
-
-  private buildGameView(levelData): void {
-    console.log('Now building game view (scene).');
-    this.building = true;
-    setTimeout(() => {
-      this.phaserGame = new Phaser.Game(this.config);
-      this.phaserGame.scene.add('shakerScene', ShakerScene);
-      this.phaserGame.scene.start('shakerScene', { socketService: this.socketService, levelData: levelData });
-    }, 100);
   }
 }
 

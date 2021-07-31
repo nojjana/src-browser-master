@@ -2,6 +2,7 @@ import { verifyHostBindings } from '@angular/compiler';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { Component, destroyPlatform, OnDestroy, OnInit } from '@angular/core';
 import Phaser from 'phaser';
+import { SaftlimacherBaseGameComponent } from '../saftlimacher-base-game/saftlimacher-base-game-component';
 //import { clearInterval } from 'timers';
 import { SocketService } from '../socket-service/socket.service';
 import Group = Phaser.GameObjects.Group;
@@ -12,104 +13,28 @@ import Group = Phaser.GameObjects.Group;
   templateUrl: './catcher-game.component.html',
   styleUrls: ['./catcher-game.component.css']
 })
-export class CatcherGameComponent implements OnInit, OnDestroy {
+export class CatcherGameComponent extends SaftlimacherBaseGameComponent implements OnInit, OnDestroy {
 
-  // basic program setup
-  phaserGame: Phaser.Game;
-  config: Phaser.Types.Core.GameConfig;
-  public building = false;
-  public amountOfReadyPlayers = 0;
-
-  // basic game setup
-  public tutorial = true;
-  public dots = 0;
-  private dotInterval;
-  public countdown: number = 5;
-  public gameOverCountdown: number = 0;
-  public gameOver = false;
-
-  constructor(private socketService: SocketService) {
-    this.dotInterval = setInterval(() => {
-      this.dots++;
-      if (this.dots === 4) {
-        this.dots = 0;
-      }
-    }, 500);
-
-    this.config = {
-      type: Phaser.AUTO,
-      scale: {
-        mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH,
-        height: 1440,
-        width: 2560,
-
-      },
-      transparent: true,
-      parent: 'gameContainer',
-      audio: { disableWebAudio: true },
-      physics: {
-        default: 'arcade',
-        arcade: {
-            debug: false,
-            gravity: { y: 150 }
-        }
-      },
-    };
+  constructor(protected socketService: SocketService) {
+    // TODO socketservice parameter anders übergeben?
+    super(socketService);
   }
 
-
-  ngOnDestroy() {
-    if (this.phaserGame != null) {
-      this.phaserGame.destroy(true);
-    }
-
-    this.socketService.removeListener('controllerEndedTutorial');
-    this.socketService.removeListener('countdown');
-    this.socketService.removeListener('gameOverCountdown');
-    this.socketService.removeListener('gameOver');
-
-    this.socketService.removeListener('levelData');
-    this.socketService.removeListener('updateScore');
-    this.socketService.removeListener('checkIngredientOnList');
-    // TODO: listeners vervollständigen
-
-    clearInterval(this.dotInterval);
+  startGameScene(levelData: any): void {
+    this.phaserGame = new Phaser.Game(this.config);
+    this.phaserGame.scene.add('catcherScene', CatcherScene);
+    this.phaserGame.scene.start('catcherScene', { socketService: this.socketService, levelData: levelData });
   }
 
-  ngOnInit(): void {
-    this.socketService.on('controllerEndedTutorial', () => { this.controllerReady(); });
-    this.socketService.on('countdown', (number) => {
-      // TODO countdown sound
-      this.countdown = number;
-    });
-    this.socketService.on('gameOverCountdown', (number) => {
-      this.gameOverCountdown = number;
-      console.log("Noch " + this.gameOverCountdown);
-    });
-    this.socketService.on('gameOver', (over) => this.gameOver = over);
-    this.socketService.once('levelData', (levelData) => { this.buildGameView(levelData); });
-
-    this.socketService.emit('displayReady');
-  }
-
-  private controllerReady(): void {
-    this.amountOfReadyPlayers++;
-
-    if (this.amountOfReadyPlayers === 2) {
-      this.tutorial = false;
-      console.log('Finished tutorial');
-    }
-  }
-
-  private buildGameView(levelData): void {
-    console.log('Now building game view (scene).');
-    this.building = true;
-    setTimeout(() => {
-      this.phaserGame = new Phaser.Game(this.config);
-      this.phaserGame.scene.add('catcherScene', CatcherScene);
-      this.phaserGame.scene.start('catcherScene', { socketService: this.socketService, levelData: levelData });
-    }, 100);
+  removeGameSpecificListeners(): void {
+    this.socketService.removeListener('catcherNet1Position');
+    this.socketService.removeListener('catcherNet2Position');
+    this.socketService.removeListener('updateIngredientLeft');
+    this.socketService.removeListener('updateIngredientRight');
+    this.socketService.removeListener('updateIngredientCenter');
+    this.socketService.removeListener('changeImageIngredientLeft');
+    this.socketService.removeListener('changeImageIngredientCenter');
+    this.socketService.removeListener('changeImageIngredientRight');
   }
 }
 
