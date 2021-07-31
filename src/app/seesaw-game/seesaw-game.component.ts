@@ -129,9 +129,12 @@ export default class SeesawScene extends Phaser.Scene {
 
   // säftlimacher visible game objects
   /// ingredients falling
-  private ingredientLeft: Phaser.GameObjects.Image;
-  private ingredientCenter: Phaser.GameObjects.Image;
-  private ingredientRight: Phaser.GameObjects.Image;
+  private ingredientLeft0: Phaser.GameObjects.Image;
+  private ingredientLeft1: Phaser.GameObjects.Image;
+  private ingredientLeft2: Phaser.GameObjects.Image;
+  private ingredientRight0: Phaser.GameObjects.Image;
+  private ingredientRight1: Phaser.GameObjects.Image;
+  private ingredientRight2: Phaser.GameObjects.Image;
   /// seesaw
 ////  private seesaw1: Phaser.GameObjects.Image;
   private rectangle1: Phaser.GameObjects.Rectangle;
@@ -156,6 +159,9 @@ export default class SeesawScene extends Phaser.Scene {
   private circleIng1: Phaser.GameObjects.Ellipse;
   private circleIng2: Phaser.GameObjects.Ellipse;
   private circleIng3: Phaser.GameObjects.Ellipse;
+  private circleIng4: Phaser.GameObjects.Ellipse;
+  private circleIng5: Phaser.GameObjects.Ellipse;
+  private circleIng6: Phaser.GameObjects.Ellipse;
 
   //test
 /*   private seesaw1TriggerSpaceLeft: Phaser.GameObjects.Rectangle;
@@ -273,13 +279,16 @@ export default class SeesawScene extends Phaser.Scene {
     this.ground.setVisible(true);
 
     //TEST RECTANGLE
-    this.rectangle1 = this.add.rectangle(0, 0, 0, 0, 0x6666ff)
-    this.rectangleBeam1 = this.add.rectangle(0,0,0,0, 0x6666ff)
-    this.rectangle2 = this.add.rectangle(0,0,0,0, 0x66666f)
-    this.rectangleBeam2 = this.add.rectangle(0,0,0,0, 0x66666f)
-    this.circleIng1 = this.add.ellipse(0,0,100,100, 0x6666ff)
-    this.circleIng2 = this.add.ellipse(0,0,100,100, 0x6668ff)
-    this.circleIng3 = this.add.ellipse(0,0,100,100, 0x6662ff)
+    this.rectangle1 = this.add.rectangle(0, 0, 0, 0, 0xa83232)
+    this.rectangleBeam1 = this.add.rectangle(0,0,0,0, 0xa83232)
+    this.rectangle2 = this.add.rectangle(0,0,0,0, 0x9a32a6)
+    this.rectangleBeam2 = this.add.rectangle(0,0,0,0, 0x9a32a6)
+    this.circleIng1 = this.add.ellipse(0,0,100,100, 0xa83232)
+    this.circleIng2 = this.add.ellipse(0,0,100,100, 0xa83232)
+    this.circleIng3 = this.add.ellipse(0,0,100,100, 0xa83232)
+    this.circleIng4 = this.add.ellipse(0,0,100,100, 0x9a32a6)
+    this.circleIng5 = this.add.ellipse(0,0,100,100, 0x9a32a6)
+    this.circleIng6 = this.add.ellipse(0,0,100,100, 0x9a32a6)
 /*     this.seesaw1TriggerSpaceLeft = this.add.rectangle(0,0,0,0, 0x6666ff)
     this.seesaw1TriggerSpaceRight = this.add.rectangle(0,0,0,0, 0x6666ff)
     this.seesaw2TriggerSpaceLeft = this.add.rectangle(0,0,0,0, 0x6666ff)
@@ -339,29 +348,53 @@ export default class SeesawScene extends Phaser.Scene {
     this.garbageContainerRight.setDepth(80);
 
 
-    /// ingredient left
-    this.ingredientLeft = this.add.image(
+    /// ingredient left 0
+    this.ingredientLeft0 = this.add.image(
       this.screenCenterX,
       -100,
       'Apple'
     );
-    this.ingredientLeft.setDepth(80);
+    this.ingredientLeft0.setDepth(80);
 
-    /// ingredient right
-    this.ingredientRight = this.add.image(
+    /// ingredient left 1
+    this.ingredientLeft2 = this.add.image(
       this.screenCenterX,
       -100,
       'Banana'
     );
-    this.ingredientRight.setDepth(80);
+    this.ingredientLeft2.setDepth(80);
 
-    /// ingredient center
-    this.ingredientCenter = this.add.image(
+    /// ingredient left 1
+    this.ingredientLeft1 = this.add.image(
       this.screenCenterX,
       -100,
       'Berry'
     );
-    this.ingredientCenter.setDepth(80);
+    this.ingredientLeft1.setDepth(80);
+
+    /// ingredient right 0
+    this.ingredientRight0 = this.add.image(
+      this.screenCenterX,
+      -100,
+      'Apple'
+    );
+    this.ingredientRight0.setDepth(80);
+
+    /// ingredient right 1
+    this.ingredientRight1 = this.add.image(
+      this.screenCenterX,
+      -100,
+      'Banana'
+    );
+    this.ingredientRight1.setDepth(80);
+
+    /// ingredient right 2
+    this.ingredientRight2 = this.add.image(
+      this.screenCenterX,
+      -100,
+      'Berry'
+    );
+    this.ingredientRight2.setDepth(80);
 
 
     /// score text
@@ -472,68 +505,133 @@ export default class SeesawScene extends Phaser.Scene {
 
     // /// current ingredient position
 
-     /// current ingredient position left
+     /// current ingredient position left 0
      this.socketService.on('updateIngredientLeft', (pos) => {
-      if (this.ingredientLeft != null) {
-        this.ingredientLeft.setPosition(pos[0], pos[1]);
-        this.ingredientLeft.setAngle(pos[3]);
+      if (this.ingredientLeft0 != null) {
+        this.ingredientLeft0.setPosition(pos[0], pos[1]);
+        this.ingredientLeft0.setAngle(pos[3]);
         this.circleIng1.setPosition(pos[0], pos[1]);
         this.circleIng1.setAngle(pos[3]);
       }
     });
-     /// current ingredient position center
-     this.socketService.on('updateIngredientCenter', (pos) => {
-      if (this.ingredientCenter != null) {
-        this.ingredientCenter.setPosition(pos[0], pos[1]);
-        this.ingredientCenter.setAngle(pos[3]);
+     /// current ingredient position left 1
+     this.socketService.on('updateIngredientLeft1', (pos) => {
+      if (this.ingredientLeft1 != null) {
+        this.ingredientLeft1.setPosition(pos[0], pos[1]);
+        this.ingredientLeft1.setAngle(pos[3]);
         this.circleIng2.setPosition(pos[0], pos[1]);
         this.circleIng2.setAngle(pos[3])
       }
     });
 
-    /// current ingredient position right
-    this.socketService.on('updateIngredientRight', (pos) => {
-      if (this.ingredientRight != null) {
-        this.ingredientRight.setPosition(pos[0], pos[1]);
-        this.ingredientRight.setAngle(pos[3]);
+    /// current ingredient position left 2
+    this.socketService.on('updateIngredientLeft2', (pos) => {
+      if (this.ingredientLeft2 != null) {
+        this.ingredientLeft2.setPosition(pos[0], pos[1]);
+        this.ingredientLeft2.setAngle(pos[3]);
         this.circleIng3.setPosition(pos[0], pos[1]);
         this.circleIng3.setAngle(pos[3]);
       }
     });
+
+    this.socketService.on('updateIngredientRight0', (pos) => {
+      if (this.ingredientRight0 != null) {
+        this.ingredientRight0.setPosition(pos[0], pos[1]);
+        this.ingredientRight0.setAngle(pos[3]);
+        this.circleIng4.setPosition(pos[0], pos[1]);
+        this.circleIng4.setAngle(pos[3]);
+      }
+    });
+
+    this.socketService.on('updateIngredientRight1', (pos) => {
+      if (this.ingredientRight1 != null) {
+        this.ingredientRight1.setPosition(pos[0], pos[1]);
+        this.ingredientRight1.setAngle(pos[3]);
+        this.circleIng5.setPosition(pos[0], pos[1]);
+        this.circleIng5.setAngle(pos[3]);
+      }
+    });
+
+    this.socketService.on('updateIngredientRight2', (pos) => {
+      if (this.ingredientRight2 != null) {
+        this.ingredientRight2.setPosition(pos[0], pos[1]);
+        this.ingredientRight2.setAngle(pos[3]);
+        this.circleIng6.setPosition(pos[0], pos[1]);
+        this.circleIng6.setAngle(pos[3]);
+      }
+    });
    
-    this.socketService.on('changeImageIngredientLeft', (nr) => {
-      if (this.ingredientLeft != null) {
-       this.ingredientLeft.destroy();
-       this.ingredientLeft = this.add.image(
+    this.socketService.on('changeImageIngredientLeft0', (nr) => {
+      if (this.ingredientLeft0 != null) {
+       this.ingredientLeft0.destroy();
+       this.ingredientLeft0 = this.add.image(
          this.screenCenterX,
          -100,
          this.loadIngredientImage(nr)
        );
-       this.ingredientLeft.setDepth(80);
+       this.ingredientLeft0.setDepth(80);
       }
-   });
-   this.socketService.on('changeImageIngredientCenter', (nr) => {
-    if (this.ingredientCenter != null) {
-     this.ingredientCenter.destroy();
-     this.ingredientCenter = this.add.image(
-       this.screenCenterX,
-       -100,
-       this.loadIngredientImage(nr)
-     );
-     this.ingredientCenter.setDepth(80);
+    });
+    
+    this.socketService.on('changeImageIngredientLeft1', (nr) => {
+      if (this.ingredientLeft1 != null) {
+      this.ingredientLeft1.destroy();
+      this.ingredientLeft1 = this.add.image(
+        this.screenCenterX,
+        -100,
+        this.loadIngredientImage(nr)
+      );
+      this.ingredientLeft1.setDepth(80);
+      }
+    });
+  
+   this.socketService.on('changeImageIngredientLeft2', (nr) => {
+    if (this.ingredientLeft2 != null) {
+    this.ingredientLeft2.destroy();
+    this.ingredientLeft2 = this.add.image(
+      this.screenCenterX,
+      -100,
+      this.loadIngredientImage(nr)
+    );
+    this.ingredientLeft2.setDepth(80);
     }
- });
- this.socketService.on('changeImageIngredientRight', (nr) => {
-  if (this.ingredientRight != null) {
-   this.ingredientRight.destroy();
-   this.ingredientRight = this.add.image(
-     this.screenCenterX,
-     -100,
-     this.loadIngredientImage(nr)
-   );
-   this.ingredientRight.setDepth(80);
-  }
-});
+  });
+
+  this.socketService.on('changeImageIngredientRight0', (nr) => {
+    if (this.ingredientRight0 != null) {
+    this.ingredientRight0.destroy();
+    this.ingredientRight0 = this.add.image(
+      this.screenCenterX,
+      -100,
+      this.loadIngredientImage(nr)
+    );
+    this.ingredientRight0.setDepth(80);
+    }
+  });
+
+  this.socketService.on('changeImageIngredientRight1', (nr) => {
+    if (this.ingredientRight1 != null) {
+    this.ingredientRight1.destroy();
+    this.ingredientRight1 = this.add.image(
+      this.screenCenterX,
+      -100,
+      this.loadIngredientImage(nr)
+    );
+    this.ingredientRight1.setDepth(80);
+    }
+  });
+
+  this.socketService.on('changeImageIngredientRight2', (nr) => {
+    if (this.ingredientRight2 != null) {
+    this.ingredientRight2.destroy();
+    this.ingredientRight2 = this.add.image(
+      this.screenCenterX,
+      -100,
+      this.loadIngredientImage(nr)
+    );
+    this.ingredientRight2.setDepth(80);
+    }
+  });  
 
 this.socketService.on('checkIngredientOnList', (number) => {
   this.checkIngredientOnList(number);
@@ -817,9 +915,9 @@ this.socketService.on('checkIngredientOnList', (number) => {
     this.scoreText.destroy();
     this.adjustedPointsText?.destroy();
 
-    this.ingredientLeft?.destroy();
-    this.ingredientCenter?.destroy();
-    this.ingredientRight?.destroy();
+    this.ingredientLeft0?.destroy();
+    this.ingredientLeft1?.destroy();
+    this.ingredientLeft2?.destroy();
 
     this.rectangle1.destroy();
     this.rectangle2.destroy();
