@@ -82,7 +82,8 @@ export default class ShakerScene extends Phaser.Scene {
   private currentRandomShakingObjectNumber = 0;
   private objectReachedShaker = false;
   private falling = false;
-  private speedOfFalling: number = 18;  //+ y delta
+  // private speedOfFalling: number = 18;  //+ y delta
+  private speedOfFalling: number = 30;  //+ y delta
 
   //TODO beeHouse
   private beeHouse: Phaser.GameObjects.Image;
@@ -151,12 +152,14 @@ export default class ShakerScene extends Phaser.Scene {
     this.load.image('AppleTree', '../../assets/shaker/ShakeObject-Apple.png');
     this.load.image('BananaTree', '../../assets/shaker/ShakeObject-Banana.png');
     this.load.image('BerryTree', '../../assets/shaker/ShakeObject-Berry.png');
-    this.load.image('BerryTree1', '../../assets/shaker/ShakeObject-Berry1.png');
-    this.load.image('BerryTree2', '../../assets/shaker/ShakeObject-Berry2.png');
+    // this.load.image('BerryTree1', '../../assets/shaker/ShakeObject-Berry1.png');
+    // this.load.image('BerryTree2', '../../assets/shaker/ShakeObject-Berry2.png');
+    this.load.image('BeatleTree', '../../assets/shaker/ShakeObject-Beatle.png');
 
     this.load.image('Apple', '../../assets/shaker/Apple.png');
     this.load.image('Banana', '../../assets/shaker/Banana.png');
     this.load.image('Berry', '../../assets/shaker/Berry.png');
+    this.load.image('Beatle', '../../assets/shaker/Beatle.png');
 
     this.load.image('AppleTall', '../../assets/shaker/AppleTall.png');
     this.load.image('BananaTall', '../../assets/shaker/BananaTall.png');
@@ -174,6 +177,8 @@ export default class ShakerScene extends Phaser.Scene {
     this.load.image('FallingObject', '../../assets/shaker/Apple.png');
 
     this.load.image('IngredientList', '../../assets/shaker/IngredientList.png');
+    this.load.image('ShakerMixing', '../../assets/shaker/ShakerMixing.png');
+    
     this.load.image('Progressbar', '../../assets/shaker/Progressbar.png');
     this.load.bitmapFont('pressStart', '../../assets/font/PressStartWhite.png', '../../assets/font/PressStartWhite.fnt');
 
@@ -214,11 +219,21 @@ export default class ShakerScene extends Phaser.Scene {
     this.progressbarX = this.screenEndX * 0.68;
     this.progressbarY = this.initShakeObjectY * 0.3;
 
-    this.scoreText = this.add.bitmapText(this.screenEndX * 0.8, this.screenEndY * 0.9, 'pressStartBlack', 'Punkte: 0', 28)
+    this.scoreText = this.add.bitmapText(
+      this.screenEndX * 0.8,
+      this.screenEndY * 0.9,
+      'pressStartBlack',
+      '0',
+      32)
     .setOrigin(0.5)
     .setDepth(100);
 
-    this.adjustedPointsText = this.add.bitmapText(this.screenEndX * 0.68, this.screenEndY * 0.7, 'pressStartBlack', '', 28)
+    this.adjustedPointsText = this.add.bitmapText(
+      this.shakerContainerX * 1.2,
+      this.shakerContainerY * 0.9,
+      'pressStartBlack',
+      '',
+      40)
       .setOrigin(0.5)
       .setDepth(100);
 
@@ -347,7 +362,7 @@ export default class ShakerScene extends Phaser.Scene {
       this.hammer.setPosition(hammer[0], hammer[1]);
       this.mole.setPosition(hammer[2], hammer[3]);
       this.hammerHit(hammer[4]);
-      this.scoreText.setText('Punkte: ' + hammer[5]);
+      // this.scoreText.setText('' + hammer[5]);
       // this.score = hammer[5];
     });
 
@@ -368,6 +383,7 @@ export default class ShakerScene extends Phaser.Scene {
 
     this.socketService.on('updateScore', (score) => {
       this.score = score;
+      this.scoreText.setText(score);
     });
 
     this.socketService.on('updateShakeCounter', (counter) => {
@@ -390,12 +406,12 @@ export default class ShakerScene extends Phaser.Scene {
 
     this.socketService.on('adjustScoreByCatchedIngredient', (scoreInfo) => {
       if (scoreInfo[0] < 0) {
-        this.showLostPointsByIngredient(scoreInfo[0], scoreInfo[1]);
         this.playBadSound();
+        this.showLostPointsByIngredient(scoreInfo[0], scoreInfo[1]);
 
       } else if (scoreInfo[0] > 0) {
-        this.showCollectedPointsByIngredient(scoreInfo[0], scoreInfo[1]);
         this.playGoodSound();
+        this.showCollectedPointsByIngredient(scoreInfo[0], scoreInfo[1]);
       }
 
     });
@@ -480,7 +496,8 @@ export default class ShakerScene extends Phaser.Scene {
   }
 
   private showLostPointsByIngredient(scoreDec: number, ingredientNr: number) {
-    this.adjustedPointsText.setText('Oh nein!\n\n' + scoreDec + ' Punkte');
+    this.adjustedPointsText.setText('' + scoreDec);
+    this.adjustedPointsText.setTintFill(0xE50D0D);
     this.adjustedPointsText.setVisible(true);
     this.adjustedPointsTextVisibleCounter = 0;
     return this.adjustedPointsText;
@@ -490,7 +507,8 @@ export default class ShakerScene extends Phaser.Scene {
   }
 
   private showCollectedPointsByIngredient(scoreInc: number, ingredientNr: number) {
-    this.adjustedPointsText.setText('Aufgefangen!\n\n+' + scoreInc + ' Punkte');
+    this.adjustedPointsText.setText('+' + scoreInc);
+    this.adjustedPointsText.setTintFill(0x37B400);
     this.adjustedPointsText.setVisible(true);
     return this.adjustedPointsText;
 
@@ -654,19 +672,21 @@ export default class ShakerScene extends Phaser.Scene {
       return 'BananaTree'
     } else if (randomShakingObjectNumber == 2) {
       return 'BerryTree'
+    } else if (randomShakingObjectNumber == 3) {
+      return 'BeatleTree'
     }
   }
 
-  private loadShakeObjectWhenShakingImage(randomShakingObjectNumber) {
-    console.log("loadShakeObjectWhenShakingImage called")
-    if (randomShakingObjectNumber == 0) {
-      return 'BerryTree2'
-    } else if (randomShakingObjectNumber == 1) {
-      return 'BerryTree2'
-    } else if (randomShakingObjectNumber == 2) {
-      return 'BerryTree2'
-    }
-  }
+  // private loadShakeObjectWhenShakingImage(randomShakingObjectNumber) {
+  //   console.log("loadShakeObjectWhenShakingImage called")
+  //   if (randomShakingObjectNumber == 0) {
+  //     return 'BerryTree2'
+  //   } else if (randomShakingObjectNumber == 1) {
+  //     return 'BerryTree2'
+  //   } else if (randomShakingObjectNumber == 2) {
+  //     return 'BerryTree2'
+  //   }
+  // }
 
   private loadIngredientImage(randomShakingObjectNumber) {
     if (randomShakingObjectNumber == 0) {
@@ -675,8 +695,10 @@ export default class ShakerScene extends Phaser.Scene {
       return 'Banana'
     } else if (randomShakingObjectNumber == 2) {
       return 'Berry'
+    } else if (randomShakingObjectNumber == 3) {
+      return 'Beatle'
     }
-  }
+ }
 
   private loadIngredientsOnList(ingredientNumbers: number[]) {
     console.log("init list with ingredients, numbers:");
@@ -967,8 +989,32 @@ export default class ShakerScene extends Phaser.Scene {
 
     this.sound?.stopAll();
 
-    const text = ['Der Saft ist fertig!\n\n\n\n\n\nGesammelte Punkte: ' + this.score + '\n\nDas macht ' + this.getNumberOfGlasses(this.score) + ' Becher. Toll!'];
-    this.add.bitmapText(this.screenCenterX, this.screenCenterY, 'pressStartBlack', text, 45).setOrigin(0.5, 0.5).setCenterAlign();
+    this.showReachedScore();
+
+
+    // const text = ['Der Saft ist fertig!\n\n\n\n\n\nGesammelte Punkte: ' + this.score + '\n\nDas macht ' + this.getNumberOfGlasses(this.score) + ' Becher. Toll!'];
+    // this.add.bitmapText(this.screenCenterX, this.screenCenterY, 'pressStartBlack', text, 45).setOrigin(0.5, 0.5).setCenterAlign();
+  }
+
+  private showReachedScore() {
+    const text = ['Der Saft ist fertig!\n\n\n\nGesammelte Punkte: '
+      + this.score + '\n\nDas macht ' + this.getNumberOfGlasses(this.score)
+      + ' Becher!'];
+
+    this.add.bitmapText(
+      this.screenCenterX,
+      this.screenCenterY*1.5,
+      'pressStartBlack',
+      text,
+      40)
+      .setOrigin(0.5, 0.5)
+      .setCenterAlign();
+
+      this.add.image(
+        this.screenCenterX,
+        this.screenCenterY*0.8,
+        'ShakerMixing'
+      );
   }
 
   private getNumberOfGlasses(score: number) {
@@ -1008,6 +1054,7 @@ enum IngredientType {
   APPLE,
   BANANA,
   BERRY,
+  BEATLE
   // HONEY,
   // BEE
 }
