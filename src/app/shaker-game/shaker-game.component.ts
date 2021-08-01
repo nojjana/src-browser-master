@@ -178,7 +178,7 @@ export default class ShakerScene extends Phaser.Scene {
 
     this.load.image('IngredientList', '../../assets/shaker/IngredientList.png');
     this.load.image('ShakerMixing', '../../assets/shaker/ShakerMixing.png');
-    
+
     this.load.image('Progressbar', '../../assets/shaker/Progressbar.png');
     this.load.bitmapFont('pressStart', '../../assets/font/PressStartWhite.png', '../../assets/font/PressStartWhite.fnt');
 
@@ -367,7 +367,7 @@ export default class ShakerScene extends Phaser.Scene {
     });
 
     this.socketService.on('updateShaking', (isShaking) => {
-      if (isShaking == true){
+      if (isShaking){
         this.startShakeLoop();
       } else {
         this.stopShakeLoop();
@@ -375,7 +375,7 @@ export default class ShakerScene extends Phaser.Scene {
     });
 
     this.socketService.on('updateFall', (triggerFall) => {
-      if (triggerFall === true) {
+      if (triggerFall) {
         this.triggerFallOfIngredient();
       }
       //this.fallEvent(fallEvent[0]);
@@ -665,7 +665,7 @@ export default class ShakerScene extends Phaser.Scene {
   }
 
   private loadShakeObjectImage(randomShakingObjectNumber) {
-    console.log("loadShakeObject called")
+    // console.log("loadShakeObjectImage called")
     if (randomShakingObjectNumber == 0) {
       return 'AppleTree'
     } else if (randomShakingObjectNumber == 1) {
