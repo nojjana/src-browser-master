@@ -508,6 +508,7 @@ export default class SeesawScene extends Phaser.Scene {
      /// current ingredient position left 0
      this.socketService.on('updateIngredientLeft0', (pos) => {
       if (this.ingredientLeft0 != null) {
+        console.log("ingredientLeftPositionX: "+pos[0]+" ingredientY: "+pos[1]+" angle: "+pos[2])
         this.ingredientLeft0.setPosition(pos[0], pos[1]);
         this.ingredientLeft0.setAngle(pos[3]);
         this.circleIng1.setPosition(pos[0], pos[1]);
