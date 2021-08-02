@@ -444,12 +444,19 @@ export default class SeesawScene extends Phaser.Scene {
     // listeners on updates from server
     /// current shaker position
     this.socketService.on('seesaw1Position', (pos) => {
-      console.log("seesaw1 X: "+pos[0]+" seesaw1 Y: "+pos[1]+" seesaw Angle: "+pos[4])
+
+      if (Math.abs(this.rectangle1.rotation - pos[4]) > 0.1){
+        this.rectangle1.setRotation(pos[4]);
+      } if (this.rectangle1.x = 0) {
+        this.rectangle1.setRotation(0);
+      }
+/*       console.log("seesaw1 X: "+pos[0]+" seesaw1 Y: "+pos[1]+" seesaw Angle: "+pos[4])
+      this.rectangle1.setRotation(pos[4]); */
 
       this.rectangle1.setPosition(pos[0], pos[1]);
       this.rectangle1.setSize(pos[2], pos[3]);
       this.rectangle1.setOrigin(0.5);   
-      this.rectangle1.setRotation(pos[4]);
+
     });
 
     this.socketService.on('seesawBeam1Position', (pos) => {
@@ -463,14 +470,18 @@ export default class SeesawScene extends Phaser.Scene {
       });
 
       
-
     this.socketService.on('seesaw2Position', (pos) => {
-      console.log("seesaw2 X: "+pos[0]+" seesaw2 Y: "+pos[1] +" seesaw2 Angle: "+pos[4])
+      if (Math.abs(this.rectangle2.rotation - pos[4]) > 0.1){
+        this.rectangle2.setRotation(pos[4]);
+      } if (this.rectangle2.x = 0) {
+        this.rectangle2.setRotation(0);
+      }
+    //  console.log("seesaw2 X: "+pos[0]+" seesaw2 Y: "+pos[1] +" seesaw2 Angle: "+pos[4])
 
       this.rectangle2.setPosition(pos[0], pos[1]);
       this.rectangle2.setSize(pos[2], pos[3]);
       this.rectangle2.setOrigin(0.5);   
-      this.rectangle2.setRotation(pos[4]);
+    //  this.rectangle2.setRotation(pos[4]);
     });
 
     this.socketService.on('seesawBeam2Position', (pos) => {
