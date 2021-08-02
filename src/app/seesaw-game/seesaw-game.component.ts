@@ -149,10 +149,10 @@ export default class SeesawScene extends Phaser.Scene {
   private garbageContainerRight: Phaser.GameObjects.Image;
 
   //placement of containers
-  private garbageContainerLeftX = 550;
-  private shakerContainerX = 1350; //800
+  private garbageContainerLeftX = 700;
+  private shakerContainerX = 1500; //800
   private garbageContainerRightX = 2250; //2400
-  private shakerContainerY = 900;
+  private shakerContainerY = 930;
   private garbageContainerY = 1000;
 
 ////only for testing reasons - circle for Ingredients 1-3
