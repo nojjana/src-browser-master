@@ -11,6 +11,7 @@ import { SpaceshipGameComponent } from './spaceship-game/spaceship-game.componen
 import { WhackAMoleGameComponent } from './whack-a-mole-game/whack-a-mole-game.component';
 import { ShakerGameComponent } from './shaker-game/shaker-game.component';
 import { CatcherGameComponent } from './catcher-game/catcher-game.component';
+import { SeesawGameComponent } from './seesaw-game/seesaw-game.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatButtonModule} from '@angular/material/button';
@@ -29,6 +30,7 @@ import { VarianzTestComponent } from './varianz-test/varianz-test.component';
     WhackAMoleGameComponent,
     ShakerGameComponent,
     CatcherGameComponent,
+    SeesawGameComponent,
     VarianzTestComponent,
   ],
   imports: [
