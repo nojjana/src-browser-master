@@ -178,6 +178,8 @@ export default class ShakerScene extends Phaser.Scene {
 
     this.load.image('IngredientList', '../../assets/shaker/IngredientList.png');
     this.load.image('ShakerMixing', '../../assets/shaker/ShakerMixing.png');
+    this.load.image('ShakerMixed', '../../assets/shaker/ShakerMixed.png');
+    this.load.image('GlassFull', '../../assets/shaker/glass-full.png');
 
     this.load.image('Progressbar', '../../assets/shaker/Progressbar.png');
     this.load.bitmapFont('pressStart', '../../assets/font/PressStartWhite.png', '../../assets/font/PressStartWhite.fnt');
@@ -274,7 +276,7 @@ export default class ShakerScene extends Phaser.Scene {
     this.ingredientFalling.setVisible(false);
 
     this.ingredientInShaker = this.add.image(
-      this.shakerContainerX * 1.2,
+      this.shakerContainerX * 1.1,
       this.shakerContainerY,
       this.loadIngredientImage(this.currentRandomShakingObjectNumber)
     );
@@ -282,8 +284,8 @@ export default class ShakerScene extends Phaser.Scene {
     this.ingredientInShaker.setVisible(false);
 
     this.oldIngredientInShaker = this.add.image(
-      this.shakerContainerX * 1.2,
-      this.shakerContainerY * 0.5,
+      this.shakerContainerX * 1.1,
+      this.shakerContainerY * 0.5, // TODO??
       this.loadIngredientImage(this.currentRandomShakingObjectNumber)
     );
     this.oldIngredientInShaker.setDepth(75);
@@ -605,7 +607,7 @@ export default class ShakerScene extends Phaser.Scene {
       // drop ingredient a bit more
       i.y += this.speedOfFalling;
 
-      if (i.y >= this.shakerContainerY) {
+      if (i.y >= this.shakerContainerY*0.985) {
         console.log('An ingredient fell into shaker!');
         // this.strikethroughCatchedIngredient(this.currentRandomShakingObjectNumber);
         // this.updateCatchedIngredientCounter(this.currentRandomShakingObjectNumber);
@@ -997,31 +999,77 @@ export default class ShakerScene extends Phaser.Scene {
   }
 
   private showReachedScore() {
-    const text = ['Der Saft ist fertig!\n\n\n\nGesammelte Punkte: '
-      + this.score + '\n\nDas macht ' + this.getNumberOfGlasses(this.score)
-      + ' Becher!'];
+    // mixed juice in shaker
+    this.add.image(
+      this.screenCenterX,
+      this.screenCenterY*0.35,
+      'ShakerMixed'
+    );
+
+    let glasses = this.getNumberOfGlasses(this.score);
+
+    let glassesY = this.screenCenterY*1.3;
+    let glassesXStart = this.screenCenterX*0.7;
+    let glassesXAdd = 0;
+    let glassesPerRow = 6;
+
+    // const text = ['Der Saft ist fertig!\n\n\n\nGesammelte Punkte: '
+    //   + this.score + '\n\nDas macht ' + glasses.toString()
+    //   + ' Glaser!'];
+    let text = [''];
+    if (glasses <= 0) {
+      text = ['Der Saft ist fertig!\n\nIhr habt leider\n\nkeine Glaser geschafft...'];
+    } else if (glasses == 1) {
+      text = ['Der Saft ist fertig!\n\nIhr habt 1 Glas geschafft.\n\nImmerhin!'];
+      glassesXStart = this.screenCenterX;
+      glassesY = this.screenCenterY*1.6;
+    } else if (glasses > 20) {
+      text = ['Der Saft ist fertig!\n\nIhr habt ' + glasses.toString()
+      + ' Glaser geschafft! Wow!'];
+    } else {
+      text = ['Der Saft ist fertig!\n\nIhr habt ' + glasses.toString()
+      + ' Glaser geschafft!'];
+    }
 
     this.add.bitmapText(
       this.screenCenterX,
-      this.screenCenterY*1.5,
+      this.screenCenterY*0.9,
       'pressStartBlack',
       text,
       40)
       .setOrigin(0.5, 0.5)
       .setCenterAlign();
 
-      this.add.image(
-        this.screenCenterX,
-        this.screenCenterY*0.8,
-        'ShakerMixing'
-      );
+      if (glasses > 12) {
+        glassesY = this.screenCenterY*1.2;
+        glassesPerRow = 10;
+        glassesXStart = this.screenCenterX*0.4;
+      } else if (glasses > 30) {
+        // TODO test...
+        glassesY = this.screenCenterY*1.2;
+        glassesPerRow = 15;
+        glassesXStart = this.screenCenterX*0.1;
+      }
+      for (let index = 1; index <= glasses; index++) {
+        let img = this.add.image(
+          glassesXStart + glassesXAdd,
+          glassesY,
+          'GlassFull'
+        );
+        glassesXAdd = glassesXAdd + img.width*1.1;
+        if (index % glassesPerRow == 0) {
+          glassesY = glassesY + img.height*1.05;
+          glassesXAdd = 0;
+        }
+      }
   }
 
   private getNumberOfGlasses(score: number) {
     // TODO: rechnung server überlassen!
-    let glasses = score / 100;
-    return glasses.toString();
-
+    // let glasses = score / 100;
+    let glasses = score / 10;
+    glasses = Math.floor(glasses);
+    return glasses;
   }
 
   update() {

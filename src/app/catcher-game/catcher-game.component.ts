@@ -580,7 +580,8 @@ this.socketService.on('checkIngredientOnList', (number) => {
 
   private getNumberOfGlasses(score: number) {
     // TODO: rechnung server überlassen!
-    let glasses = score / 100;
+    let glasses = score / 10;
+    glasses = Math.round(glasses);
     return glasses.toString();
   }
 
@@ -639,7 +640,7 @@ this.socketService.on('checkIngredientOnList', (number) => {
   private showReachedScore() {
     const text = ['Der Saft ist fertig!\n\n\n\nGesammelte Punkte: '
       + this.score + '\n\nDas macht ' + this.getNumberOfGlasses(this.score)
-      + ' Becher!'];
+      + ' Glaser!'];
 
     this.add.bitmapText(
       this.screenCenterX,

@@ -1,14 +1,14 @@
 <!--Div inside which the labyrinth game will be displayed-->
 <div style="width: 100%; height: 100%; background-color: black">
   <div style="position: absolute; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); color: white; text-align: center;" *ngIf="countdown != 0 && !tutorial">
-    <p style="font-size: 120px; margin-top: 150px;">{{countdown}}</p>
-    <p style="font-size: 70px; margin-top: 200px;">
+    <p style="font-size: 120px; margin-top: 250px;">{{countdown}}</p>
+    <p style="font-size: 70px; margin-top: 100px;">
       <span>Halte dein Handy mittig zum TV!</span>
   </p>
   <img src="assets/catcher/pointing-center-transparent.png" alt="Handy zur Mitte" style="height: 600px">
   </div>
   <div style="position: absolute; width: 100%; color: black; text-align: right;" *ngIf="gameOverCountdown != 0 && !gameOver">
-    <p style="font-size: 100px; margin-top: 150px; margin-right: 150px;">{{gameOverCountdown}}</p>
+    <p style="font-size: 100px; margin-top: 250px; margin-right: 150px;">{{gameOverCountdown}}</p>
   </div>
 
   <main *ngIf="building"><div id="gameContainer"></div></main>
