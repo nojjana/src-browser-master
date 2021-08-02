@@ -163,12 +163,6 @@ export default class SeesawScene extends Phaser.Scene {
   private circleIng5: Phaser.GameObjects.Ellipse;
   private circleIng6: Phaser.GameObjects.Ellipse;
 
-  //test
-  private seesaw1TriggerSpaceLeft: Phaser.GameObjects.Rectangle;
-  private seesaw1TriggerSpaceRight: Phaser.GameObjects.Rectangle;
-  private seesaw2TriggerSpaceLeft: Phaser.GameObjects.Rectangle;
-  private seesaw2TriggerSpaceRight: Phaser.GameObjects.Rectangle; 
-
 
   //private seesawBeam1: Phaser.GameObjects.Image;
 ////  private seesaw2: Phaser.GameObjects.Image;
@@ -289,10 +283,7 @@ export default class SeesawScene extends Phaser.Scene {
     this.circleIng4 = this.add.ellipse(0,0,100,100, 0x9a32a6)
     this.circleIng5 = this.add.ellipse(0,0,100,100, 0x9a32a6)
     this.circleIng6 = this.add.ellipse(0,0,100,100, 0x9a32a6)
-    this.seesaw1TriggerSpaceLeft = this.add.rectangle(0,0,0,0, 0x6666ff)
-    this.seesaw1TriggerSpaceRight = this.add.rectangle(0,0,0,0, 0x6666ff)
-    this.seesaw2TriggerSpaceLeft = this.add.rectangle(0,0,0,0, 0x6666ff)
-    this.seesaw2TriggerSpaceRight = this.add.rectangle(0,0,0,0, 0x6666ff) 
+
 
      // seesaw
     /*  this.seesaw1 = this.add.image(
@@ -493,26 +484,6 @@ export default class SeesawScene extends Phaser.Scene {
         this.rectangleBeam2.setPosition(pos[0], pos[1]);
         this.rectangleBeam2.setSize(pos[2], pos[3]);
     });
-
-     this.socketService.on('seesaw1TriggerSpaceLeft', (pos) => {
-        this.seesaw1TriggerSpaceLeft.setPosition(pos[0], pos[1]);
-        this.seesaw1TriggerSpaceLeft.setSize(pos[2], pos[3]);
-    });
-
-      this.socketService.on('seesaw1TriggerSpaceRight', (pos) => {
-        this.seesaw1TriggerSpaceRight.setPosition(pos[0], pos[1]);
-        this.seesaw1TriggerSpaceRight.setSize(pos[2], pos[3]);
-    });
-
-    this.socketService.on('seesaw2TriggerSpaceLeft', (pos) => {
-      this.seesaw2TriggerSpaceLeft.setPosition(pos[0], pos[1]);
-      this.seesaw2TriggerSpaceLeft.setSize(pos[2], pos[3]);
-    });
-
-    this.socketService.on('seesaw2TriggerSpaceRight', (pos) => {
-      this.seesaw2TriggerSpaceRight.setPosition(pos[0], pos[1]);
-      this.seesaw2TriggerSpaceRight.setSize(pos[2], pos[3]);
-    }); 
 
     // /// current ingredient position
 
