@@ -1008,58 +1008,97 @@ export default class ShakerScene extends Phaser.Scene {
 
     let glasses = this.getNumberOfGlasses(this.score);
 
-    let glassesY = this.screenCenterY*1.3;
+    let glassesY = this.screenCenterY*1.25;
     let glassesXStart = this.screenCenterX*0.7;
     let glassesXAdd = 0;
     let glassesPerRow = 6;
+    let scaleValue = 1;
 
-    // const text = ['Der Saft ist fertig!\n\n\n\nGesammelte Punkte: '
-    //   + this.score + '\n\nDas macht ' + glasses.toString()
-    //   + ' Glaser!'];
+    let textY = this.screenCenterY*0.98;
     let text = [''];
     if (glasses <= 0) {
-      text = ['Der Saft ist fertig!\n\nIhr habt leider\n\nkeine Glaser geschafft...'];
-    } else if (glasses == 1) {
-      text = ['Der Saft ist fertig!\n\nIhr habt 1 Glas geschafft.\n\nImmerhin!'];
-      glassesXStart = this.screenCenterX;
-      glassesY = this.screenCenterY*1.6;
-    } else if (glasses > 20) {
-      text = ['Der Saft ist fertig!\n\nIhr habt ' + glasses.toString()
-      + ' Glaser geschafft! Wow!'];
-    } else {
-      text = ['Der Saft ist fertig!\n\nIhr habt ' + glasses.toString()
-      + ' Glaser geschafft!'];
+      text = ['Der Saft ist fertig!\n\nIhr habt leider keinen\n\nleckeren Saft hergestellt...'];
+      textY = this.screenCenterY*1.1;
+    }
+    if (glasses == 1) {
+      text = ['Der Saft ist fertig! Ihr habt\n\n1 leckere Portion Saft hergestellt.\n\nImmerhin!'];
+      textY = this.screenCenterY*1.1;
+    }
+    if (glasses > 2) {
+      text = ['Der Saft ist fertig! Ihr habt\n\n' + glasses.toString()
+      + ' leckere Portionen hergestellt.'];
+    }
+    if (glasses > 12) {
+      text = ['Der Saft ist fertig! Ihr habt\n\n' + glasses.toString()
+      + ' leckere Portionen hergestellt. Toll!'];
+    }
+    if (glasses > 30) {
+      text = ['Der Saft ist fertig! Ihr habt\n\n' + glasses.toString()
+      + ' leckere Portionen hergestellt. Super!'];
+    }
+    if (glasses > 45) {
+      text = ['Der Saft ist fertig! Ihr habt\n\n' + glasses.toString()
+      + ' leckere Portionen hergestellt. Wow!'];
+    }
+    if (glasses > 100) {
+      text = ['Der Saft ist fertig! Ihr habt\n\n' + glasses.toString()
+      + ' leckere Portionen hergestellt. Unglaublich!'];
     }
 
     this.add.bitmapText(
       this.screenCenterX,
-      this.screenCenterY*0.98,
+      textY,
       'pressStartBlack',
       text,
       40)
       .setOrigin(0.5, 0.5)
       .setCenterAlign();
 
+      if (glasses == 1) {
+        glassesXStart = this.screenCenterX;
+        glassesY = this.screenCenterY*1.5;
+      }
       if (glasses > 12) {
-        glassesY = this.screenCenterY*1.2;
         glassesPerRow = 10;
         glassesXStart = this.screenCenterX*0.4;
-      } else if (glasses > 30) {
-        // TODO test...
-        glassesY = this.screenCenterY*1.2;
+      }
+      if (glasses > 30) {
+        // glassesY = this.screenCenterY*1.2;
         glassesPerRow = 15;
-        glassesXStart = this.screenCenterX*0.1;
+        glassesXStart = this.screenCenterX*0.3;
+        scaleValue = 0.8;
+      }
+      if (glasses > 45) {
+        // TODO test...
+        // glassesY = this.screenCenterY*1.2;
+        glassesPerRow = 20;
+        glassesXStart = this.screenCenterX*0.4;
+        scaleValue = 0.5;
+      }
+      if (glasses > 100) {
+        glassesXStart = this.screenCenterX*0.25;
+        glassesPerRow = 30;
+        scaleValue = 0.4;
       }
       for (let index = 1; index <= glasses; index++) {
+        console.log("glassesY: "+glassesY);
         let img = this.add.image(
           glassesXStart + glassesXAdd,
           glassesY,
           'GlassFull'
         );
-        glassesXAdd = glassesXAdd + img.width*1.1;
+        img.setScale(scaleValue);
+        // if (glasses > 45) {
+        //   console.log("img.height before scaling: "+ img.height);
+        //   scaleValue = 0.5;
+        //   img.setScale(scaleValue);
+        //   console.log("img.height after scaling: "+ img.height);
+        // }
+        glassesXAdd = glassesXAdd + img.width*scaleValue*1.1;
         if (index % glassesPerRow == 0) {
-          glassesY = glassesY + img.height*1.05;
+          glassesY = glassesY + img.height*scaleValue*1.1;
           glassesXAdd = 0;
+          console.log("glassesY next: "+glassesY);
         }
       }
   }

@@ -87,13 +87,13 @@ export default class CatcherScene extends Phaser.Scene {
   private startBling: Phaser.Sound.BaseSound;
   private endBling: Phaser.Sound.BaseSound;
 
-    // not needed anymore? TODO delete
-    private ingredientFallingX: number;
-    private ingredientFallingY: number;
-    public ingredientTouchedCollider: boolean = false;
-    private ground: Phaser.GameObjects.Image;
-    private ingredientFalling: Phaser.GameObjects.Image;
-    private ingredientTest: Phaser.GameObjects.Image;
+  // not needed anymore? TODO delete
+  private ingredientFallingX: number;
+  private ingredientFallingY: number;
+  public ingredientTouchedCollider: boolean = false;
+  private ground: Phaser.GameObjects.Image;
+  private ingredientFalling: Phaser.GameObjects.Image;
+  private ingredientTest: Phaser.GameObjects.Image;
 
   constructor() {
     super({ key: 'catcherScene' });
@@ -164,7 +164,7 @@ export default class CatcherScene extends Phaser.Scene {
     // ground
     this.ground = this.physics.add.staticImage(
       this.screenCenterX,
-      this.screenHeight-39,
+      this.screenHeight - 39,
       'Ground'
     );
     this.ground.setVisible(false);
@@ -177,7 +177,7 @@ export default class CatcherScene extends Phaser.Scene {
     )
     this.catcherNet1.setDepth(80);
 
-     // catcher net 2 - Middle
+    // catcher net 2 - Middle
     this.catcherNet2 = this.add.image(
       initCatcherNetMiddleX,
       initCatcherNetMiddleY,
@@ -274,19 +274,19 @@ export default class CatcherScene extends Phaser.Scene {
     // listeners on updates from server
     /// current shaker position
     this.socketService.on('catcherNet1Position', (pos) => {
-    //  this.shakerContainer.setPosition(pos[0], pos[1]);
+      //  this.shakerContainer.setPosition(pos[0], pos[1]);
       this.catcherNet1.setPosition(pos[0], pos[1]);
     });
     this.socketService.on('catcherNet2Position', (pos) => {
-    //  this.shakerContainer.setPosition(pos[0], pos[1]);
+      //  this.shakerContainer.setPosition(pos[0], pos[1]);
       this.catcherNet2.setPosition(pos[0], pos[1]);
     });
     // /// current ingredient position
     // this.socketService.on('updateIngredientPosition', (pos) => {
     //   this.ingredientTest.setPosition(pos[0], pos[1]);
     // });
-     /// current ingredient position left
-     this.socketService.on('updateIngredientLeft', (pos) => {
+    /// current ingredient position left
+    this.socketService.on('updateIngredientLeft', (pos) => {
       this.ingredientLeft.setPosition(pos[0], pos[1]);
     });
     /// current ingredient position right
@@ -300,41 +300,41 @@ export default class CatcherScene extends Phaser.Scene {
     });
     this.socketService.on('changeImageIngredientLeft', (nr) => {
       if (this.ingredientLeft != null) {
-       this.ingredientLeft.destroy();
-       this.ingredientLeft = this.add.image(
-         this.screenCenterX,
-         -100,
-         this.loadIngredientImage(nr)
-       );
-       this.ingredientLeft.setDepth(80);
+        this.ingredientLeft.destroy();
+        this.ingredientLeft = this.add.image(
+          this.screenCenterX,
+          -100,
+          this.loadIngredientImage(nr)
+        );
+        this.ingredientLeft.setDepth(80);
       }
-   });
-   this.socketService.on('changeImageIngredientCenter', (nr) => {
-    if (this.ingredientCenter != null) {
-     this.ingredientCenter.destroy();
-     this.ingredientCenter = this.add.image(
-       this.screenCenterX,
-       -100,
-       this.loadIngredientImage(nr)
-     );
-     this.ingredientCenter.setDepth(80);
-    }
- });
- this.socketService.on('changeImageIngredientRight', (nr) => {
-  if (this.ingredientRight != null) {
-   this.ingredientRight.destroy();
-   this.ingredientRight = this.add.image(
-     this.screenCenterX,
-     -100,
-     this.loadIngredientImage(nr)
-   );
-   this.ingredientRight.setDepth(80);
-  }
-});
+    });
+    this.socketService.on('changeImageIngredientCenter', (nr) => {
+      if (this.ingredientCenter != null) {
+        this.ingredientCenter.destroy();
+        this.ingredientCenter = this.add.image(
+          this.screenCenterX,
+          -100,
+          this.loadIngredientImage(nr)
+        );
+        this.ingredientCenter.setDepth(80);
+      }
+    });
+    this.socketService.on('changeImageIngredientRight', (nr) => {
+      if (this.ingredientRight != null) {
+        this.ingredientRight.destroy();
+        this.ingredientRight = this.add.image(
+          this.screenCenterX,
+          -100,
+          this.loadIngredientImage(nr)
+        );
+        this.ingredientRight.setDepth(80);
+      }
+    });
 
-this.socketService.on('checkIngredientOnList', (number) => {
-  this.checkIngredientOnList(number);
-});
+    this.socketService.on('checkIngredientOnList', (number) => {
+      this.checkIngredientOnList(number);
+    });
 
 
     // this.socketService.on('newIngredient', (ingr) => {
@@ -361,10 +361,10 @@ this.socketService.on('checkIngredientOnList', (number) => {
     this.socketService.on('adjustScoreByCatchedIngredient', (scoreInfo) => {
       if (scoreInfo[0] < 0) {
         this.playBadSound();
-        this.showLostPointsByIngredient(scoreInfo[0], scoreInfo[1], scoreInfo[2]+150, scoreInfo[3]-120);
+        this.showLostPointsByIngredient(scoreInfo[0], scoreInfo[1], scoreInfo[2] + 150, scoreInfo[3] - 120);
       } else if (scoreInfo[0] > 0) {
         this.playGoodSound();
-        this.showCollectedPointsByIngredient(scoreInfo[0], scoreInfo[1], scoreInfo[2]+150, scoreInfo[3]-120);
+        this.showCollectedPointsByIngredient(scoreInfo[0], scoreInfo[1], scoreInfo[2] + 150, scoreInfo[3] - 120);
       }
     });
 
@@ -394,8 +394,8 @@ this.socketService.on('checkIngredientOnList', (number) => {
     if (this.playing != undefined && this.playing) {
       // this.keepFalling();
       // console.log("boolean for while: "+this.ingredientTouchedCollider);
-      if (this.ingredientTouchedCollider){
-        console.log("true / update playing called boolean: "+this.ingredientTouchedCollider);
+      if (this.ingredientTouchedCollider) {
+        console.log("true / update playing called boolean: " + this.ingredientTouchedCollider);
         //TODO: generate random number
         // TODO: has to come from server!?
         // this.letIngredientsFall(3);
@@ -410,7 +410,7 @@ this.socketService.on('checkIngredientOnList', (number) => {
         this.adjustedPointsTextVisibleCounter = 0;
       }
     }
-}
+  }
 
 
   /* -------------------- SÄFTLIMACHER GAME METHODS --------------------*/
@@ -499,83 +499,83 @@ this.socketService.on('checkIngredientOnList', (number) => {
     }
   }
 
-    private drawIngredientCounter(ingredientObjectNumber: number) {
-      let x = this.ingredientOnListX - 100;
-      let y = this.getYPosOnListForNumber(ingredientObjectNumber) - 50;
-      let currentCounter = this.getCounterForNumber(ingredientObjectNumber);
-      let counterText = this.add.bitmapText(
-        x,
-        y,
-        'pressStartBlack',
-        currentCounter.toString(),
-        25)
-        .setOrigin(0.5, 0.5)
-        .setCenterAlign();
+  private drawIngredientCounter(ingredientObjectNumber: number) {
+    let x = this.ingredientOnListX - 100;
+    let y = this.getYPosOnListForNumber(ingredientObjectNumber) - 50;
+    let currentCounter = this.getCounterForNumber(ingredientObjectNumber);
+    let counterText = this.add.bitmapText(
+      x,
+      y,
+      'pressStartBlack',
+      currentCounter.toString(),
+      25)
+      .setOrigin(0.5, 0.5)
+      .setCenterAlign();
 
-      this.setCounterTextForNumber(counterText, ingredientObjectNumber);
-    }
+    this.setCounterTextForNumber(counterText, ingredientObjectNumber);
+  }
 
-    setCounterTextForNumber(counterBitmapText: any, ingredientObjectNumber: any) {
-      switch (ingredientObjectNumber) {
-        case 0:
-          this.catchedIngredientCounterText1?.destroy();
-          this.catchedIngredientCounterText1 = counterBitmapText;
-          // this.catchedIngredientCounterText1.setText = counterText;
-          break;
-        case 1:
-          this.catchedIngredientCounterText2?.destroy();
-          this.catchedIngredientCounterText2 = counterBitmapText;
-          // this.catchedIngredientCounterText2.setText = counterText;
-          break;
-        case 2:
-          this.catchedIngredientCounterText3?.destroy();
-          this.catchedIngredientCounterText3 = counterBitmapText;
-          // this.catchedIngredientCounterText3.setText = counterText;
-          break;
-      }
+  setCounterTextForNumber(counterBitmapText: any, ingredientObjectNumber: any) {
+    switch (ingredientObjectNumber) {
+      case 0:
+        this.catchedIngredientCounterText1?.destroy();
+        this.catchedIngredientCounterText1 = counterBitmapText;
+        // this.catchedIngredientCounterText1.setText = counterText;
+        break;
+      case 1:
+        this.catchedIngredientCounterText2?.destroy();
+        this.catchedIngredientCounterText2 = counterBitmapText;
+        // this.catchedIngredientCounterText2.setText = counterText;
+        break;
+      case 2:
+        this.catchedIngredientCounterText3?.destroy();
+        this.catchedIngredientCounterText3 = counterBitmapText;
+        // this.catchedIngredientCounterText3.setText = counterText;
+        break;
     }
+  }
 
-    updateCounterTextForNumber(counterText: string, ingredientObjectNumber: any) {
-      switch (ingredientObjectNumber) {
-        case 0:
-          // this.catchedIngredientCounterText1?.destroy();
-          // this.catchedIngredientCounterText1 = counterText;
-          this.catchedIngredientCounterText1.setText(counterText);
-          break;
-        case 1:
-          // this.catchedIngredientCounterText2?.destroy();
-          // this.catchedIngredientCounterText2 = counterText;
-          this.catchedIngredientCounterText2.setText(counterText);
-          break;
-        case 2:
-          // this.catchedIngredientCounterText3?.destroy();
-          // this.catchedIngredientCounterText3 = counterText;
-          this.catchedIngredientCounterText3.setText(counterText);
-          break;
-      }
+  updateCounterTextForNumber(counterText: string, ingredientObjectNumber: any) {
+    switch (ingredientObjectNumber) {
+      case 0:
+        // this.catchedIngredientCounterText1?.destroy();
+        // this.catchedIngredientCounterText1 = counterText;
+        this.catchedIngredientCounterText1.setText(counterText);
+        break;
+      case 1:
+        // this.catchedIngredientCounterText2?.destroy();
+        // this.catchedIngredientCounterText2 = counterText;
+        this.catchedIngredientCounterText2.setText(counterText);
+        break;
+      case 2:
+        // this.catchedIngredientCounterText3?.destroy();
+        // this.catchedIngredientCounterText3 = counterText;
+        this.catchedIngredientCounterText3.setText(counterText);
+        break;
     }
+  }
 
-    getCounterForNumber(ingredientObjectNumber: number) {
-      switch (ingredientObjectNumber) {
-        case 0:
-          return this.catchedShakeObjectCounter1;
-        case 1:
-          return this.catchedShakeObjectCounter2;
-        case 2:
-          return this.catchedShakeObjectCounter3;
-      }
+  getCounterForNumber(ingredientObjectNumber: number) {
+    switch (ingredientObjectNumber) {
+      case 0:
+        return this.catchedShakeObjectCounter1;
+      case 1:
+        return this.catchedShakeObjectCounter2;
+      case 2:
+        return this.catchedShakeObjectCounter3;
     }
+  }
 
-    increaseCounterForNumber(ingredientObjectNumber: number) {
-      switch (ingredientObjectNumber) {
-        case 0:
-          return this.catchedShakeObjectCounter1++;
-        case 1:
-          return this.catchedShakeObjectCounter2++;
-        case 2:
-          return this.catchedShakeObjectCounter3++;
-      }
+  increaseCounterForNumber(ingredientObjectNumber: number) {
+    switch (ingredientObjectNumber) {
+      case 0:
+        return this.catchedShakeObjectCounter1++;
+      case 1:
+        return this.catchedShakeObjectCounter2++;
+      case 2:
+        return this.catchedShakeObjectCounter3++;
     }
+  }
 
 
   /* -------------------- SÄFTLIMACHER GAME METHODS WITH INDIVIDUAL IMPLEMENTATION --------------------*/
@@ -640,89 +640,129 @@ this.socketService.on('checkIngredientOnList', (number) => {
     this.showReachedScore();
   }
 
+  // private showReachedScore() {
+  // const text = ['Der Saft ist fertig!\n\n\n\nGesammelte Punkte: '
+  //   + this.score + '\n\nDas macht ' + this.getNumberOfGlasses(this.score)
+  //   + ' Glaser!'];
+
+  // this.add.bitmapText(
+  //   this.screenCenterX,
+  //   this.screenCenterY*1.5,
+  //   'pressStartBlack',
+  //   text,
+  //   40)
+  //   .setOrigin(0.5, 0.5)
+  //   .setCenterAlign();
+
+  //   this.add.image(
+  //     this.screenCenterX,
+  //     this.screenCenterY*0.8,
+  //     'ShakerMixing'
+  //   );
+
   private showReachedScore() {
-    // const text = ['Der Saft ist fertig!\n\n\n\nGesammelte Punkte: '
-    //   + this.score + '\n\nDas macht ' + this.getNumberOfGlasses(this.score)
-    //   + ' Glaser!'];
+    // mixed juice in shaker
+    this.add.image(
+      this.screenCenterX,
+      this.screenCenterY * 0.45,
+      'ShakerMixed'
+    );
 
-    // this.add.bitmapText(
-    //   this.screenCenterX,
-    //   this.screenCenterY*1.5,
-    //   'pressStartBlack',
-    //   text,
-    //   40)
-    //   .setOrigin(0.5, 0.5)
-    //   .setCenterAlign();
+    let glasses = this.getNumberOfGlasses(this.score);
 
-    //   this.add.image(
-    //     this.screenCenterX,
-    //     this.screenCenterY*0.8,
-    //     'ShakerMixing'
-    //   );
+    let glassesY = this.screenCenterY * 1.25;
+    let glassesXStart = this.screenCenterX * 0.7;
+    let glassesXAdd = 0;
+    let glassesPerRow = 6;
+    let scaleValue = 1;
 
-        // mixed juice in shaker
-        this.add.image(
-          this.screenCenterX,
-          this.screenCenterY*0.45,
-          'ShakerMixed'
-        );
+    let textY = this.screenCenterY * 0.98;
+    let text = [''];
+    if (glasses <= 0) {
+      text = ['Der Saft ist fertig!\n\nIhr habt leider keinen\n\nleckeren Saft hergestellt...'];
+      textY = this.screenCenterY * 1.1;
+    }
+    if (glasses == 1) {
+      text = ['Der Saft ist fertig! Ihr habt\n\n1 leckere Portion Saft hergestellt.\n\nImmerhin!'];
+      textY = this.screenCenterY * 1.1;
+    }
+    if (glasses > 2) {
+      text = ['Der Saft ist fertig! Ihr habt\n\n' + glasses.toString()
+        + ' leckere Portionen hergestellt.'];
+    }
+    if (glasses > 12) {
+      text = ['Der Saft ist fertig! Ihr habt\n\n' + glasses.toString()
+        + ' leckere Portionen hergestellt. Toll!'];
+    }
+    if (glasses > 30) {
+      text = ['Der Saft ist fertig! Ihr habt\n\n' + glasses.toString()
+        + ' leckere Portionen hergestellt. Super!'];
+    }
+    if (glasses > 45) {
+      text = ['Der Saft ist fertig! Ihr habt\n\n' + glasses.toString()
+        + ' leckere Portionen hergestellt. Wow!'];
+    }
+    if (glasses > 100) {
+      text = ['Der Saft ist fertig! Ihr habt\n\n' + glasses.toString()
+        + ' leckere Portionen hergestellt. Unglaublich!'];
+    }
 
-        let glasses = this.getNumberOfGlasses(this.score);
+    this.add.bitmapText(
+      this.screenCenterX,
+      textY,
+      'pressStartBlack',
+      text,
+      40)
+      .setOrigin(0.5, 0.5)
+      .setCenterAlign();
 
-        let glassesY = this.screenCenterY*1.3;
-        let glassesXStart = this.screenCenterX*0.7;
-        let glassesXAdd = 0;
-        let glassesPerRow = 6;
-
-        // const text = ['Der Saft ist fertig!\n\n\n\nGesammelte Punkte: '
-        //   + this.score + '\n\nDas macht ' + glasses.toString()
-        //   + ' Glaser!'];
-        let text = [''];
-        if (glasses <= 0) {
-          text = ['Der Saft ist fertig!\n\nIhr habt leider\n\nkeine Glaser geschafft...'];
-        } else if (glasses == 1) {
-          text = ['Der Saft ist fertig!\n\nIhr habt 1 Glas geschafft.\n\nImmerhin!'];
-          glassesXStart = this.screenCenterX;
-          glassesY = this.screenCenterY*1.6;
-        } else if (glasses > 20) {
-          text = ['Der Saft ist fertig!\n\nIhr habt ' + glasses.toString()
-          + ' Glaser geschafft! Wow!'];
-        } else {
-          text = ['Der Saft ist fertig!\n\nIhr habt ' + glasses.toString()
-          + ' Glaser geschafft!'];
-        }
-
-        this.add.bitmapText(
-          this.screenCenterX,
-          this.screenCenterY*0.98,
-          'pressStartBlack',
-          text,
-          40)
-          .setOrigin(0.5, 0.5)
-          .setCenterAlign();
-
-          if (glasses > 12) {
-            glassesY = this.screenCenterY*1.2;
-            glassesPerRow = 10;
-            glassesXStart = this.screenCenterX*0.4;
-          } else if (glasses > 30) {
-            // TODO test...
-            glassesY = this.screenCenterY*1.2;
-            glassesPerRow = 15;
-            glassesXStart = this.screenCenterX*0.1;
-          }
-          for (let index = 1; index <= glasses; index++) {
-            let img = this.add.image(
-              glassesXStart + glassesXAdd,
-              glassesY,
-              'GlassFull'
-            );
-            glassesXAdd = glassesXAdd + img.width*1.1;
-            if (index % glassesPerRow == 0) {
-              glassesY = glassesY + img.height*1.05;
-              glassesXAdd = 0;
-            }
-          }
+    if (glasses == 1) {
+      glassesXStart = this.screenCenterX;
+      glassesY = this.screenCenterY * 1.5;
+    }
+    if (glasses > 12) {
+      glassesPerRow = 10;
+      glassesXStart = this.screenCenterX * 0.4;
+    }
+    if (glasses > 30) {
+      // glassesY = this.screenCenterY*1.2;
+      glassesPerRow = 15;
+      glassesXStart = this.screenCenterX * 0.3;
+      scaleValue = 0.8;
+    }
+    if (glasses > 45) {
+      // TODO test...
+      // glassesY = this.screenCenterY*1.2;
+      glassesPerRow = 20;
+      glassesXStart = this.screenCenterX * 0.4;
+      scaleValue = 0.5;
+    }
+    if (glasses > 100) {
+      glassesXStart = this.screenCenterX * 0.25;
+      glassesPerRow = 30;
+      scaleValue = 0.4;
+    }
+    for (let index = 1; index <= glasses; index++) {
+      console.log("glassesY: " + glassesY);
+      let img = this.add.image(
+        glassesXStart + glassesXAdd,
+        glassesY,
+        'GlassFull'
+      );
+      img.setScale(scaleValue);
+      // if (glasses > 45) {
+      //   console.log("img.height before scaling: "+ img.height);
+      //   scaleValue = 0.5;
+      //   img.setScale(scaleValue);
+      //   console.log("img.height after scaling: "+ img.height);
+      // }
+      glassesXAdd = glassesXAdd + img.width * scaleValue * 1.1;
+      if (index % glassesPerRow == 0) {
+        glassesY = glassesY + img.height * scaleValue * 1.1;
+        glassesXAdd = 0;
+        console.log("glassesY next: " + glassesY);
+      }
+    }
   }
 
   private initSoundEffects() {
