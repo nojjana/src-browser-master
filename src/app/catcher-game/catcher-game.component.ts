@@ -663,7 +663,7 @@ this.socketService.on('checkIngredientOnList', (number) => {
         // mixed juice in shaker
         this.add.image(
           this.screenCenterX,
-          this.screenCenterY*0.35,
+          this.screenCenterY*0.45,
           'ShakerMixed'
         );
 
@@ -694,7 +694,7 @@ this.socketService.on('checkIngredientOnList', (number) => {
 
         this.add.bitmapText(
           this.screenCenterX,
-          this.screenCenterY*0.9,
+          this.screenCenterY*0.98,
           'pressStartBlack',
           text,
           40)

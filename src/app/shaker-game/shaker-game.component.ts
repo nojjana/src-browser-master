@@ -1002,7 +1002,7 @@ export default class ShakerScene extends Phaser.Scene {
     // mixed juice in shaker
     this.add.image(
       this.screenCenterX,
-      this.screenCenterY*0.35,
+      this.screenCenterY*0.45,
       'ShakerMixed'
     );
 
@@ -1033,7 +1033,7 @@ export default class ShakerScene extends Phaser.Scene {
 
     this.add.bitmapText(
       this.screenCenterX,
-      this.screenCenterY*0.9,
+      this.screenCenterY*0.98,
       'pressStartBlack',
       text,
       40)
