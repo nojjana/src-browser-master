@@ -156,12 +156,12 @@ export default class SeesawScene extends Phaser.Scene {
   private garbageContainerY = 1000;
 
 ////only for testing reasons - circle for Ingredients 1-3
-  private circleIng1: Phaser.GameObjects.Ellipse;
+/*   private circleIng1: Phaser.GameObjects.Ellipse;
   private circleIng2: Phaser.GameObjects.Ellipse;
   private circleIng3: Phaser.GameObjects.Ellipse;
   private circleIng4: Phaser.GameObjects.Ellipse;
   private circleIng5: Phaser.GameObjects.Ellipse;
-  private circleIng6: Phaser.GameObjects.Ellipse;
+  private circleIng6: Phaser.GameObjects.Ellipse; */
 
 
   //private seesawBeam1: Phaser.GameObjects.Image;
@@ -277,12 +277,12 @@ export default class SeesawScene extends Phaser.Scene {
     this.rectangleBeam1 = this.add.rectangle(0,0,0,0, 0xa83232)
     this.rectangle2 = this.add.rectangle(0,0,0,0, 0x9a32a6)
     this.rectangleBeam2 = this.add.rectangle(0,0,0,0, 0x9a32a6)
-    this.circleIng1 = this.add.ellipse(0,0,100,100, 0xa83232)
+/*     this.circleIng1 = this.add.ellipse(0,0,100,100, 0xa83232)
     this.circleIng2 = this.add.ellipse(0,0,100,100, 0xa83232)
     this.circleIng3 = this.add.ellipse(0,0,100,100, 0xa83232)
     this.circleIng4 = this.add.ellipse(0,0,100,100, 0x9a32a6)
     this.circleIng5 = this.add.ellipse(0,0,100,100, 0x9a32a6)
-    this.circleIng6 = this.add.ellipse(0,0,100,100, 0x9a32a6)
+    this.circleIng6 = this.add.ellipse(0,0,100,100, 0x9a32a6) */
 
 
      // seesaw
@@ -493,8 +493,6 @@ export default class SeesawScene extends Phaser.Scene {
         console.log("ingredientLeftPositionX: "+pos[0]+" ingredientY: "+pos[1]+" angle: "+pos[2])
         this.ingredientLeft0.setPosition(pos[0], pos[1]);
         this.ingredientLeft0.setAngle(pos[3]);
-        this.circleIng1.setPosition(pos[0], pos[1]);
-        this.circleIng1.setAngle(pos[3]);
       }
     });
      /// current ingredient position left 1
@@ -502,9 +500,7 @@ export default class SeesawScene extends Phaser.Scene {
       if (this.ingredientLeft1 != null) {
         this.ingredientLeft1.setPosition(pos[0], pos[1]);
         this.ingredientLeft1.setAngle(pos[3]);
-        this.circleIng2.setPosition(pos[0], pos[1]);
-        this.circleIng2.setAngle(pos[3])
-      }
+     }
     });
 
     /// current ingredient position left 2
@@ -512,8 +508,6 @@ export default class SeesawScene extends Phaser.Scene {
       if (this.ingredientLeft2 != null) {
         this.ingredientLeft2.setPosition(pos[0], pos[1]);
         this.ingredientLeft2.setAngle(pos[3]);
-        this.circleIng3.setPosition(pos[0], pos[1]);
-        this.circleIng3.setAngle(pos[3]);
       }
     });
 
@@ -521,8 +515,6 @@ export default class SeesawScene extends Phaser.Scene {
       if (this.ingredientRight0 != null) {
         this.ingredientRight0.setPosition(pos[0], pos[1]);
         this.ingredientRight0.setAngle(pos[3]);
-        this.circleIng4.setPosition(pos[0], pos[1]);
-        this.circleIng4.setAngle(pos[3]);
       }
     });
 
@@ -530,8 +522,6 @@ export default class SeesawScene extends Phaser.Scene {
       if (this.ingredientRight1 != null) {
         this.ingredientRight1.setPosition(pos[0], pos[1]);
         this.ingredientRight1.setAngle(pos[3]);
-        this.circleIng5.setPosition(pos[0], pos[1]);
-        this.circleIng5.setAngle(pos[3]);
       }
     });
 
@@ -539,8 +529,6 @@ export default class SeesawScene extends Phaser.Scene {
       if (this.ingredientRight2 != null) {
         this.ingredientRight2.setPosition(pos[0], pos[1]);
         this.ingredientRight2.setAngle(pos[3]);
-        this.circleIng6.setPosition(pos[0], pos[1]);
-        this.circleIng6.setAngle(pos[3]);
       }
     });
    
@@ -901,17 +889,14 @@ this.socketService.on('checkIngredientOnList', (number) => {
     this.ingredientLeft0?.destroy();
     this.ingredientLeft1?.destroy();
     this.ingredientLeft2?.destroy();
+    this.ingredientRight0?.destroy();
+    this.ingredientRight1?.destroy();
+    this.ingredientRight2?.destroy();
 
     this.rectangle1.destroy();
     this.rectangle2.destroy();
     this.rectangleBeam1.destroy();
     this.rectangleBeam2.destroy();
-    this.circleIng1.destroy();
-    this.circleIng2.destroy();
-    this.circleIng3.destroy();
-    this.circleIng4.destroy();
-    this.circleIng5.destroy();
-    this.circleIng6.destroy();
   ////  this.seesaw1?.destroy();
    // this.seesawBeam1?.destroy();
   ////  this.seesaw2?.destroy();
