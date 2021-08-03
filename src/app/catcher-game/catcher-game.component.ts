@@ -102,11 +102,13 @@ export default class CatcherScene extends Phaser.Scene {
   preload() {
     // säftlimacher visible objects
     this.load.image('Ground', '../../assets/catcher/Ground.png')
+
     this.load.image('CatcherNet1', '../../assets/catcher/NetOrange.png');
     this.load.image('CatcherNet2', '../../assets/catcher/NetLightGreen.png');
     this.load.image('CatcherNet3', '../../assets/catcher/NetBlue.png');
     this.load.image('ShakerContainer', '../../assets/shaker/ShakerContainer.png');
     this.load.image('IngredientList', '../../assets/shaker/IngredientList.png');
+
     this.load.image('ShakerMixing', '../../assets/shaker/ShakerMixing.png');
     this.load.image('ShakerMixed', '../../assets/shaker/ShakerMixed.png');
     this.load.image('GlassFull', '../../assets/shaker/glass-full.png');
@@ -162,9 +164,9 @@ export default class CatcherScene extends Phaser.Scene {
 
     // add säftlimacher visible game objects to scene
     // ground
-    this.ground = this.physics.add.staticImage(
+    this.ground = this.add.image(
       this.screenCenterX,
-      this.screenHeight - 39,
+      this.screenHeight-39,
       'Ground'
     );
     this.ground.setVisible(false);

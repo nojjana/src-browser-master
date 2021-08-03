@@ -48,18 +48,17 @@ export abstract class SaftlimacherBaseGameComponent implements OnInit, OnDestroy
         autoCenter: Phaser.Scale.CENTER_BOTH,
         height: 1440,
         width: 2560,
-
       },
       transparent: true,
       parent: 'gameContainer',
-      audio: { disableWebAudio: true },
-      physics: {
-        default: 'arcade',
-        arcade: {
-            debug: false,
-            gravity: { y: 150 }
-        }
-      },
+      audio: { disableWebAudio: true }
+      // physics: {
+      //   default: 'arcade',
+      //   arcade: {
+      //       debug: false,
+      //       gravity: { y: 150 }
+      //   }
+      // },
     };
   }
 

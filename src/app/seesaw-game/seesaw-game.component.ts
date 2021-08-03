@@ -2,6 +2,7 @@ import { verifyHostBindings } from '@angular/compiler';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { Component, destroyPlatform, OnDestroy, OnInit } from '@angular/core';
 import Phaser from 'phaser';
+import { SaftlimacherBaseGameComponent } from '../saftlimacher-base-game/saftlimacher-base-game-component';
 //import { clearInterval } from 'timers';
 import { SocketService } from '../socket-service/socket.service';
 import Group = Phaser.GameObjects.Group;
@@ -12,103 +13,36 @@ import Group = Phaser.GameObjects.Group;
   templateUrl: './seesaw-game.component.html',
   styleUrls: ['./seesaw-game.component.css']
 })
-export class SeesawGameComponent implements OnInit, OnDestroy {
+export class SeesawGameComponent extends SaftlimacherBaseGameComponent implements OnInit, OnDestroy {
 
-  // basic program setup
-  phaserGame: Phaser.Game;
-  config: Phaser.Types.Core.GameConfig;
-  public building = false;
-  public amountOfReadyPlayers = 0;
-
-  // basic game setup
-  public tutorial = true;
-  public dots = 0;
-  private dotInterval;
-  public countdown: number = 5;
-  public gameOverCountdown: number = 0;
-  public gameOver = false;
-
-  constructor(private socketService: SocketService) {
-    this.dotInterval = setInterval(() => {
-      this.dots++;
-      if (this.dots === 4) {
-        this.dots = 0;
-      }
-    }, 500);
-
-    this.config = {
-      type: Phaser.AUTO,
-      scale: {
-        mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH,
-        height: 1440,
-        width: 2560,
-      },
-      transparent: true,
-      parent: 'gameContainer',
-      audio: { disableWebAudio: true },
-      /* physics: {
-        default: 'matter',
-        matter: {
-            debug: false,
-            gravity: { y: 150 }
-        }
-      }, */
-    };
+  constructor(protected socketService: SocketService) {
+    // TODO socketservice parameter anders übergeben?
+    super(socketService);
   }
 
-
-  ngOnDestroy() {
-    if (this.phaserGame != null) {
-      this.phaserGame.destroy(true);
-    }
-
-    this.socketService.removeListener('controllerEndedTutorial');
-    this.socketService.removeListener('countdown');
-    this.socketService.removeListener('gameOverCountdown');
-    this.socketService.removeListener('gameOver');
-
-    this.socketService.removeListener('levelData');
-    this.socketService.removeListener('updateScore');
-    this.socketService.removeListener('checkIngredientOnList');
-    // TODO: listeners vervollständigen
-
-    clearInterval(this.dotInterval);
+  startGameScene(levelData: any): void {
+    this.phaserGame = new Phaser.Game(this.config);
+    this.phaserGame.scene.add('seesawScene', SeesawScene);
+    this.phaserGame.scene.start('seesawScene', { socketService: this.socketService, levelData: levelData });
   }
 
-  ngOnInit(): void {
-    this.socketService.on('controllerEndedTutorial', () => { this.controllerReady(); });
-    this.socketService.on('countdown', (number) => {
-      // TODO countdown sound
-      this.countdown = number;
-    });
-    this.socketService.on('gameOverCountdown', (number) => {
-      this.gameOverCountdown = number;
-      console.log("Noch " + this.gameOverCountdown);
-    });
-    this.socketService.on('gameOver', (over) => this.gameOver = over);
-    this.socketService.once('levelData', (levelData) => { this.buildGameView(levelData); });
-
-    this.socketService.emit('displayReady');
-  }
-
-  private controllerReady(): void {
-    this.amountOfReadyPlayers++;
-
-    if (this.amountOfReadyPlayers === 2) {
-      this.tutorial = false;
-      console.log('Finished tutorial');
-    }
-  }
-
-  private buildGameView(levelData): void {
-    console.log('Now building game view (scene).');
-    this.building = true;
-    setTimeout(() => {
-      this.phaserGame = new Phaser.Game(this.config);
-      this.phaserGame.scene.add('seesawScene', SeesawScene);
-      this.phaserGame.scene.start('seesawScene', { socketService: this.socketService, levelData: levelData });
-    }, 100);
+  removeGameSpecificListeners(): void {
+    this.socketService.removeListener('seesaw1Position');
+    this.socketService.removeListener('seesawBeam1Position');
+    this.socketService.removeListener('seesaw2Position');
+    this.socketService.removeListener('seesawBeam2Position');
+    this.socketService.removeListener('updateIngredientLeft0');
+    this.socketService.removeListener('updateIngredientLeft1');
+    this.socketService.removeListener('updateIngredientLeft2');
+    this.socketService.removeListener('updateIngredientRight0');
+    this.socketService.removeListener('updateIngredientRight1');
+    this.socketService.removeListener('updateIngredientRight2');
+    this.socketService.removeListener('changeImageIngredientLeft0');
+    this.socketService.removeListener('changeImageIngredientLeft1');
+    this.socketService.removeListener('changeImageIngredientLeft2');
+    this.socketService.removeListener('changeImageIngredientRight0');
+    this.socketService.removeListener('changeImageIngredientRight1');
+    this.socketService.removeListener('changeImageIngredientRight2');
   }
 }
 
@@ -149,10 +83,11 @@ export default class SeesawScene extends Phaser.Scene {
   private garbageContainerRight: Phaser.GameObjects.Image;
 
   //placement of containers
-  private garbageContainerLeftX = 700;
+  // TODO via leveldate von server erhalten!!
+  private garbageContainerLeftX = 650;
   private shakerContainerX = 1500; //800
-  private garbageContainerRightX = 2250; //2400
-  private shakerContainerY = 930;
+  private garbageContainerRightX = 2300; //2400
+  private shakerContainerY = 1050;
   private garbageContainerY = 1000;
 
 ////only for testing reasons - circle for Ingredients 1-3
@@ -166,7 +101,7 @@ export default class SeesawScene extends Phaser.Scene {
 
   //private seesawBeam1: Phaser.GameObjects.Image;
 ////  private seesaw2: Phaser.GameObjects.Image;
-  //private seesawBeam2: Phaser.GameObjects.Image; 
+  //private seesawBeam2: Phaser.GameObjects.Image;
   /// catchers
   /* private catcherNet1: Phaser.GameObjects.Image;
   private catcherNet2: Phaser.GameObjects.Image;
@@ -211,12 +146,15 @@ export default class SeesawScene extends Phaser.Scene {
   preload() {
     // säftlimacher visible objects
     this.load.image('Ground', '../../assets/catcher/Ground.png')
-    ////this.load.image('CatcherNet1', '../../assets/catcher/NetOrange.png');
-    ////this.load.image('CatcherNet2', '../../assets/catcher/NetLightGreen.png');
-    ////this.load.image('CatcherNet3', '../../assets/catcher/NetBlue.png');
+
     this.load.image('ShakerContainer', '../../assets/shaker/ShakerContainer.png');
     this.load.image('GarbageContainer', '../../assets/seesaw/Garbage.png');
     this.load.image('IngredientList', '../../assets/shaker/IngredientList.png');
+
+    this.load.image('ShakerMixing', '../../assets/shaker/ShakerMixing.png');
+    this.load.image('ShakerMixed', '../../assets/shaker/ShakerMixed.png');
+    this.load.image('GlassFull', '../../assets/shaker/glass-full.png');
+
     this.load.image('Seesaw', '../../assets/seesaw/seesaw.png');
     this.load.image('SeesawBeam', '../../assets/seesaw/seesawBeam.png');
 
@@ -224,6 +162,8 @@ export default class SeesawScene extends Phaser.Scene {
     this.load.image('Apple', '../../assets/shaker/Apple.png');
     this.load.image('Banana', '../../assets/shaker/Banana.png');
     this.load.image('Berry', '../../assets/shaker/Berry.png');
+    this.load.image('Beatle', '../../assets/shaker/Beatle.png');
+
     /// ingredients on list (TODO: handle with scaling?)
     this.load.image('AppleTall', '../../assets/shaker/AppleTall.png');
     this.load.image('BananaTall', '../../assets/shaker/BananaTall.png');
@@ -251,7 +191,7 @@ export default class SeesawScene extends Phaser.Scene {
   ////  let initSeesaw1Y = levelData[2];
 
   ////  let initSeesaw2X = levelData[3];
-  ////  let initSeesaw2Y = levelData[4];    
+  ////  let initSeesaw2Y = levelData[4];
 
 
     // screen dimensions
@@ -265,12 +205,18 @@ export default class SeesawScene extends Phaser.Scene {
 
     // add säftlimacher visible game objects to scene
     // ground
+    // this.ground = this.add.image(
+    //   this.screenCenterX,
+    //   this.screenHeight-39,
+    //   'Ground'
+    // );
+    // this.ground.setVisible(true);
     this.ground = this.add.image(
       this.screenCenterX,
       this.screenHeight-39,
       'Ground'
     );
-    this.ground.setVisible(true);
+    this.ground.setVisible(false);
 
     //TEST RECTANGLE
     this.rectangle1 = this.add.rectangle(0, 0, 0, 0, 0xa83232)
@@ -393,8 +339,8 @@ export default class SeesawScene extends Phaser.Scene {
       this.screenWidth * 0.8,
       this.screenHeight * 0.9,
       'pressStartBlack',
-      'Punkte: 0',
-      28)
+      '0',
+      32)
       .setOrigin(0.5)
       .setDepth(100);
 
@@ -404,7 +350,7 @@ export default class SeesawScene extends Phaser.Scene {
       this.screenHeight * 0.7,
       'pressStartBlack',
       '',
-      28)
+      40)
       .setOrigin(0.5)
       .setDepth(100);
     this.adjustedPointsText.setVisible(false);
@@ -438,15 +384,19 @@ export default class SeesawScene extends Phaser.Scene {
 
       if (Math.abs(this.rectangle1.rotation - pos[4]) > 0.1){
         this.rectangle1.setRotation(pos[4]);
-      } if (this.rectangle1.x = 0) {
+      } if (this.rectangle1.x == 0) {
+        // set at the beginning
+        this.rectangle1.setPosition(pos[0], pos[1]);
+        this.rectangle1.setSize(pos[2], pos[3]);
+        this.rectangle1.setOrigin(0.5);
         this.rectangle1.setRotation(0);
       }
 /*       console.log("seesaw1 X: "+pos[0]+" seesaw1 Y: "+pos[1]+" seesaw Angle: "+pos[4])
       this.rectangle1.setRotation(pos[4]); */
 
-      this.rectangle1.setPosition(pos[0], pos[1]);
-      this.rectangle1.setSize(pos[2], pos[3]);
-      this.rectangle1.setOrigin(0.5);   
+      // this.rectangle1.setPosition(pos[0], pos[1]);
+      // this.rectangle1.setSize(pos[2], pos[3]);
+      // this.rectangle1.setOrigin(0.5);
 
     });
 
@@ -455,23 +405,27 @@ export default class SeesawScene extends Phaser.Scene {
       ////  this.seesaw1.setPosition(pos[0], pos[1]);
     //    console.log("seesawBeam1 pos0: "+pos[0]+" seesawBeam1 pos1: "+pos[1])
     //    console.log("seesawBeam1 length: "+pos[2]+" seesawBeam1 height: "+pos[3])
-
-        this.rectangleBeam1.setPosition(pos[0], pos[1]);
-        this.rectangleBeam1.setSize(pos[2], pos[3]);
+        if (this.rectangleBeam1.x == 0) {
+          this.rectangleBeam1.setPosition(pos[0], pos[1]);
+          this.rectangleBeam1.setSize(pos[2], pos[3]);
+        }
       });
 
-      
+
     this.socketService.on('seesaw2Position', (pos) => {
       if (Math.abs(this.rectangle2.rotation - pos[4]) > 0.1){
         this.rectangle2.setRotation(pos[4]);
-      } if (this.rectangle2.x = 0) {
+      } if (this.rectangle2.x == 0) {
+        this.rectangle2.setPosition(pos[0], pos[1]);
+        this.rectangle2.setSize(pos[2], pos[3]);
+        this.rectangle2.setOrigin(0.5);
         this.rectangle2.setRotation(0);
       }
     //  console.log("seesaw2 X: "+pos[0]+" seesaw2 Y: "+pos[1] +" seesaw2 Angle: "+pos[4])
 
-      this.rectangle2.setPosition(pos[0], pos[1]);
-      this.rectangle2.setSize(pos[2], pos[3]);
-      this.rectangle2.setOrigin(0.5);   
+      // this.rectangle2.setPosition(pos[0], pos[1]);
+      // this.rectangle2.setSize(pos[2], pos[3]);
+      // this.rectangle2.setOrigin(0.5);
     //  this.rectangle2.setRotation(pos[4]);
     });
 
@@ -480,9 +434,10 @@ export default class SeesawScene extends Phaser.Scene {
       ////  this.seesaw1.setPosition(pos[0], pos[1]);
     //    console.log("seesawBeam1 pos0: "+pos[0]+" seesawBeam1 pos1: "+pos[1])
     //    console.log("seesawBeam2 length: "+pos[2]+" seesawBeam2 height: "+pos[3])
-
+      if (this.rectangleBeam2.x == 0) {
         this.rectangleBeam2.setPosition(pos[0], pos[1]);
         this.rectangleBeam2.setSize(pos[2], pos[3]);
+      }
     });
 
     // /// current ingredient position
@@ -490,16 +445,16 @@ export default class SeesawScene extends Phaser.Scene {
      /// current ingredient position left 0
      this.socketService.on('updateIngredientLeft0', (pos) => {
       if (this.ingredientLeft0 != null) {
-        console.log("ingredientLeftPositionX: "+pos[0]+" ingredientY: "+pos[1]+" angle: "+pos[2])
+        // console.log("ingredientLeftPositionX: "+pos[0]+" ingredientY: "+pos[1]+" angle: "+pos[2])
         this.ingredientLeft0.setPosition(pos[0], pos[1]);
-        this.ingredientLeft0.setAngle(pos[3]);
+        this.ingredientLeft0.setAngle(pos[2]);
       }
     });
      /// current ingredient position left 1
      this.socketService.on('updateIngredientLeft1', (pos) => {
       if (this.ingredientLeft1 != null) {
         this.ingredientLeft1.setPosition(pos[0], pos[1]);
-        this.ingredientLeft1.setAngle(pos[3]);
+        this.ingredientLeft1.setAngle(pos[2]);
      }
     });
 
@@ -507,60 +462,64 @@ export default class SeesawScene extends Phaser.Scene {
     this.socketService.on('updateIngredientLeft2', (pos) => {
       if (this.ingredientLeft2 != null) {
         this.ingredientLeft2.setPosition(pos[0], pos[1]);
-        this.ingredientLeft2.setAngle(pos[3]);
+        this.ingredientLeft2.setAngle(pos[2]);
       }
     });
 
     this.socketService.on('updateIngredientRight0', (pos) => {
       if (this.ingredientRight0 != null) {
         this.ingredientRight0.setPosition(pos[0], pos[1]);
-        this.ingredientRight0.setAngle(pos[3]);
+        this.ingredientRight0.setAngle(pos[2]);
       }
     });
 
     this.socketService.on('updateIngredientRight1', (pos) => {
       if (this.ingredientRight1 != null) {
         this.ingredientRight1.setPosition(pos[0], pos[1]);
-        this.ingredientRight1.setAngle(pos[3]);
+        this.ingredientRight1.setAngle(pos[2]);
       }
     });
 
     this.socketService.on('updateIngredientRight2', (pos) => {
       if (this.ingredientRight2 != null) {
         this.ingredientRight2.setPosition(pos[0], pos[1]);
-        this.ingredientRight2.setAngle(pos[3]);
+        this.ingredientRight2.setAngle(pos[2]);
       }
     });
-   
+
     this.socketService.on('changeImageIngredientLeft0', (nr) => {
       if (this.ingredientLeft0 != null) {
+      // let ingrX = this.ingredientLeft0.x;
        this.ingredientLeft0.destroy();
        this.ingredientLeft0 = this.add.image(
-         this.screenCenterX,
+        //  this.screenCenterX,
+        // ingrX,
+         1050,
          -100,
          this.loadIngredientImage(nr)
        );
        this.ingredientLeft0.setDepth(80);
       }
     });
-    
+
     this.socketService.on('changeImageIngredientLeft1', (nr) => {
       if (this.ingredientLeft1 != null) {
       this.ingredientLeft1.destroy();
       this.ingredientLeft1 = this.add.image(
-        this.screenCenterX,
+        this.screenCenterX, // TODO
         -100,
         this.loadIngredientImage(nr)
       );
       this.ingredientLeft1.setDepth(80);
       }
     });
-  
+
    this.socketService.on('changeImageIngredientLeft2', (nr) => {
     if (this.ingredientLeft2 != null) {
     this.ingredientLeft2.destroy();
     this.ingredientLeft2 = this.add.image(
-      this.screenCenterX,
+      // this.screenCenterX,
+      1050,
       -100,
       this.loadIngredientImage(nr)
     );
@@ -570,9 +529,12 @@ export default class SeesawScene extends Phaser.Scene {
 
   this.socketService.on('changeImageIngredientRight0', (nr) => {
     if (this.ingredientRight0 != null) {
+      // let ingrX = this.ingredientRight0.x;
     this.ingredientRight0.destroy();
     this.ingredientRight0 = this.add.image(
-      this.screenCenterX,
+      // this.screenCenterX,
+      // ingrX,
+      1950,
       -100,
       this.loadIngredientImage(nr)
     );
@@ -584,7 +546,7 @@ export default class SeesawScene extends Phaser.Scene {
     if (this.ingredientRight1 != null) {
     this.ingredientRight1.destroy();
     this.ingredientRight1 = this.add.image(
-      this.screenCenterX,
+      this.screenCenterX, // TODO
       -100,
       this.loadIngredientImage(nr)
     );
@@ -602,7 +564,7 @@ export default class SeesawScene extends Phaser.Scene {
     );
     this.ingredientRight2.setDepth(80);
     }
-  });  
+  });
 
 this.socketService.on('checkIngredientOnList', (number) => {
   this.checkIngredientOnList(number);
@@ -626,7 +588,7 @@ this.socketService.on('checkIngredientOnList', (number) => {
     /// current score
     this.socketService.on('updateScore', (score) => {
       this.score = score;
-      this.scoreText.setText('Punkte: ' + score);
+      this.scoreText.setText(score);
     });
 
     /// on +/- score points
@@ -693,6 +655,8 @@ this.socketService.on('checkIngredientOnList', (number) => {
       return 'Banana'
     } else if (randomIngredientNumber == 2) {
       return 'Berry'
+    } else if (randomIngredientNumber == 3) {
+      return 'Beatle'
     }
   }
 
@@ -851,15 +815,19 @@ this.socketService.on('checkIngredientOnList', (number) => {
 
   private getNumberOfGlasses(score: number) {
     // TODO: rechnung server überlassen!
-    let glasses = score / 100;
-    return glasses.toString();
+    // let glasses = score / 100;
+    let glasses = score / 10;
+    glasses = Math.floor(glasses);
+    return glasses;
   }
 
 
   private showLostPointsByIngredient(scoreDec: number, ingredientNr: number, x: number, y: number) {
     this.adjustedPointsText.setX(x);
     this.adjustedPointsText.setY(y);
-    this.adjustedPointsText.setText(scoreDec + ' Punkte');
+    this.adjustedPointsText.setText('' + scoreDec);
+    // red
+    this.adjustedPointsText.setTintFill(0xE50D0D);
     this.adjustedPointsText.setVisible(true);
     this.adjustedPointsTextVisibleCounter = 0;
     // return this.adjustedPointsText;
@@ -868,7 +836,9 @@ this.socketService.on('checkIngredientOnList', (number) => {
   private showCollectedPointsByIngredient(scoreInc: number, ingredientNr: number, x: number, y: number) {
     this.adjustedPointsText.setX(x);
     this.adjustedPointsText.setY(y);
-    this.adjustedPointsText.setText('+' + scoreInc + ' Punkte');
+    this.adjustedPointsText.setText('+' + scoreInc);
+    // green
+    this.adjustedPointsText.setTintFill(0x37B400);
     this.adjustedPointsText.setVisible(true);
     this.adjustedPointsTextVisibleCounter = 0;
     // return this.adjustedPointsText;
@@ -917,19 +887,124 @@ this.socketService.on('checkIngredientOnList', (number) => {
     this.showReachedScore();
   }
 
+  // private showReachedScore() {
+  //   const text = ['Der Saft ist fertig!\n\n\n\n\n\nGesammelte Punkte: '
+  //     + this.score + '\n\nDas macht ' + this.getNumberOfGlasses(this.score)
+  //     + ' Becher. Toll!'];
+
+  //   this.add.bitmapText(
+  //     this.screenCenterX,
+  //     this.screenCenterY,
+  //     'pressStartBlack',
+  //     text,
+  //     45)
+  //     .setOrigin(0.5, 0.5)
+  //     .setCenterAlign();
+  // }
+
   private showReachedScore() {
-    const text = ['Der Saft ist fertig!\n\n\n\n\n\nGesammelte Punkte: '
-      + this.score + '\n\nDas macht ' + this.getNumberOfGlasses(this.score)
-      + ' Becher. Toll!'];
+    // mixed juice in shaker
+    this.add.image(
+      this.screenCenterX,
+      this.screenCenterY * 0.45,
+      'ShakerMixed'
+    );
+
+    let glasses = this.getNumberOfGlasses(this.score);
+
+    let glassesY = this.screenCenterY * 1.25;
+    let glassesXStart = this.screenCenterX * 0.7;
+    let glassesXAdd = 0;
+    let glassesPerRow = 6;
+    let scaleValue = 1;
+
+    let textY = this.screenCenterY * 0.98;
+    let text = [''];
+    if (glasses <= 0) {
+      text = ['Der Saft ist fertig!\n\nIhr habt leider keinen\n\nleckeren Saft hergestellt...'];
+      textY = this.screenCenterY * 1.1;
+    }
+    if (glasses == 1) {
+      text = ['Der Saft ist fertig! Ihr habt\n\n1 leckere Portion Saft hergestellt.\n\nImmerhin!'];
+      textY = this.screenCenterY * 1.1;
+    }
+    if (glasses > 2) {
+      text = ['Der Saft ist fertig! Ihr habt\n\n' + glasses.toString()
+        + ' leckere Portionen hergestellt.'];
+    }
+    if (glasses > 12) {
+      text = ['Der Saft ist fertig! Ihr habt\n\n' + glasses.toString()
+        + ' leckere Portionen hergestellt. Toll!'];
+    }
+    if (glasses > 30) {
+      text = ['Der Saft ist fertig! Ihr habt\n\n' + glasses.toString()
+        + ' leckere Portionen hergestellt. Super!'];
+    }
+    if (glasses > 45) {
+      text = ['Der Saft ist fertig! Ihr habt\n\n' + glasses.toString()
+        + ' leckere Portionen hergestellt. Wow!'];
+    }
+    if (glasses > 100) {
+      text = ['Der Saft ist fertig! Ihr habt\n\n' + glasses.toString()
+        + ' leckere Portionen hergestellt. Unglaublich!'];
+    }
 
     this.add.bitmapText(
       this.screenCenterX,
-      this.screenCenterY,
+      textY,
       'pressStartBlack',
       text,
-      45)
+      40)
       .setOrigin(0.5, 0.5)
       .setCenterAlign();
+
+    if (glasses == 1) {
+      glassesXStart = this.screenCenterX;
+      glassesY = this.screenCenterY * 1.5;
+    }
+    if (glasses > 12) {
+      glassesPerRow = 10;
+      glassesXStart = this.screenCenterX * 0.4;
+    }
+    if (glasses > 30) {
+      // glassesY = this.screenCenterY*1.2;
+      glassesPerRow = 15;
+      glassesXStart = this.screenCenterX * 0.3;
+      scaleValue = 0.8;
+    }
+    if (glasses > 45) {
+      // TODO test...
+      // glassesY = this.screenCenterY*1.2;
+      glassesPerRow = 20;
+      glassesXStart = this.screenCenterX * 0.4;
+      scaleValue = 0.5;
+    }
+    if (glasses > 100) {
+      glassesXStart = this.screenCenterX * 0.25;
+      glassesPerRow = 30;
+      scaleValue = 0.4;
+    }
+    for (let index = 1; index <= glasses; index++) {
+      console.log("glassesY: " + glassesY);
+      let img = this.add.image(
+        glassesXStart + glassesXAdd,
+        glassesY,
+        'GlassFull'
+      );
+      img.setScale(scaleValue);
+      // if (glasses > 45) {
+      //   console.log("img.height before scaling: "+ img.height);
+      //   scaleValue = 0.5;
+      //   img.setScale(scaleValue);
+      //   console.log("img.height after scaling: "+ img.height);
+      // }
+      glassesXAdd = glassesXAdd + img.width * scaleValue * 1.1;
+      if (index % glassesPerRow == 0) {
+        glassesY = glassesY + img.height * scaleValue * 1.1;
+        glassesXAdd = 0;
+        console.log("glassesY next: " + glassesY);
+      }
+    }
   }
 
   private initSoundEffects() {
@@ -964,6 +1039,7 @@ enum IngredientType {
   APPLE,
   BANANA,
   BERRY,
+  BEATLE
   // HONEY,
   // BEE
 }
