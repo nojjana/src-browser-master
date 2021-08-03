@@ -6,7 +6,9 @@
   <div style="position: absolute; width: 100%; color: black; text-align: right;" *ngIf="gameOverCountdown != 0 && !gameOver">
     <p style="font-size: 40px; margin-top: 250px; margin-right: 100px;">{{gameOverCountdown}}</p>
   </div>
+  
   <main *ngIf="building"><div id="gameContainer"></div></main>
+
   <div id="tutorial-box" *ngIf="tutorial">
     <div style="margin-top: 50px">
       <span>Bitte lest die Spielanleitung auf eurem Handy</span>
@@ -15,9 +17,15 @@
       <span *ngIf="dots == 1">.&nbsp;&nbsp;</span>
       <span *ngIf="dots == 0">&nbsp;&nbsp;&nbsp;</span>
     </div>
+
     <div style="margin-top: 30px">
       {{amountOfReadyPlayers}}/2 gelesen
     </div>
+
+    <div style="width: 100%; margin-top: 70px; text-align: center;">
+      <img src="assets/seesaw/screen-example.png" alt="Spielanzeige Beispiel" style="height: 600px">
+    </div>
+    
   </div>
 </div>
 
