@@ -272,11 +272,11 @@ export default class SeesawScene extends Phaser.Scene {
     );
     this.ground.setVisible(true);
 
-    //TEST RECTANGLE
-    this.rectangle1 = this.add.rectangle(0, 0, 0, 0, 0xa83232)
-    this.rectangleBeam1 = this.add.rectangle(0,0,0,0, 0xa83232)
-    this.rectangle2 = this.add.rectangle(0,0,0,0, 0x9a32a6)
-    this.rectangleBeam2 = this.add.rectangle(0,0,0,0, 0x9a32a6)
+    //Rectangle
+    this.rectangle1 = this.add.rectangle(0, 0, 0, 0, 0xF38C2C)
+    this.rectangleBeam1 = this.add.rectangle(0,0,0,0, 0xF38C2C)
+    this.rectangle2 = this.add.rectangle(0,0,0,0, 0x4CAF50)
+    this.rectangleBeam2 = this.add.rectangle(0,0,0,0, 0x4CAF50)
 /*     this.circleIng1 = this.add.ellipse(0,0,100,100, 0xa83232)
     this.circleIng2 = this.add.ellipse(0,0,100,100, 0xa83232)
     this.circleIng3 = this.add.ellipse(0,0,100,100, 0xa83232)
