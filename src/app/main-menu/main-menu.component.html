@@ -17,23 +17,25 @@
           <img src="assets/main-menu/controller.png" alt="controllers" style="height: 100px; margin-left: 58px;">
           <p style="font-size: 25px; text-align: center; ">Verbundene Handys: {{mainMenuState.controllers}}</p>
         </div>
-        <div style="position: absolute; top: 0px; right: 40px; width: 170px">
+        <!--  Option to show QR for app download (SRC-App for Android with Säftlimacher not deployed yet)
+          <div style="position: absolute; top: 0px; right: 40px; width: 170px">
           <div style="display: flex; align-items: center; justify-content: center;">
             <img src="assets/main-menu/qr-code.png" alt="qr-code" style="height: 100px">
           </div>
           <p style="font-size: 25px; text-align: center; color: white;">App herunterladen</p>
         </div>
+      -->
       </div>
-
-      <!-- <div style="width: 200px; text-align: center; margin: 250px auto auto; padding-top: 100px">
+      <!-- Option for more displays to join lobby
+        <div style="width: 200px; text-align: center; margin: 250px auto auto; padding-top: 100px">
         <input class="game-code-input" placeholder="Game Code" [(ngModel)]="joinLobbyCode" autofocus>
-      </div>
-      <div style="text-align: center; width: 100%; margin-top: 20px;">
-        <div class="myButton2" (click)="joinLobby()">
-          <p style="font-size: 30px; margin-bottom: 0px">Bestätigen</p>
         </div>
-      </div> -->
-
+        <div style="text-align: center; width: 100%; margin-top: 20px;">
+          <div class="myButton2" (click)="joinLobby()">
+            <p style="font-size: 30px; margin-bottom: 0px">Bestätigen</p>
+          </div>
+        </div>
+    -->
   </div>
 
 
@@ -45,9 +47,11 @@
     </div>
 
     <div style="position: relative; text-align: center; width: 100%; margin-top: 30px" *ngFor="let game of mainMenuState.games; let i = index" >
-      <!--<button mat-raised-button style="width: 200px;" [color]="getButtonColor(i)" (click)="showConnectControllerError()">
+      <!-- Option to show error when clicking/touching screen
+        <button mat-raised-button style="width: 200px;" [color]="getButtonColor(i)" (click)="showConnectControllerError()">
         {{game}}
-      </button>-->
+      </button>
+      -->
       <div class="myButton" [ngClass]="{'selected': i === this.mainMenuState.selectedGame}" (click)="showConnectControllerError()">
         <p style="margin-top: 15px;">{{game}}</p>
       </div>

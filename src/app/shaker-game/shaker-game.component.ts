@@ -195,8 +195,8 @@ export default class ShakerScene extends Phaser.Scene {
   create(data) {
     this.socketService = data.socketService;
     const levelData = data.levelData;
-    this.allIngredientNumbersOnList = levelData[6];
-    this.shakePointsNeededForFalling = levelData[7];
+    this.allIngredientNumbersOnList = levelData[0];
+    this.shakePointsNeededForFalling = levelData[1];
 
     this.screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
     this.screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
