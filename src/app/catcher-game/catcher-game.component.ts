@@ -140,27 +140,17 @@ export default class CatcherScene extends Phaser.Scene {
     // get level info from CatcherProgram (server)
     const levelData = data.levelData;
     this.allIngredientNumbersOnList = levelData[0];
-    //TODO: link to levelData
     let initCatcherNetBottomX = levelData[1];
     let initCatcherNetBottomY = levelData[2];
-    //TODO: link to levelData
     let initCatcherNetMiddleX = levelData[3];
     let initCatcherNetMiddleY = levelData[4];
-    //TODO: link to levelData
-    // let initCatcherNetTopX = levelData[1];
-    // let initCatcherNetTopY = levelData[2];
-
-    // let initShakerPositionX = levelData[1];
-    // let initShakerPositionY = levelData[2];
 
     // screen dimensions
-    // 2560 1440
     this.screenWidth = this.cameras.main.width;
     this.screenHeight = this.cameras.main.height;
     this.screenCenterX = this.screenWidth / 2;
     this.screenCenterY = this.screenHeight / 2;
     this.ingredientOnListX = this.screenCenterX * 0.2;
-    // this.socketService.emit('screenDimension', [this.screenWidth, this.screenHeight]);
 
     // add säftlimacher visible game objects to scene
     // ground
@@ -186,24 +176,6 @@ export default class CatcherScene extends Phaser.Scene {
       'CatcherNet2'
     )
     this.catcherNet2.setDepth(80);
-
-    // // catcher net 3 - Top
-    // this.catcherNet3 = this.add.image(
-    //   initCatcherNetTopX,
-    //   initCatcherNetTopY,
-    //   //TODO: load color of controller
-    //   'CatcherNet3'
-    // )
-    // this.catcherNet3.setDepth(100);
-
-    // /// shaker/mixer
-    // this.shakerContainer = this.add.image(
-    //   initShakerPositionX,
-    //   initShakerPositionY,
-    //   'ShakerContainer'
-    // );
-    // this.shakerContainer.setDepth(100);
-
 
     /// ingredient left
     this.ingredientLeft = this.add.image(
@@ -269,7 +241,6 @@ export default class CatcherScene extends Phaser.Scene {
 
     this.loadIngredientsOnList(this.allIngredientNumbersOnList);
 
-    // TODO: fix error which shows after restarting game
     // add sounds to scene
     this.initSoundEffects();
 
@@ -283,17 +254,13 @@ export default class CatcherScene extends Phaser.Scene {
       //  this.shakerContainer.setPosition(pos[0], pos[1]);
       this.catcherNet2.setPosition(pos[0], pos[1]);
     });
-    // /// current ingredient position
-    // this.socketService.on('updateIngredientPosition', (pos) => {
-    //   this.ingredientTest.setPosition(pos[0], pos[1]);
-    // });
+
     /// current ingredient position left
     this.socketService.on('updateIngredientLeft', (pos) => {
       this.ingredientLeft.setPosition(pos[0], pos[1]);
     });
     /// current ingredient position right
     this.socketService.on('updateIngredientRight', (pos) => {
-      // console.log("ingredientRight Nr:", pos[2]);
       this.ingredientRight.setPosition(pos[0], pos[1]);
     });
     /// current ingredient position center
@@ -338,21 +305,6 @@ export default class CatcherScene extends Phaser.Scene {
       this.checkIngredientOnList(number);
     });
 
-
-    // this.socketService.on('newIngredient', (ingr) => {
-    //   // type, x, y, name
-    //   console.log("newIngredient NR X Y: ", ingr[0], ingr[1], ingr[2]);
-    //   let newIngr = this.add.image(
-    //     ingr[1],
-    //     ingr[2],
-    //     this.loadIngredientImage(ingr[0])
-    //     // 'Apple'
-    //     // ingr[3]
-    //   );
-    //   newIngr.setDepth(80);
-    //   // this.ingrFalling.push(newIngr);
-    // });
-
     /// current score
     this.socketService.on('updateScore', (score) => {
       this.score = score;
@@ -373,8 +325,6 @@ export default class CatcherScene extends Phaser.Scene {
     /// on playing status change
     this.socketService.on('playing', playing => {
       this.playing = playing;
-      // let ingredients fall
-      // this.letIngredientsFall(2);
     });
 
     /// on show game over
@@ -394,14 +344,8 @@ export default class CatcherScene extends Phaser.Scene {
   update() {
 
     if (this.playing != undefined && this.playing) {
-      // this.keepFalling();
-      // console.log("boolean for while: "+this.ingredientTouchedCollider);
       if (this.ingredientTouchedCollider) {
-        console.log("true / update playing called boolean: " + this.ingredientTouchedCollider);
-        //TODO: generate random number
-        // TODO: has to come from server!?
-        // this.letIngredientsFall(3);
-        this.ingredientTouchedCollider = false;
+          this.ingredientTouchedCollider = false;
       }
     }
 
@@ -430,9 +374,7 @@ export default class CatcherScene extends Phaser.Scene {
   }
 
   private loadIngredientsOnList(ingredientNumbers: number[]) {
-    console.log("init list with ingredients, numbers:");
     ingredientNumbers.forEach(i => {
-      console.log(i);
     });
     this.allIngredientsOnList?.forEach(i => {
       i.destroy();
@@ -460,7 +402,6 @@ export default class CatcherScene extends Phaser.Scene {
     this.ingredientOnList.alpha = alphaNr;
     this.ingredientOnList.setDepth(30);
     this.allIngredientsOnList.push(this.ingredientOnList);
-    console.log("created ingredient on list with number: " + ingredientObjectNumber);
   }
 
   private getYPosOnListForNumber(ingredientObjectNumber: number) {
@@ -490,7 +431,6 @@ export default class CatcherScene extends Phaser.Scene {
   }
 
   private updateCatchedIngredientCounterDisplay(ingredientObjectNumber) {
-    console.log("updateCatchedIngredientCounterDisplay called. number: " + ingredientObjectNumber);
     this.increaseCounterForNumber(ingredientObjectNumber);
     if (this.getCounterForNumber(ingredientObjectNumber) > 1) {
       this.updateCounterTextForNumber(this.getCounterForNumber(ingredientObjectNumber).toString(), ingredientObjectNumber);
@@ -522,17 +462,14 @@ export default class CatcherScene extends Phaser.Scene {
       case 0:
         this.catchedIngredientCounterText1?.destroy();
         this.catchedIngredientCounterText1 = counterBitmapText;
-        // this.catchedIngredientCounterText1.setText = counterText;
         break;
       case 1:
         this.catchedIngredientCounterText2?.destroy();
         this.catchedIngredientCounterText2 = counterBitmapText;
-        // this.catchedIngredientCounterText2.setText = counterText;
         break;
       case 2:
         this.catchedIngredientCounterText3?.destroy();
         this.catchedIngredientCounterText3 = counterBitmapText;
-        // this.catchedIngredientCounterText3.setText = counterText;
         break;
     }
   }
@@ -540,18 +477,12 @@ export default class CatcherScene extends Phaser.Scene {
   updateCounterTextForNumber(counterText: string, ingredientObjectNumber: any) {
     switch (ingredientObjectNumber) {
       case 0:
-        // this.catchedIngredientCounterText1?.destroy();
-        // this.catchedIngredientCounterText1 = counterText;
         this.catchedIngredientCounterText1.setText(counterText);
         break;
       case 1:
-        // this.catchedIngredientCounterText2?.destroy();
-        // this.catchedIngredientCounterText2 = counterText;
         this.catchedIngredientCounterText2.setText(counterText);
         break;
       case 2:
-        // this.catchedIngredientCounterText3?.destroy();
-        // this.catchedIngredientCounterText3 = counterText;
         this.catchedIngredientCounterText3.setText(counterText);
         break;
     }
@@ -583,8 +514,6 @@ export default class CatcherScene extends Phaser.Scene {
   /* -------------------- SÄFTLIMACHER GAME METHODS WITH INDIVIDUAL IMPLEMENTATION --------------------*/
 
   private getNumberOfGlasses(score: number) {
-    // TODO: rechnung server überlassen!
-    // let glasses = score / 100;
     let glasses = score / 10;
     glasses = Math.floor(glasses);
     return glasses;
@@ -595,26 +524,21 @@ export default class CatcherScene extends Phaser.Scene {
     this.adjustedPointsText.setX(x);
     this.adjustedPointsText.setY(y);
     this.adjustedPointsText.setText('' + scoreDec);
-    // red
     this.adjustedPointsText.setTintFill(0xE50D0D);
     this.adjustedPointsText.setVisible(true);
     this.adjustedPointsTextVisibleCounter = 0;
-    // return this.adjustedPointsText;
   }
 
   private showCollectedPointsByIngredient(scoreInc: number, ingredientNr: number, x: number, y: number) {
     this.adjustedPointsText.setX(x);
     this.adjustedPointsText.setY(y);
     this.adjustedPointsText.setText('+' + scoreInc);
-    // green
     this.adjustedPointsText.setTintFill(0x37B400);
     this.adjustedPointsText.setVisible(true);
     this.adjustedPointsTextVisibleCounter = 0;
-    // return this.adjustedPointsText;
   }
 
   private checkIngredientOnList(numberOfIngredient: number) {
-    console.log("got one! checkIngredientOnList with number: " + numberOfIngredient);
     this.updateCatchedIngredientCounterDisplay(numberOfIngredient);
   }
 
@@ -642,28 +566,7 @@ export default class CatcherScene extends Phaser.Scene {
     this.showReachedScore();
   }
 
-  // private showReachedScore() {
-  // const text = ['Der Saft ist fertig!\n\n\n\nGesammelte Punkte: '
-  //   + this.score + '\n\nDas macht ' + this.getNumberOfGlasses(this.score)
-  //   + ' Glaser!'];
-
-  // this.add.bitmapText(
-  //   this.screenCenterX,
-  //   this.screenCenterY*1.5,
-  //   'pressStartBlack',
-  //   text,
-  //   40)
-  //   .setOrigin(0.5, 0.5)
-  //   .setCenterAlign();
-
-  //   this.add.image(
-  //     this.screenCenterX,
-  //     this.screenCenterY*0.8,
-  //     'ShakerMixing'
-  //   );
-
   private showReachedScore() {
-    // mixed juice in shaker
     this.add.image(
       this.screenCenterX,
       this.screenCenterY * 0.45,
@@ -727,14 +630,11 @@ export default class CatcherScene extends Phaser.Scene {
       glassesXStart = this.screenCenterX * 0.4;
     }
     if (glasses > 30) {
-      // glassesY = this.screenCenterY*1.2;
       glassesPerRow = 15;
       glassesXStart = this.screenCenterX * 0.3;
       scaleValue = 0.8;
     }
     if (glasses > 45) {
-      // TODO test...
-      // glassesY = this.screenCenterY*1.2;
       glassesPerRow = 20;
       glassesXStart = this.screenCenterX * 0.4;
       scaleValue = 0.5;
@@ -745,24 +645,16 @@ export default class CatcherScene extends Phaser.Scene {
       scaleValue = 0.4;
     }
     for (let index = 1; index <= glasses; index++) {
-      console.log("glassesY: " + glassesY);
       let img = this.add.image(
         glassesXStart + glassesXAdd,
         glassesY,
         'GlassFull'
       );
       img.setScale(scaleValue);
-      // if (glasses > 45) {
-      //   console.log("img.height before scaling: "+ img.height);
-      //   scaleValue = 0.5;
-      //   img.setScale(scaleValue);
-      //   console.log("img.height after scaling: "+ img.height);
-      // }
       glassesXAdd = glassesXAdd + img.width * scaleValue * 1.1;
       if (index % glassesPerRow == 0) {
         glassesY = glassesY + img.height * scaleValue * 1.1;
         glassesXAdd = 0;
-        console.log("glassesY next: " + glassesY);
       }
     }
   }
@@ -800,8 +692,6 @@ enum IngredientType {
   BANANA,
   BERRY,
   BEATLE
-  // HONEY,
-  // BEE
 }
 
 
